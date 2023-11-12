@@ -1,0 +1,30 @@
+<ul>
+    <li *ngFor="let schedule of travelDaySchedules;let i = index">
+        <a style="cursor:unset">
+            <!-- 序號 -->
+            <div class="travelNumber">
+                <label>{{i + 1}}</label>
+            </div>
+            <!-- 行程時間 -->
+            <div class="time center">
+                <label>{{schedule.time}}</label>
+                <!-- 行程地點位置網址 -->
+                <ng-container *ngIf="schedule.map_location">
+                    <i class="fa fa-map-marker" style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
+                        (click)="gotoWebLink(schedule.map_location)">
+                    </i>
+                </ng-container>
+            </div>
+            <!-- 代表圖片 -->
+            <div class="travelIntroduce center maxWidth">
+                <img [src]="schedule.pic_src" width="250px" height="200px">
+            </div>
+            <!-- 說明 -->
+            <div class="center maxWidth">
+                <label style="font-weight: 900;font-size: 17px;">
+                    {{schedule.description}}
+                </label>
+            </div>
+        </a>
+    </li>
+</ul>

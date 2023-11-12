@@ -1,0 +1,99 @@
+/* 大標題 */
+.caption {
+    text-align: center;
+    height: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 5px solid rgb(151, 151, 231);
+}
+
+/* 行程區塊 */
+.TravelBlock {
+    height: fit-content;
+    box-shadow: 10px 10px 0px 0px lightgray;
+    margin-bottom: 15px;
+    border-radius: 15px;
+    background-image: url('../../assets/content.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding: 0px;
+}
+
+/* 圖片區塊 */
+.imgBlock {
+    text-align: center;
+}
+
+/* 區塊內文字 */
+.imgBlock>label {
+    font-size: 25px;
+    font-weight: 900;
+}
+
+/* 圖片區塊內的照片樣式 */
+.imgBlock>img {
+    border-radius: 50%;
+    border: 5px solid green;
+    height: 170px;
+    width: 170px;
+}
+
+/* 行程標題 */
+.TravelBlockTitlte {
+    background: linear-gradient(to right, rgb(129 229 188), rgb(56 146 155));
+    text-align: center;
+    color: white;
+    font-weight: 900;
+    border-radius: 15px;
+    background-image: url('../../assets/banner.jpg');
+}
+
+/* 生活相關區塊 */
+.lifeBlock {
+    background-image: url('../../assets//memo.jpg');
+    margin: 10px 10px;
+    border-radius: 15px;
+    border: 3px solid lightgray;
+    box-shadow: 5px 5px 0px 0px;
+}
+
+/* 標籤 */
+label {
+    font-weight: 700;
+}
+
+/* 條列式 */
+li {
+    font-size: 18px;
+    font-weight: 900;
+    list-style: none;
+}
+
+i {
+    margin-right: 10px;
+}
+
+/* 介紹照片區塊 */
+.picBlock {
+    border-right: 3px solid darkcyan;
+    min-width: 200px;
+}
+
+li>i {
+    width: 25px;
+}
+
+/* 旅店資訊 */
+.hotel {
+    font-size: 25px;
+    color: rgb(10, 94, 10);
+    float: left;
+}
+
+/* 相片容器 */
+.picContainer {
+    position: sticky;
+    top: 0px;
+}
+

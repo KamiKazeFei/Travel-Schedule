@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { AppRoutingModule, } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
+import { TravelDetailComponent } from './travel-introduce/travel-detail/travel-detail.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TravelIntroduceComponent
+    TravelIntroduceComponent,
+    TravelDetailComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
