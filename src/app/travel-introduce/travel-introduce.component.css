@@ -97,3 +97,94 @@ li>i {
     top: 0px;
 }
 
+#catalog {
+    position: fixed;
+    top: 10%;
+    left: 0;
+    width: fit-content;
+    height: fit-content;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 999;
+    background: antiquewhite;
+    border-radius: 10px;
+    border: 3px solid lightgray;
+}
+
+#catalog ul {
+    list-style: none;
+    padding: 20px;
+    margin: 0;
+}
+
+#catalog li {
+    margin-bottom: 10px;
+}
+
+#catalog a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.hidden {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+#toggleButton {
+    display: none;
+    border-radius: 50%;
+    border: 2px solid gray;
+    width: 30px;
+    height: 30px;
+    background: white;
+    color: black;
+    font-weight: 300;
+    transition: 0.3s;
+    position: fixed;
+    top: 2%;
+    left: 2%;
+    z-index: 999;
+}
+
+#toggleButton:hover {
+    background: green;
+    color: white;
+}
+
+/* 媒體查詢，當螢幕寬度小於等於1200px時，隱藏目錄，顯示切換按鈕 */
+@media screen and (max-width: 1200px) {
+    #catalog {
+        left: 0%;
+        top: 4.5%;
+    }
+
+    #toggleButton {
+        top: 1%;
+        left: 1%;
+        display: block;
+    }
+}
+
+/* 媒體查詢，當螢幕寬度小於等於1200px時，隱藏目錄，顯示切換按鈕 */
+@media screen and (min-width: 1201px) {
+    #catalog {
+        left: 0.5%;
+    }
+
+    #toggleButton {
+        top: 6%;
+        left: 3.5%;
+        display: block;
+    }
+}
+
+a {
+    color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1)) !important;
+    text-decoration: underline !important;
+    cursor: pointer;
+}

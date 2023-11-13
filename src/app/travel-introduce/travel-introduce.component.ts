@@ -1,11 +1,25 @@
 import { Component } from '@angular/core';
 import AOS from 'aos';
 import { TravelDayIntroduce } from './tavel-introduce.model';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-travel-introduce',
   templateUrl: './travel-introduce.component.html',
-  styleUrls: ['./travel-introduce.component.css']
+  styleUrls: ['./travel-introduce.component.css'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0,
+        visibility: 'hidden'
+      })),
+      state('*', style({
+        opacity: 1,
+        visibility: 'visible'
+      })),
+      transition('void <=> *', animate('0.5s'))
+    ])
+  ]
 })
 export class TravelIntroduceComponent {
 
@@ -408,13 +422,13 @@ export class TravelIntroduceComponent {
           time: '18:00 ~ 20:30',
           pic_src: 'assets/海遊館.jpg',
           description: '海遊館夜遊',
-          map_location: ''
+          map_location: 'https://www.google.com.tw/maps/place/%E6%B5%B7%E9%81%8A%E9%A4%A8/@34.6545225,135.4240936,17z/data=!3m2!4b1!5s0x6000e8f48fa243ff:0x25fc1f29292f7889!4m6!3m5!1s0x6000e8f48c0da9cd:0x6f83c520ae082ccc!8m2!3d34.6545182!4d135.4289645!16zL20vMDJjeW13?hl=zh-TW&authuser=0&entry=ttu'
         },
         {
           time: '20:50 ~ 21:05',
           pic_src: 'assets/天保山大摩天輪.jpg',
           description: '天保山大摩天輪',
-          map_location: ''
+          map_location: 'https://www.google.com.tw/maps/place/%E5%A4%A9%E4%BF%9D%E5%B1%B1%E5%A4%A7%E6%91%A9%E5%A4%A9%E8%BC%AA/@34.656273,135.428391,17z/data=!3m1!4b1!4m6!3m5!1s0x6000e88b5561e543:0xfe7be2a424a0c226!8m2!3d34.6562686!4d135.4309659!16zL20vMDZrN2M1?hl=zh-TW&authuser=0&entry=ttu'
         },
       ],
       hotel_name: 'IP City Hotel Osaka',
@@ -423,7 +437,8 @@ export class TravelIntroduceComponent {
       memo_list: [
         '【大阪周遊券使用】',
         '天保山大摩天輪、大阪城 & 御座船：周遊券免費',
-        '牛かつもと村 難波御堂筋店：預約不可'
+        '牛かつもと村 難波御堂筋店：預約不可',
+        '黑門市場：YUMTEA泱茶 日本橋'
       ],
       breakfirst: '【早餐】：MONDIAL KAFFEE 328',
       breakfirst_map_location: 'https://www.google.com/maps/place/Gyukatsu+Motomura+Namba+Midosuji/@34.6666682,135.4984199,17z/data=!4m6!3m5!1s0x6000e724a9c8012f:0x81d66dd75e1dccbc!8m2!3d34.6667128!4d135.4999867!16s%2Fg%2F11twj8pbg2?entry=ttu',
@@ -480,6 +495,58 @@ export class TravelIntroduceComponent {
   /** 初始化 */
   ngOnInit() {
     AOS.init()
+
+    var catalog = document.getElementById('catalog');
+    var toggleButton = document.getElementById('toggleButton');
+
+    // 切換目錄顯示/隱藏
+    toggleButton.addEventListener('click', function () {
+      catalog.classList.toggle('hidden');
+    });
+
+    // 在滾動時，保持目錄在畫面最上方
+    window.addEventListener('scroll', function () {
+      // catalog.style.top = window.scrollY + 'px';
+    });
+
+    // 淡入淡出效果
+    function fadeIn() {
+      catalog.style.opacity = '1';
+    }
+
+    function fadeOut() {
+      catalog.style.opacity = '0';
+    }
+
+    // 偵測窗口寬度變化，以適應 RWD
+    function checkWidth() {
+      if (window.innerWidth <= 1200) {
+        catalog.classList.add('hidden');
+      } else {
+        catalog.classList.remove('hidden');
+      }
+    }
+
+    // 初始化時進行一次檢查
+    checkWidth();
+
+    // 窗口大小改變時觸發檢查
+    window.addEventListener('resize', function () {
+      checkWidth();
+    });
+
+    fadeIn();
+
+    // // 滾動時執行淡入淡出效果
+    // window.addEventListener('scroll', function () {
+    //   if (window.innerWidth > 1200) {
+    //     if (window.scrollY > 50) {
+    //       fadeIn();
+    //     } else {
+    //       fadeOut();
+    //     }
+    //   }
+    // });
   }
 
   /** 前往網址 */

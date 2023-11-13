@@ -3,11 +3,22 @@
     <h2>京坂神姬2024年獨旅行程表</h2>
 </div>
 
+<div id="catalog" class="hidden center">
+    <label style="color: black;font-size: 23px;font-weight: 900;">{{'目錄'}}</label>
+    <!-- 目錄內容 -->
+    <ul style="padding-top: 5px;border-top: 2px solid lightgray;">
+        <li *ngFor="let data of travelSchedule">
+            <a [href]="'#' + data.title" style="font-size: 11.5px;">{{data.title}}</a>
+        </li>
+    </ul>
+</div>
+<button id="toggleButton"><i class="fa fa-list" style="font-weight: 300;"></i></button>
+
 <!-- 行程介紹區塊 -->
-<div class="grid">
+<div class="grid" id="content">
     <ng-container *ngFor="let data of travelSchedule">
         <div class="col-offset-1 col-10">
-            <div class="TravelBlock" data-aos="fade-right">
+            <div class="TravelBlock" data-aos="fade-right" [id]="data.title">
                 <div class="grid zeroPadding">
                     <!-- 標題 -->
                     <div class="col-12 center TravelBlockTitlte">
@@ -57,7 +68,8 @@
                                     <!-- 晚餐 -->
                                     <li style="color: darkcyan;">
                                         <label>
-                                            <i class="fa fa-cutlery" style="font-size: 17px;"></i> 晚餐：{{data.dinner}}
+                                            <i class="fa fa-cutlery" style="font-size: 17px;"></i>
+                                            晚餐：{{data.dinner}}
                                             <!-- 地圖圖示 -->
                                             <ng-container *ngIf="data.dinner_map_location">
                                                 <i class="fa fa-map-marker"
