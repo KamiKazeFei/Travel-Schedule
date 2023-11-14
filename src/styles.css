@@ -21,9 +21,29 @@ html {
     overflow: auto;
 }
 
+/* 媒體查詢，當螢幕寬度小於等於1200px時，隱藏目錄，顯示切換按鈕 */
+@media screen and (max-width: 412) {
+
+    html {
+        width: min-content;
+        height: 100%;
+        overflow: auto;
+    }
+
+}
+
+@media screen and (min-width: 413) {
+    html {
+        width: unset;
+        height: 100%;
+        overflow: auto;
+    }
+}
+
 /* 宽度和颜色 */
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 3px;
+    height: 7px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -37,11 +57,11 @@ html {
 
 /* 圆角 */
 ::-webkit-scrollbar-thumb {
-    border-radius: 6px;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-track {
-    border-radius: 10px;
+    border-radius: 3px;
 }
 
 /* 悬停效果 */
@@ -86,4 +106,14 @@ img {
     user-select: none;
     -webkit-user-drag: none;
     -webkit-user-select: none;
+}
+
+.p-tabview .p-tabview-panels {
+    padding: 0px !important;
+}
+
+.p-tabview-nav {
+    max-width: 100px;
+    overflow: auto;
+    overflow-y: hidden;
 }

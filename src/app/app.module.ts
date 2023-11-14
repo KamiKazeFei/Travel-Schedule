@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
 import { TravelDetailComponent } from './travel-introduce/travel-detail/travel-detail.component';
 import { FormsModule } from '@angular/forms';
+import { TabViewModule } from 'primeng/tabview';
+import { ButtonModule } from 'primeng/button';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { FormsModule } from '@angular/forms';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    TabViewModule,
+    ButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

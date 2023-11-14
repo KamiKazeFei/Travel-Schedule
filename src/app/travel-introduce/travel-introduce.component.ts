@@ -495,62 +495,17 @@ export class TravelIntroduceComponent {
   /** 初始化 */
   ngOnInit() {
     AOS.init()
-
-    var catalog = document.getElementById('catalog');
-    var toggleButton = document.getElementById('toggleButton');
-
-    // 切換目錄顯示/隱藏
-    toggleButton.addEventListener('click', function () {
-      catalog.classList.toggle('hidden');
-    });
-
-    // 在滾動時，保持目錄在畫面最上方
-    window.addEventListener('scroll', function () {
-      // catalog.style.top = window.scrollY + 'px';
-    });
-
-    // 淡入淡出效果
-    function fadeIn() {
-      catalog.style.opacity = '1';
-    }
-
-    function fadeOut() {
-      catalog.style.opacity = '0';
-    }
-
-    // 偵測窗口寬度變化，以適應 RWD
-    function checkWidth() {
-      if (window.innerWidth <= 1200) {
-        catalog.classList.add('hidden');
-      } else {
-        catalog.classList.remove('hidden');
-      }
-    }
-
-    // 初始化時進行一次檢查
-    checkWidth();
-
-    // 窗口大小改變時觸發檢查
-    window.addEventListener('resize', function () {
-      checkWidth();
-    });
-
-    fadeIn();
-
-    // // 滾動時執行淡入淡出效果
-    // window.addEventListener('scroll', function () {
-    //   if (window.innerWidth > 1200) {
-    //     if (window.scrollY > 50) {
-    //       fadeIn();
-    //     } else {
-    //       fadeOut();
-    //     }
-    //   }
-    // });
   }
 
   /** 前往網址 */
   gotoWebLink(link): void {
     window.open(link, '_blank');
+  }
+
+  activeIndexChange(index: number): void {
+    document.getElementById('content').scroll({
+      top: document.getElementById(this.travelSchedule[index].title).offsetTop - 110,
+      behavior: 'smooth'
+    })
   }
 }
