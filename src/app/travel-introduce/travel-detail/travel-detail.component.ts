@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { TravelDaySchedule } from '../tavel-introduce.model';
+import { TravelDaySchedule, TravelSchedule } from 'src/app/model/travel-schesule.model';
+
 
 @Component({
   selector: 'app-travel-detail',

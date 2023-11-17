@@ -5,7 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 5px solid rgb(151, 151, 231);
+    border-bottom: 3px solid gray;
 }
 
 /* 行程區塊 */
@@ -47,6 +47,9 @@
     font-weight: 900;
     border-radius: 15px;
     background-image: url('../../assets/banner.jpg');
+    position: sticky;
+    top: 0;
+    z-index: 999;
 }
 
 /* 生活相關區塊 */
@@ -105,7 +108,6 @@ li>i {
     max-width: fit-content;
     overflow: auto;
     padding-bottom: 0px;
-
     background: white;
 }
 

@@ -6,7 +6,8 @@
 <div class="topBar">
     <div class="topBarDiv">
         <ul>
-            <li class="topBarLi" *ngFor="let data of travelSchedule;let i = index" (click)="activeIndexChange(i)">
+            <li class="topBarLi" *ngFor="let data of travelSchedule.day_introduces;let i = index"
+                (click)="activeIndexChange(i)">
                 {{data.title}}
             </li>
         </ul>
@@ -14,7 +15,7 @@
 </div>
 
 <div class="grid content" id="content">
-    <div class="col-offset-1 col-10" *ngFor="let data of travelSchedule" [id]="data.title">
+    <div class="col-offset-1 col-10" *ngFor="let data of travelSchedule.day_introduces" [id]="data.title">
         <div class="TravelBlock">
             <div class="grid zeroPadding">
                 <!-- 標題 -->
