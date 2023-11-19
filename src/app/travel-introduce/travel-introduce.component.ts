@@ -7,20 +7,7 @@ import { TravelDayIntroduce, TravelSchedule } from '../model/travel-schesule.mod
 @Component({
   selector: 'app-travel-introduce',
   templateUrl: './travel-introduce.component.html',
-  styleUrls: ['./travel-introduce.component.css'],
-  animations: [
-    trigger('fadeInOut', [
-      state('void', style({
-        opacity: 0,
-        visibility: 'hidden'
-      })),
-      state('*', style({
-        opacity: 1,
-        visibility: 'visible'
-      })),
-      transition('void <=> *', animate('0.5s'))
-    ])
-  ]
+  styleUrls: ['./travel-introduce.component.css']
 })
 export class TravelIntroduceComponent {
 
@@ -42,7 +29,7 @@ export class TravelIntroduceComponent {
 
   activeIndexChange(index: number): void {
     document.getElementById('content').scroll({
-      top: document.getElementById(this.travelSchedule[index].title).offsetTop - 110,
+      top: document.getElementById(this.travelSchedule.day_introduces[index].title).offsetTop - 110,
       behavior: 'smooth'
     })
   }

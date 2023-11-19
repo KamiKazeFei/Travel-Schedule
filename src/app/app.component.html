@@ -1,1 +1,32 @@
+<div class="topBar">
+    <div class="topBarDiv">
+        <ul>
+            <li class="topBarLi" *ngFor="let data of menu;let i = index" (click)="activeIndexChange(i)">
+                {{data}}
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="background" *ngIf="block" [@fadeInOut]>
+    <div id="load">
+        <div>G</div>
+        <div>N</div>
+        <div>I</div>
+        <div>D</div>
+        <div>A</div>
+        <div>O</div>
+        <div>L</div>
+    </div>
+</div>
+
+<p-confirmDialog #cd [style]="{ 'min-width': '400px' }" [closable]="false">
+    <ng-template pTemplate="footer">
+        <button type="button" pButton icon="pi pi-check" label="確認" (click)="cd.accept()"></button>
+        <button type="button" pButton icon="pi pi-times" label="取消" (click)="cd.reject()"></button>
+    </ng-template>
+</p-confirmDialog>
+
 <router-outlet></router-outlet>
+
+<p-toast [life]="10000" position="top-right"></p-toast>

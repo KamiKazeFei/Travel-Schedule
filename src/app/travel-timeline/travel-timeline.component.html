@@ -1,7 +1,0 @@
-<div class="grid" cdkDropList (cdkDropListDropped)="drop($event)">
-    <div cdkDrag class="dayBox col-12 md:col-6 lg:col-4 xl:col-3" *ngFor="let data of travelSchedule.day_introduces">
-        <p-card [style]="{width:'100% !important'}">
-            {{data.title}}
-        </p-card>
-    </div>
-</div>

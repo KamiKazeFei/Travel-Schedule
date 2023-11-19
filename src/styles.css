@@ -4,6 +4,7 @@
 
 label {
     text-rendering: optimizeSpeed;
+    line-height: normal;
 }
 
 /* You can add global styles to this file, and also import other style files */
@@ -117,5 +118,44 @@ img {
     overflow: auto;
     overflow-y: hidden;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.p-button {
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.p-inputtext {
+    width: 100%;
+}
+
+::ng-deep .p-inputnumber {
+    width: 100% !important;
+}
+
+.p-calendar {
+    width: 100%;
+}
+
+.p-datepicker {
+    height: fit-content !important;
+}
+
+::ng-deep .p-component,
+.p-component {
+    width: 100% !important;
+}
+
+ol,
+ul {
+    padding-left: 0px !important;
+}

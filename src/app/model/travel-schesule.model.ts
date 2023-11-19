@@ -1,7 +1,15 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /** 行程計畫 */
 export class TravelSchedule {
+    /** 主要識別碼 */
+    pk_id?: string = uuidv4().replace(/-/g, '');
     /** 行程標題 */
     title: string;
+    /** 起 */
+    start_date: Date;
+    /** 迄 */
+    end_date: Date;
     /** 行程說明 */
     description: string;
     /** 行程備註 */
@@ -14,10 +22,20 @@ export class TravelSchedule {
     day_introduces: TravelDayIntroduce[] = [];
     /** 花費紀錄 */
     cost_records: TravelCostRecord[] = [];
+    /** 天數 */
+    pass_day: number = 1;
+    /** 選擇天數 */
+    selected_introduce?: TravelDayIntroduce;
 }
 
 /** 旅遊單天規劃 */
 export class TravelDayIntroduce {
+    /** 主要識別碼 */
+    pk_id?: string = uuidv4().replace(/-/g, '');
+    /** 行程PK */
+    schedule_pk_id?: string;
+    /** 日期 */
+    date: Date;
     /** 當日標題 */
     title: string;
     /** 當日說明 */
@@ -48,6 +66,10 @@ export class TravelDayIntroduce {
 
 /** 單一行程 */
 export class TravelDaySchedule {
+    /** 行程PK */
+    introduce_pk_id?: string;
+    /** 主要識別碼 */
+    pk_id?: string = uuidv4().replace(/-/g, '');
     /** 行程時間 */
     time: string;
     /** 行程介紹圖片 */
@@ -60,6 +82,8 @@ export class TravelDaySchedule {
 
 /** 花費紀錄 */
 export class TravelCostRecord {
+    /** 主要識別碼 */
+    pk_id?: string = uuidv4().replace(/-/g, '');
     /** A機票、B住宿、C景點票券、D交通、E吃喝、F禮物、G其他 */
     type: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' = 'G';
     /** 說明 */

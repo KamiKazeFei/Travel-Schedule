@@ -479,7 +479,7 @@ export class TravelScheduleService {
         dinner: '無',
         dinner_map_location: null
       },
-    ]
+    ] as any[]
     return this.travelSchedule;
   }
 }

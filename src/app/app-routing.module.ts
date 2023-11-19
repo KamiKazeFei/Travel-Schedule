@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
-import { TravelTimelineComponent } from './travel-timeline/travel-timeline.component';
+import { TravelCostRecordComponent } from './travel-cost-record/travel-cost-record.component';
+import { TravelPlanningComponent } from './travel-planning/travel-planning.component';
 
 const routes: Routes = [
-  // { path: '', component: TravelTimelineComponent },
-  { path: '', component: TravelIntroduceComponent },
+  { path: 'introduce', component: TravelIntroduceComponent },
+  { path: 'cost', component: TravelCostRecordComponent },
+  { path: 'planning', component: TravelPlanningComponent }
 ];
 
 @NgModule({

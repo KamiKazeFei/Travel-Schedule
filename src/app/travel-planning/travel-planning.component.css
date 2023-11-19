@@ -1,0 +1,94 @@
+:host .title {
+    font-size: 23px;
+    font-weight: 900;
+    text-align: center;
+}
+
+:host .footer {
+    position: fixed;
+    bottom: 3%;
+    right: 7%;
+}
+
+:host .roundBtn {
+    border-radius: 50%;
+    background-color: rgb(15, 149, 233);
+    color: white;
+    border: 2px solid rgb(15, 149, 233);
+    width: 60px;
+    height: 60px;
+}
+
+:host.notCreated {
+    font-weight: 900;
+    color: lightgray !important;
+    text-align: center;
+}
+
+:host .card {
+    font-size: 28px;
+    box-shadow: 10px 5px 0px 0px lightgray;
+    min-height: 55px;
+    height: fit-content;
+    width: 100%;
+    padding: 13px 5px;
+}
+
+.topBar {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    max-width: fit-content;
+    overflow: auto;
+    padding-bottom: 0px;
+    background: white;
+}
+
+.topBarDiv {
+    overflow-x: auto;
+    min-width: max-content;
+    max-width: 100%;
+    display: inline-flex;
+    min-height: 55px;
+    align-items: center;
+    padding-top: 15px;
+    padding-bottom: 0px;
+}
+
+.topBarLi {
+    display: inline-flex;
+    cursor: pointer;
+    padding: 0px 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 2px solid green;
+    color: green;
+    transition: 0.3s;
+    margin: 0px 5px;
+    user-select: none;
+    font-size: 23px;
+}
+
+.selectedTopBarLi {
+    display: inline-flex;
+    cursor: pointer;
+    padding: 0px 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 2px solid green;
+    color: white;
+    background-color: green;
+    transition: 0.3s;
+    margin: 0px 5px;
+    user-select: none;
+    font-size: 23px;
+}
+
+.topBarLi:hover {
+    background: green;
+    color: white;
+}
+
+.grayBottom {
+    border-bottom: 3px solid lightgray;
+}
