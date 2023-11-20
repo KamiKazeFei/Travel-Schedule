@@ -46,6 +46,11 @@ export class CommonService {
     return str;
   }
 
+  /** 設定日期時分秒為0 */
+  setDateDetailToZero(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+  }
+
   /** 回傳日曆多語 */
   getCalendarLocale(): Object {
     return {

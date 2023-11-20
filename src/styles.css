@@ -159,3 +159,11 @@ ol,
 ul {
     padding-left: 0px !important;
 }
+
+.p-inputnumber{
+    width: 100% !important;
+}
+
+.p-inputnumber-input{
+    width: 100% !important;
+}

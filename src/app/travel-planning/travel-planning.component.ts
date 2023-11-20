@@ -37,7 +37,6 @@ export class TravelPlanningComponent {
   /** 日曆多語 */
   calendarLocale: Object;
 
-
   /** 初始化 */
   async ngOnInit(): Promise<void> {
     this.calendarLocale = this.commonService.getCalendarLocale();
@@ -55,8 +54,8 @@ export class TravelPlanningComponent {
   /** 新增計畫 */
   create(): void {
     this.schedule = new TravelSchedule();
-    this.schedule.start_date = new Date();
-    this.schedule.end_date = new Date()
+    this.schedule.start_date = this.commonService.setDateDetailToZero(new Date());
+    this.schedule.end_date = this.commonService.setDateDetailToZero(new Date());
     this.schedule.end_date.setDate(this.schedule.end_date.getDate() + 5);
     this.schedule.pass_day = 5;
     this.creatingStep = 1;
@@ -68,7 +67,7 @@ export class TravelPlanningComponent {
   gotoNextStep(): void {
     this.basicInfoSettingDialog = false;
     this.creatingStep++;
-    for (let i = 0; i < this.schedule.pass_day; i++) {
+    for (let i = 0; i < (this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day); i++) {
       const date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + i);
       const dayIntroudece = new TravelDayIntroduce();
       dayIntroudece.schedule_pk_id = this.schedule.pk_id;
@@ -85,11 +84,16 @@ export class TravelPlanningComponent {
       case 'date':
         if (this.schedule.start_date && this.schedule.end_date) {
           this.schedule.pass_day = Math.floor((this.schedule.end_date.getTime() - this.schedule.start_date.getTime()) / 1000 / 60 / 60 / 24);
+          if (this.schedule.pass_day < 0) {
+            this.commonService.setMsg('i', '旅行日程不得小於0，已自動調整為適當日期!')
+            this.schedule.pass_day = 0
+            this.schedule.end_date = this.commonService.setDateDetailToZero(new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + this.schedule.pass_day));
+          }
         }
         break;
       case 'day':
-        if (this.schedule.start_date && this.schedule.pass_day) {
-          this.schedule.end_date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + this.schedule.pass_day);
+        if (this.schedule.start_date && this.schedule.pass_day !== undefined && this.schedule.pass_day !== null) {
+          this.schedule.end_date = this.commonService.setDateDetailToZero(new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + this.schedule.pass_day));
         }
         break;
     }
@@ -97,7 +101,7 @@ export class TravelPlanningComponent {
 
   /** 編輯基本資訊 */
   openEditBasicInfo(): void {
-    this.selectedSchedule = JSON.parse(JSON.stringify(this.schedule));
+    this.selectedSchedule = { ...this.schedule };
     this.basicInfoSettingDialog = true;
   }
 
@@ -110,9 +114,10 @@ export class TravelPlanningComponent {
             header: '確認',
             message: '未超出天數的資料將被保存並更改日期，超出旅程天數的資料將直接移除，確定要更新行程日期，',
             accept: () => {
+              this.basicInfoSettingDialog = false;
               const length = this.schedule.day_introduces.length;
-              this.schedule.day_introduces = this.schedule.day_introduces.slice(0, this.schedule.pass_day);
-              for (let i = 0; i < this.schedule.pass_day; i++) {
+              this.schedule.day_introduces = this.schedule.day_introduces.slice(0, this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day);
+              for (let i = 0; i < (this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day); i++) {
                 const date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + i);
                 if (i < length) {
                   this.schedule.day_introduces[i].date = date;
@@ -123,6 +128,7 @@ export class TravelPlanningComponent {
                   this.schedule.day_introduces.push(dayIntroudece);
                 }
               }
+              this.schedule.selected_introduce = this.schedule.day_introduces[0];
             }
           })
         } else {
@@ -155,7 +161,9 @@ export class TravelPlanningComponent {
             header: '確認',
             message: '確定不儲存已更動資訊就離開?',
             accept: () => {
-              this.schedule = JSON.parse(JSON.stringify(this.selectedSchedule))
+              this.schedule = { ...this.selectedSchedule }
+              this.basicInfoSettingDialog = false;
+              this.selectedSchedule = null;
             }
           })
         } else {
@@ -198,14 +206,16 @@ export class TravelPlanningComponent {
   /** 按鈕無效判斷 */
   disabelBtn(mode: string): boolean {
     switch (mode) {
-      // 初始化專案內容
+      // 初始化行程內容
       case 'schedule_init':
-        return this.schedule.title && this.schedule.start_date && this.schedule.end_date && (this.schedule.start_date.getTime() <= this.schedule.end_date.getTime()) ? false : true;
+        const schedule = this.creatingStep === 1 ? this.schedule : this.selectedSchedule;
+        return schedule.title && schedule.start_date && schedule.end_date && (schedule.start_date.getTime() <= schedule.end_date.getTime()) ? false : true;
       case 'save':
         return this.schedule.title ? false : true;
       default:
         return false;
     }
   }
+
 }
 

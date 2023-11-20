@@ -1,9 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 
-/** 行程計畫 */
-export class TravelSchedule {
+class BasicTable {
     /** 主要識別碼 */
     pk_id?: string = uuidv4().replace(/-/g, '');
+    /** 建立日期 */
+    create_dt: Date;
+    /** 最後異動日 */
+    last_update_dt: Date;
+    /** 版本 */
+    version: number = 0;
+}
+
+/** 行程計畫 */
+export class TravelSchedule extends BasicTable {
     /** 行程標題 */
     title: string;
     /** 起 */
@@ -29,9 +38,7 @@ export class TravelSchedule {
 }
 
 /** 旅遊單天規劃 */
-export class TravelDayIntroduce {
-    /** 主要識別碼 */
-    pk_id?: string = uuidv4().replace(/-/g, '');
+export class TravelDayIntroduce extends BasicTable {
     /** 行程PK */
     schedule_pk_id?: string;
     /** 日期 */
@@ -65,11 +72,9 @@ export class TravelDayIntroduce {
 }
 
 /** 單一行程 */
-export class TravelDaySchedule {
+export class TravelDaySchedule extends BasicTable {
     /** 行程PK */
     introduce_pk_id?: string;
-    /** 主要識別碼 */
-    pk_id?: string = uuidv4().replace(/-/g, '');
     /** 行程時間 */
     time: string;
     /** 行程介紹圖片 */
@@ -81,9 +86,7 @@ export class TravelDaySchedule {
 }
 
 /** 花費紀錄 */
-export class TravelCostRecord {
-    /** 主要識別碼 */
-    pk_id?: string = uuidv4().replace(/-/g, '');
+export class TravelCostRecord extends BasicTable {
     /** A機票、B住宿、C景點票券、D交通、E吃喝、F禮物、G其他 */
     type: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' = 'G';
     /** 說明 */

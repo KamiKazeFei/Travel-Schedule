@@ -30,9 +30,6 @@
         <!-- 標題 -->
         <div class="col-12 title" style="border-bottom: 3px solid green;">
             {{schedule.title}}
-            <label *ngIf="schedule.preparation_cost" style="float: right;">
-                {{'預估花費:' + (schedule.preparation_cost | number:'3.0-0')}}
-            </label>
         </div>
         <!-- 日期選項 -->
         <div class="col-12 grayBottom card">
@@ -69,13 +66,16 @@
     <!-- 新增行程 -->
     <button pButton type="button" icon="pi pi-plus" class="roundBtn" (click)="create()" *ngIf="!isEditMode">
     </button>
-    <!-- 儲存 -->
-    <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()" *ngIf="isEditMode"
-        [disabled]="disabelBtn('save')">
-    </button>
-    <!-- 取消 -->
-    <button pButton type="button" icon="pi pi-times" class="roundBtn" (click)="confirmCancel()" *ngIf="isEditMode">
-    </button>
+    <!-- 編輯模式 -->
+    <ng-container *ngIf="isEditMode">
+        <!-- 儲存 -->
+        <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()"
+            [disabled]="disabelBtn('save')">
+        </button>
+        <!-- 取消 -->
+        <button pButton type="button" icon="pi pi-times" class="roundBtn" (click)="confirmCancel()">
+        </button>
+    </ng-container>
 </div>
 
 <!-- 基本資訊編輯 -->
@@ -85,36 +85,36 @@
         <div class="grid">
             <div class="col-12">
                 <label>行程標題*</label>
-                <input pInputText type="text" [(ngModel)]="selectedSchedule.title">
+                <input pInputText type="text" [(ngModel)]="schedule.title">
             </div>
             <div class="col-12">
                 <label>起始日期*</label>
-                <p-calendar [(ngModel)]="selectedSchedule.start_date" [minDate]="now" [yearNavigator]="true"
+                <p-calendar [(ngModel)]="schedule.start_date" [minDate]="now" [yearNavigator]="true"
                     [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')" [dateFormat]="'yy/mm/dd'"
                     [appendTo]="'body'">
                 </p-calendar>
             </div>
             <div class="col-12">
                 <label>行程天數*</label>
-                <input pInputText type="number" [(ngModel)]="selectedSchedule.pass_day" [min]="1" [step]="1"
+                <input pInputText type="number" [(ngModel)]="schedule.pass_day" [min]="0" [step]="1"
                     (ngModelChange)="changeTravelDate('day')" />
             </div>
             <div class="col-12">
                 <label>結束日期*</label>
-                <p-calendar [(ngModel)]="selectedSchedule.end_date" [minDate]="now" [yearNavigator]="true"
+                <p-calendar [(ngModel)]="schedule.end_date" [minDate]="now" [yearNavigator]="true"
                     [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')" [appendTo]="'body'"
                     [dateFormat]="'yy/mm/dd'">
                 </p-calendar>
             </div>
             <div class="col-12">
-                <label>預計花費</label>
-                <input pInputText type="number" [(ngModel)]="selectedSchedule.preparation_cost">
+                <label>預計花費</label><br>
+                <p-inputNumber [(ngModel)]="schedule.preparation_cost" [ngStyle]="{width:'100%'}"></p-inputNumber>
             </div>
         </div>
         <p-footer>
             <!-- 確認 -->
             <button pButton type="button" icon="pi pi-check" [disabled]="disabelBtn('schedule_init')" [label]="'確認'"
-                (click)="gotoNextStep()">
+                (click)="creatingStep === 1 ? gotoNextStep() : confirmSave('basicInfo')">
             </button>
             <!-- 取消 -->
             <button pButton type="button" icon="pi pi-times"
