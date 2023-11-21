@@ -1,3 +1,6 @@
+:host label{
+    color: white;
+}
 /* 大標題 */
 .caption {
     text-align: center;
@@ -11,10 +14,9 @@
 /* 行程區塊 */
 .TravelBlock {
     height: fit-content;
-    box-shadow: 10px 10px 0px 0px lightgray;
+    box-shadow: 10px 10px 0px 0px rgb(31, 61, 81);
     margin-bottom: 15px;
     border-radius: 15px;
-    background-image: url('../../assets/content.jpg');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     padding: 0px;
@@ -41,12 +43,13 @@
 
 /* 行程標題 */
 .TravelBlockTitlte {
-    background: linear-gradient(to right, rgb(129 229 188), rgb(56 146 155));
+    background-color: rgb(177, 149, 98);
+    border-radius: 15px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
     text-align: center;
     color: white;
-    font-weight: 900;
-    border-radius: 15px;
-    background-image: url('../../assets/banner.jpg');
+    font-weight: 900 !important;
     position: sticky;
     top: 0;
     z-index: 999;
@@ -54,11 +57,10 @@
 
 /* 生活相關區塊 */
 .lifeBlock {
-    background-image: url('../../assets//memo.jpg');
+    background: #2e2e43;
     margin: 10px 10px;
     border-radius: 15px;
     border: 3px solid lightgray;
-    box-shadow: 5px 5px 0px 0px;
 }
 
 /* 標籤 */
@@ -108,7 +110,6 @@ li>i {
     max-width: fit-content;
     overflow: auto;
     padding-bottom: 0px;
-    background: white;
 }
 
 .topBarDiv {
@@ -123,20 +124,21 @@ li>i {
 }
 
 .topBarLi {
+    background: white;
     display: inline-flex;
     cursor: pointer;
     padding: 0px 5px;
     font-size: 16px;
     border-radius: 5px;
-    border: 2px solid green;
-    color: green;
+    border: 2px solid orange;
+    color: black;
     transition: 0.3s;
     margin: 0px 5px;
     user-select: none;
 }
 
 .topBarLi:hover {
-    background: green;
+    background: orange;
     color: white;
 }
 
@@ -150,5 +152,9 @@ a {
 .content {
     max-height: 85%;
     overflow-y: auto;
-    border-bottom: 2px solid green;
+    border-bottom: 2px solid white;
+}
+
+.content > .col-12{
+    padding: 5px 15px;
 }

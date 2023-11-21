@@ -1,5 +1,5 @@
 * {
-    font-family: 'Microsoft JhengHei';
+    font-family: 'Microsoft JhengHei';    
 }
 
 label {
@@ -11,6 +11,7 @@ label {
 body {
     padding: 0px;
     height: 100%;
+    background-color: rgb(22, 46, 62) !important;
 }
 
 body>* {
@@ -160,10 +161,10 @@ ul {
     padding-left: 0px !important;
 }
 
-.p-inputnumber{
+.p-inputnumber {
     width: 100% !important;
 }
 
-.p-inputnumber-input{
+.p-inputnumber-input {
     width: 100% !important;
 }

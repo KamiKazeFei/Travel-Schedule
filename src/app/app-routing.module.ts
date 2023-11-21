@@ -7,7 +7,8 @@ import { TravelPlanningComponent } from './travel-planning/travel-planning.compo
 const routes: Routes = [
   { path: 'introduce', component: TravelIntroduceComponent },
   { path: 'cost', component: TravelCostRecordComponent },
-  { path: 'planning', component: TravelPlanningComponent }
+  { path: 'planning', component: TravelPlanningComponent },
+  { path: '**', redirectTo: 'introduce' }
 ];
 
 @NgModule({

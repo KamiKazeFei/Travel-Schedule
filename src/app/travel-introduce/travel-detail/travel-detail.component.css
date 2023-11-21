@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+label {
+    color: black;
+}
+
 body {
     font-family: arial, sans-serif;
     font-size: 100%;
@@ -23,6 +27,7 @@ li {
 }
 
 ul {
+    padding-left: 33px !important;
     overflow: hidden;
     padding: 2em;
     padding-bottom: 0px;
@@ -125,8 +130,8 @@ ul li:nth-child(5n) a {
 
 @media screen and (max-width:499px) {
     ul li a {
-        min-width: 250px;
-        max-width: 250px;
+        min-width: 300px;
+        max-width: 300px;
         -o-transform: rotate(0deg);
         -webkit-transform: rotate(0deg);
         -moz-transform: rotate(0deg);
@@ -174,12 +179,16 @@ ol li a {
     color: white;
     font-weight: 900;
     font-size: 22px;
-    border: 2px solid green;
-    background: green;
+    border: 2px solid rgb(177, 149, 98);
+    background: rgb(177, 149, 98);
     text-align: center;
     position: absolute;
     top: -17px;
     left: -16px;
+}
+
+.travelNumber>label {
+    color: white;
 }
 
 /* 時間 */

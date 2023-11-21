@@ -12,23 +12,25 @@
 
 :host .roundBtn {
     border-radius: 50%;
-    background-color: rgb(15, 149, 233);
+    background-color: darkcyan;
     color: white;
-    border: 2px solid rgb(15, 149, 233);
+    border: 2px solid darkcyan;
     width: 60px;
     height: 60px;
 }
 
 :host.notCreated {
     font-weight: 900;
-    color: lightgray !important;
     text-align: center;
+    background: rgb(177, 149, 98);
 }
 
 :host .card {
     font-size: 28px;
+    background-color: rgb(177, 149, 98);
     box-shadow: 10px 5px 0px 0px lightgray;
     min-height: 55px;
+    color: white;
     height: fit-content;
     width: 100%;
     padding: 13px 5px;
@@ -41,7 +43,6 @@
     max-width: fit-content;
     overflow: auto;
     padding-bottom: 0px;
-    background: white;
 }
 
 .topBarDiv {
@@ -61,8 +62,9 @@
     padding: 0px 5px;
     font-size: 16px;
     border-radius: 5px;
-    border: 2px solid green;
-    color: green;
+    border: 2px solid orange;
+    color: white;
+    background: transparent;
     transition: 0.3s;
     margin: 0px 5px;
     user-select: none;
@@ -70,7 +72,7 @@
     cursor: pointer;
 }
 
-.topBarLi > label{
+.topBarLi>label {
     cursor: pointer;
 }
 
@@ -80,9 +82,9 @@
     padding: 0px 5px;
     font-size: 16px;
     border-radius: 5px;
-    border: 2px solid green;
-    color: white;
-    background-color: green;
+    border: 2px solid orange;
+    background-color: orange;
+    color: black;
     transition: 0.3s;
     margin: 0px 5px;
     user-select: none;
@@ -90,7 +92,7 @@
 }
 
 .topBarLi:hover {
-    background: green;
+    background: orange;
     color: white;
 }
 
