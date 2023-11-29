@@ -1,32 +1,62 @@
-<!-- <div class="topBar">
-    <div class="topBarDiv">
-        <ul>
-            <li class="topBarLi" *ngFor="let data of menu;let i = index" (click)="activeIndexChange(i)">
-                {{data}}
-            </li>
-        </ul>
-    </div>
-</div> -->
+<!-- 資料料表 -->
+<div id="page-top" class="index" data-pinterest-extension-installed="cr1.3.4">
+    <!-- Navigation -->
+    <div class="navbar navbar-default navbar-fixed-top navbar-shrink">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">行程規劃</a>
+            </div>
 
-<div class="background" *ngIf="block" [@fadeInOut]>
-    <div id="load">
-        <div>G</div>
-        <div>N</div>
-        <div>I</div>
-        <div>D</div>
-        <div>A</div>
-        <div>O</div>
-        <div>L</div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden active">
+                        <a href="#page-top"></a>
+                    </li>
+                    <ng-container *ngFor="let data of menu">
+                        <li class="" *ngIf="data.isLogin === isLogin" (click)="goto(data.url)">
+                            <a class="page-scroll">{{data.label}}</a>
+                        </li>
+                    </ng-container>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 
-<p-confirmDialog #cd [style]="{ 'min-width': '400px' }" [closable]="false">
+<!-- 路由 -->
+<router-outlet></router-outlet>
+
+<!-- 載入畫面 -->
+<ng-container *ngIf="block">
+    <div class="background" [@fadeInOut]>
+        <div id="load">
+            <div>G</div>
+            <div>N</div>
+            <div>I</div>
+            <div>D</div>
+            <div>A</div>
+            <div>O</div>
+            <div>L</div>
+        </div>
+    </div>
+</ng-container>
+
+<!-- 確認視窗 -->
+<p-confirmDialog #cd [style]="{ 'min-width': '400px','font-size':'16px' }" [closable]="false">
     <ng-template pTemplate="footer">
         <button type="button" pButton icon="pi pi-check" label="確認" (click)="cd.accept()"></button>
         <button type="button" pButton icon="pi pi-times" label="取消" (click)="cd.reject()"></button>
     </ng-template>
 </p-confirmDialog>
 
-<router-outlet></router-outlet>
-
+<!-- 顯示訊息 -->
 <p-toast [life]="10000" position="top-center"></p-toast>

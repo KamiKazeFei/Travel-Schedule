@@ -1,29 +1,39 @@
-import { NgModule } from '@angular/core';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { registerLocaleData } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import localeZh from '@angular/common/locales/zh';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CardModule } from 'primeng/card';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessagesModule } from 'primeng/messages';
+import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
+import { CheckboxModule } from 'primeng/checkbox';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { AppRoutingModule, } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
-import { TravelDetailComponent } from './travel-introduce/travel-detail/travel-detail.component';
-import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DialogModule } from 'primeng/dialog';
-import { CalendarModule } from 'primeng/calendar';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ApiService } from './service/api.service';
 import { TravelCostRecordComponent } from './travel-cost-record/travel-cost-record.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { ToastModule } from 'primeng/toast';
-import { InputTextModule } from 'primeng/inputtext';
-import { TravelPlanningComponent } from './travel-planning/travel-planning.component';
-import { ConfirmationService } from 'primeng/api';
-import { TooltipModule } from 'primeng/tooltip';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { MessagesModule } from 'primeng/messages';
-import { MessageService } from 'primeng/api';
+import { TravelHomeComponent } from './travel-home/travel-home.component';
+import { TravelDetailComponent } from './travel-introduce/travel-detail/travel-detail.component';
+import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
+import { TravelLoginComponent } from './travel-login/travel-login.component';
+import { TravelRegisterComponent } from './travel-register/travel-register.component';
+import { TravelScheduleListComponent } from './travel-schedule-list/travel-schedule-list.component';
+import { EditorModule } from 'primeng/editor';
+
+registerLocaleData(localeZh);
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -35,7 +45,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     TravelIntroduceComponent,
     TravelDetailComponent,
     TravelCostRecordComponent,
-    TravelPlanningComponent,
+    TravelHomeComponent,
+    TravelLoginComponent,
+    TravelRegisterComponent,
+    TravelScheduleListComponent
   ],
   imports: [
     BrowserModule,
@@ -54,6 +67,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     ToastModule,
     MessagesModule,
     TooltipModule,
+    CheckboxModule,
+    RadioButtonModule,
+    EditorModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -65,7 +81,9 @@ export function HttpLoaderFactory(http: HttpClient) {
   providers: [
     ConfirmationService,
     TranslateService,
-    MessageService
+    MessageService,
+    ApiService,
+    { provide: LOCALE_ID, useValue: 'zh' }
   ],
   bootstrap: [AppComponent]
 })

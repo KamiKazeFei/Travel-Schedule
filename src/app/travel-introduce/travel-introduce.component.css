@@ -1,6 +1,7 @@
-:host label{
+:host label {
     color: white;
 }
+
 /* 大標題 */
 .caption {
     text-align: center;
@@ -9,6 +10,7 @@
     justify-content: center;
     align-items: center;
     border-bottom: 3px solid gray;
+    color: white;
 }
 
 /* 行程區塊 */
@@ -69,7 +71,7 @@ label {
 }
 
 /* 條列式 */
-li {
+:host li {
     font-size: 18px;
     font-weight: 900;
     list-style: none;
@@ -85,7 +87,7 @@ i {
     min-width: 200px;
 }
 
-li>i {
+:host li>i {
     width: 25px;
 }
 
@@ -103,10 +105,10 @@ li>i {
 }
 
 /* 標題攔 */
-.topBar {
+.dayBar {
     position: sticky;
     top: 0;
-    z-index: 99;
+    z-index: 0;
     max-width: fit-content;
     overflow: auto;
     padding-bottom: 0px;
@@ -155,6 +157,6 @@ a {
     border-bottom: 2px solid white;
 }
 
-.content > .col-12{
+.content>.col-12 {
     padding: 5px 15px;
 }

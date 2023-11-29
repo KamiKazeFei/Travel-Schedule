@@ -1,0 +1,295 @@
+<!-- 顯示所有行程計畫 -->
+<ng-container *ngIf="!isEditMode">
+    <!-- 資料列表 -->
+    <div class="grid scheduleListGrid">
+        <div class="col-12 center scheduleListTitle">
+            {{'我的行程列表'}}
+        </div>
+        <div class="col-12">
+            <!-- 行程列表 -->
+            <div class="grid scheduleList">
+                <!--  -->
+                <div class="col-12 xl:col-4 lg:col-6 scheduleCol" *ngFor="let data of travelScheduleList">
+                    <div class="scheduleCard">
+                        <div class="grid">
+                            <!-- 行程標題 -->
+                            <div class="col-10 scheduleCardTitle">
+                                <!-- 行程標題 -->
+                                <label style="color: antiquewhite;">{{data.title}}</label>
+                                <br>
+                                <!-- 行程日期 -->
+                                <label style="color: lightseagreen;">
+                                    {{
+                                    (data.start_date | date:'yyyy/MM/dd (EE)') + '~' +
+                                    (data.end_date | date:'yyyy/MM/dd (EE)')
+                                    }}
+                                </label>
+                            </div>
+                            <!-- 編輯行程按鈕 -->
+                            <div class="col-2">
+                                <button pButton type="button" class="scheduleSettingBtn" icon="pi pi-list"
+                                    (click)="setEditScheduleDialog(true,data)">
+                                </button>
+                            </div>
+                            <!-- 行程敘述 -->
+                            <div class="col-12" style="border-top: 1px solid white;">
+                                <div class="scheduleDescription">
+                                    {{data.description}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 頁尾 -->
+    <div class="footer">
+        <label style="color: white;font-size: 21px;margin-right: 15px;">新增行程</label>
+        <!-- 新增行程 -->
+        <button pButton type="button" icon="pi pi-plus" class="roundBtn" (click)="create()">
+        </button>
+    </div>
+</ng-container>
+
+<!-- 編輯行程 -->
+<ng-container *ngIf="isEditMode">
+    <!-- 行程資訊 -->
+    <div class="grid editPageGrid">
+        <!-- 標題 -->
+        <div class="col-12 title">
+            {{schedule.title}}
+        </div>
+        <!-- 行程敘述 -->
+        <div class="col-12 description">
+            {{schedule.description}}
+        </div>
+        <!-- 日期選項 -->
+        <div class="col-12 grayBottom">
+            <div class="grid zeroPadding">
+                <!-- 調整日期 -->
+                <div class="col-2 xl:col-1 lg:col-1 md:col-1 center dateSettingBtnCol">
+                    <button pButton type="button" icon="pi pi-cog" class="roundBtn" (click)="openEditBasicInfo()"
+                        style="width: 40px;height: 40px;">
+                    </button>
+                    <br>
+                    <label style="margin: auto;color: white;">調整行程</label>
+                </div>
+                <!-- 新增 -->
+                <div class="col-2 xl:col-1 lg:col-1 md:col-1 center dateSettingBtnCol">
+                    <button pButton type="button" *ngIf="isEditMode" icon="pi pi-plus" class="roundBtn"
+                        (click)="createDayIntroduce()">
+                    </button>
+                    <br>
+                    <label style="margin: auto;color: white;">新增行程</label>
+                </div>
+                <!-- 日期列 -->
+                <div class="col-8 xl:col-10 lg:col-10 md:col-10">
+                    <!-- 標題攔 -->
+                    <div class="dateOptionBar">
+                        <div class="dateOptionBarDiv">
+                            <ul>
+                                <li [class]="schedule.selected_introduce.pk_id === data.pk_id ? 'selectedDateOption' : 'dateOption'"
+                                    (click)="schedule.selected_introduce = data"
+                                    *ngFor="let data of schedule.day_introduces;let i = index">
+                                    <label>{{data.date | date: 'MM/dd'}}</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 行程列表 -->
+        <div class="col-12 grayBottom editPage">
+            <div class="grid dayPerScheduleList" cdkDropList (cdkDropListDropped)="changeScheduleOrder($event)">
+                <div class="col-12 dragBlock" cdkDrag
+                    *ngFor="let data of schedule.selected_introduce.schedule_list;let i = index">
+                    <div class="scheduleBlock">
+                        <div class="grid zeroPadding">
+                            <!-- 移動 -->
+                            <div class="col-1 center" style="display: flex;align-items: center;user-select: none;">
+                                <i class="pi pi-list" cdkDragHandle style="font-size: 25px;float: left;"></i>
+                                <label style="margin-left: 25px;font-size: 25px;">{{data.ser_no + '. '}}</label>
+                                <ng-container *ngIf="data.type === 'move';else stay">
+                                    <label style="font-size: 50px;">🚝</label>
+                                </ng-container>
+                                <ng-template #stay>
+                                    <label style="font-size: 50px;">🖼️</label>
+                                </ng-template>
+                            </div>
+                            <!-- 類型 -->
+                            <div class="col-1">
+                                <label>{{'行程類型：'}}</label>
+                                <br>
+                                <p-radioButton [(ngModel)]="data.type" [label]="'停留'" [value]="'stay'"></p-radioButton>
+                                <p-radioButton [(ngModel)]="data.type" [label]="'移動'" [value]="'move'"></p-radioButton>
+                            </div>
+                            <!-- 停留時間 -->
+                            <div class="col-2">
+                                <label>{{(data.type === 'move' ? '移動' : '停留') + '時間：'}}</label>
+                                <input pInputText type="text" [(ngModel)]="data.time" style="background: transparent;">
+                            </div>
+                            <!-- 地點名稱 -->
+                            <div class="col-4">
+                                <label>{{'行程敘述：'}}</label>
+                                <input pInputText type="text" [(ngModel)]="data.description"
+                                    style="background: transparent;">
+                            </div>
+                            <!-- Google地圖網址 -->
+                            <div class="col-3">
+                                <label>{{'地點網址：'}}</label>
+                                <input pInputText type="text" [(ngModel)]="data.map_location"
+                                    style="background: transparent;">
+                            </div>
+                            <!-- 移除 -->
+                            <div class="col-1 center"
+                                style="display: flex;justify-content: center;align-items: center;">
+                                <button pButton type="button" class="deleteBtn" [icon]="'pi pi-trash'"
+                                    (click)="deleteDaysSchedule(i)">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 子項目 -->
+        <div class="col-12 grayBottom subDataGrid" style="color: white;">
+            <div class="grid zeroPadding">
+                <!-- 餐食、住宿 -->
+                <div class="col-5">
+                    <div class="grid zeroPadding">
+                        <div class="col-7">
+                            <label>住宿</label>
+                            <input pInputText type="text" [(ngModel)]="schedule.selected_introduce.hotel_name" />
+                        </div>
+                        <div class="col-5">
+                            <label>網址</label>
+                            <input pInputText type="text"
+                                [(ngModel)]="schedule.selected_introduce.hotel_map_location" />
+                        </div>
+                    </div>
+                    <div class="grid zeroPadding">
+                        <div class="col-7">
+                            <label>早餐</label>
+                            <input pInputText type="text" [(ngModel)]="schedule.selected_introduce.breakfirst" />
+                        </div>
+                        <div class="col-5">
+                            <label>網址</label>
+                            <input pInputText type="text"
+                                [(ngModel)]="schedule.selected_introduce.breakfirst_map_location" />
+                        </div>
+                    </div>
+                    <div class="grid zeroPadding">
+                        <div class="col-7">
+                            <label>午餐</label>
+                            <input pInputText type="text" [(ngModel)]="schedule.selected_introduce.launch" />
+                        </div>
+                        <div class="col-5">
+                            <label>網址</label>
+                            <input pInputText type="text"
+                                [(ngModel)]="schedule.selected_introduce.launch_map_location" />
+                        </div>
+                    </div>
+                    <div class="grid zeroPadding">
+                        <div class="col-7">
+                            <label>晚餐</label>
+                            <input pInputText type="text" [(ngModel)]="schedule.selected_introduce.dinner" />
+                        </div>
+                        <div class="col-5">
+                            <label>網址</label>
+                            <input pInputText type="text"
+                                [(ngModel)]="schedule.selected_introduce.dinner_map_location" />
+                        </div>
+                    </div>
+                </div>
+                <!-- 購物清單 -->
+                <div class="col-4">
+                    <label>{{'購物項目'}}</label>
+                    <p-editor [(ngModel)]="schedule.selected_introduce.shopping_list"
+                        [style]="{ height: '250px',width:'100%' }">
+                        <p-header>
+                        </p-header>
+                    </p-editor>
+                </div>
+                <!-- 備註 -->
+                <div class="col-3">
+                    <label>{{'備註'}}</label>
+                    <p-editor [(ngModel)]="schedule.selected_introduce.memo" [style]="{ height: '250px',width:'100%' }">
+                        <p-header>
+                        </p-header>
+                    </p-editor>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 頁尾 -->
+    <div class="footer">
+        <!-- 編輯模式 -->
+        <ng-container *ngIf="isEditMode">
+            <!-- 新增 -->
+            <button pButton type="button" icon="pi pi-plus" class="roundBtn" (click)="createDayIntroduce()">
+            </button>
+            <!-- 儲存 -->
+            <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()"
+                [disabled]="disabelBtn('save')">
+            </button>
+            <!-- 取消 -->
+            <button pButton type="button" icon="pi pi-times" class="roundBtn" (click)="confirmCancel()">
+            </button>
+        </ng-container>
+    </div>
+</ng-container>
+
+<!-- 基本資訊編輯 -->
+<ng-container *ngIf="basicInfoSettingDialog">
+    <p-dialog [(visible)]="basicInfoSettingDialog" [modal]="true" [style]="{width:'600px','font-size':'16px'}"
+        [header]="'請輸入新建行程資訊'" [closable]="false" [blockScroll]="true">
+        <div class="grid">
+            <div class="col-12">
+                <label>行程標題<span style="color: red;">*</span></label>
+                <input pInputText type="text" [(ngModel)]="selectedSchedule.title">
+            </div>
+            <div class="col-12">
+                <label>行程敘述<span style="color: red;">*</span></label><br>
+                <textarea pInputTextArea [(ngModel)]="selectedSchedule.description" style="height: 150px;">
+                </textarea>
+            </div>
+            <div class="col-12">
+                <label>起始日期<span style="color: red;">*</span></label>
+                <p-calendar [(ngModel)]="selectedSchedule.start_date" [minDate]="now" [yearNavigator]="true"
+                    [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')" [dateFormat]="'yy/mm/dd'"
+                    [appendTo]="'body'">
+                </p-calendar>
+            </div>
+            <div class="col-12">
+                <label>行程天數<span style="color: red;">*</span></label>
+                <input pInputText type="number" [(ngModel)]="selectedSchedule.pass_day" [min]="0" [step]="1"
+                    (ngModelChange)="changeTravelDate('day')" />
+            </div>
+            <div class="col-12">
+                <label>結束日期<span style="color: red;">*</span></label>
+                <p-calendar [(ngModel)]="selectedSchedule.end_date" [minDate]="now" [yearNavigator]="true"
+                    [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')" [appendTo]="'body'"
+                    [dateFormat]="'yy/mm/dd'">
+                </p-calendar>
+            </div>
+            <div class="col-12">
+                <label>預計花費</label><br>
+                <p-inputNumber [(ngModel)]="selectedSchedule.preparation_cost"
+                    [ngStyle]="{width:'100%'}"></p-inputNumber>
+            </div>
+        </div>
+        <p-footer>
+            <!-- 確認 -->
+            <button pButton type="button" icon="pi pi-check" [disabled]="disabelBtn('schedule_init')" [label]="'確認'"
+                (click)="creatingStep === 1 ? gotoNextStep() : confirmSave('basicInfo')">
+            </button>
+            <!-- 取消 -->
+            <button pButton type="button" icon="pi pi-times"
+                (click)="confirmCancel(creatingStep === 1 ? null : 'basicInfo')" [label]="'取消'">
+            </button>
+        </p-footer>
+    </p-dialog>
+</ng-container>

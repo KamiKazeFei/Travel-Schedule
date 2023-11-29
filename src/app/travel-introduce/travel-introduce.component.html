@@ -1,118 +1,121 @@
-<!-- 標題 -->
-<div class="caption" data-aos="fade-down">
-    <h2>京坂神姬2024年獨旅行程表</h2>
-</div>
-
-<!-- 標題攔 -->
-<div class="topBar">
-    <div class="topBarDiv">
-        <ul>
-            <li class="topBarLi" *ngFor="let data of travelSchedule.day_introduces;let i = index"
-                (click)="activeIndexChange(i)">
-                {{data.title}}
-            </li>
-        </ul>
+<ng-container *ngIf="travelSchedule">
+    <!-- 標題 -->
+    <div class="caption" data-aos="fade-down">
+        <h2>{{travelSchedule.title}}</h2>
     </div>
-</div>
 
-<!-- 行程說明 -->
-<div class="grid content" id="content">
-    <div class="col-12" *ngFor="let data of travelSchedule.day_introduces" [id]="data.title">
-        <div class="TravelBlock">
-            <div class="grid zeroPadding">
-                <!-- 標題 -->
-                <div class="col-12 center TravelBlockTitlte">
-                    <h3>{{data.title}}</h3>
-                    <h5>{{data.description}}</h5>
-                </div>
-                <!-- 行程說明 -->
-                <div class="col-12">
-                    <app-travel-detail [travelDaySchedules]="data.schedule_list"></app-travel-detail>
-                </div>
-                <!-- 食 & 住 -->
-                <div class="col-12">
-                    <div class="grid zeroPadding lifeBlock">
-                        <!-- 行程介紹 -->
-                        <div class="col-12">
-                        </div>
-                        <!-- 早午晚餐介紹 -->
-                        <div class="col-12 md:col-4 lg:col-4">
-                            <label style="font-size: 25px;">三餐</label>
-                            <ul>
-                                <!-- 早餐 -->
-                                <li style="color: crimson;">
-                                    <label><i class="fa fa-coffee" style="font-size: 17px;"></i>早餐：{{data.breakfirst}}
-                                        <!-- 地圖圖示 -->
-                                        <ng-container *ngIf="data.breakfirst_map_location">
-                                            <i class="fa fa-map-marker" *ngIf="data.breakfirst_map_location"
-                                                style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
-                                                (click)="gotoWebLink(data.breakfirst_map_location)">
-                                            </i>
-                                        </ng-container>
-                                    </label>
-                                </li>
-                                <!-- 午餐 -->
-                                <li style="color: green;">
-                                    <label>
-                                        <i class="fa fa-beer" style="font-size: 17px;"></i>午餐：{{data.launch}}
-                                        <!-- 地圖圖示 -->
-                                        <ng-container *ngIf="data.launch_map_location">
-                                            <i class="fa fa-map-marker" *ngIf="data.launch_map_location"
-                                                style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
-                                                (click)="gotoWebLink(data.launch_map_location)">
-                                            </i>
-                                        </ng-container>
-                                    </label>
-                                </li>
-                                <!-- 晚餐 -->
-                                <li style="color: darkcyan;">
-                                    <label>
-                                        <i class="fa fa-cutlery" style="font-size: 17px;"></i>
-                                        晚餐：{{data.dinner}}
-                                        <!-- 地圖圖示 -->
-                                        <ng-container *ngIf="data.dinner_map_location">
-                                            <i class="fa fa-map-marker"
-                                                style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
-                                                (click)="gotoWebLink(data.dinner_map_location)">
-                                            </i>
-                                        </ng-container>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- 購買清單 -->
-                        <div class="col-12 md:col-4 lg:col-4">
-                            <label style="font-size: 25px;">購買清單</label>
-                            <ul>
-                                <li *ngFor="let item of data.shopping_list">
-                                    <label>{{item}} </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- 行程注記 -->
-                        <div class="col-12 md:col-4 lg:col-4">
-                            <label style="font-size: 25px;">備註</label>
-                            <ul>
-                                <li *ngFor="let memo of data.memo_list">
-                                    <label style="word-break: break-all;">{{memo}}</label>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- 住宿 -->
-                        <div class="col-12 md:col-12 lg:col-12">
-                            <div class="hotel">
-                                <label>{{'住宿'}}</label>
+    <!-- 標題攔 -->
+    <div>
+        <div class="dayBar">
+            <div class="topBarDiv">
+                <ul>
+                    <li class="topBarLi" *ngFor="let data of travelSchedule.day_introduces;let i = index"
+                        (click)="activeIndexChange(i)">
+                        {{data.date | date : 'MM/dd (EE)'}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 行程說明 -->
+    <div class="grid content" id="content">
+        <div class="col-12" *ngFor="let data of travelSchedule.day_introduces;let i = index" [id]="data.title">
+            <div class="TravelBlock">
+                <div class="grid zeroPadding">
+                    <!-- 標題 -->
+                    <div class="col-12 center TravelBlockTitlte">
+                        <h3>{{ '【Day' + (i + 1) + '】' + (data.date | date : 'MM/dd (E)')}}</h3>
+                        <h3>{{ data.title}}</h3>
+                        <h5>{{data.description}}</h5>
+                    </div>
+                    <!-- 行程說明 -->
+                    <div class="col-12">
+                        <app-travel-detail [travelDaySchedules]="data.schedule_list"></app-travel-detail>
+                    </div>
+                    <!-- 食 & 住 -->
+                    <div class="col-12">
+                        <div class="grid zeroPadding lifeBlock">
+                            <!-- 行程介紹 -->
+                            <div class="col-12">
+                            </div>
+                            <!-- 早午晚餐介紹 -->
+                            <div class="col-12 md:col-4 lg:col-4">
+                                <label style="font-size: 25px;">三餐</label>
                                 <ul>
-                                    <li>
-                                        <i class="fa fa-bed"></i>
-                                        <label style="font-size: 20px;">{{data.hotel_name}}</label>
-                                        <!-- 地圖圖示 -->
-                                        <i class="fa fa-map-marker" *ngIf="data.hotel_map_location"
-                                            style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
-                                            (click)="gotoWebLink(data.hotel_map_location)">
-                                        </i>
+                                    <!-- 早餐 -->
+                                    <li style="color: crimson;">
+                                        <label><i class="fa fa-coffee"
+                                                style="font-size: 17px;"></i>早餐：{{data.breakfirst}}
+                                            <!-- 地圖圖示 -->
+                                            <ng-container *ngIf="data.breakfirst_map_location">
+                                                <i class="fa fa-map-marker" *ngIf="data.breakfirst_map_location"
+                                                    style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
+                                                    (click)="gotoWebLink(data.breakfirst_map_location)">
+                                                </i>
+                                            </ng-container>
+                                        </label>
+                                    </li>
+                                    <!-- 午餐 -->
+                                    <li style="color: green;">
+                                        <label>
+                                            <i class="fa fa-beer" style="font-size: 17px;"></i>午餐：{{data.launch}}
+                                            <!-- 地圖圖示 -->
+                                            <ng-container *ngIf="data.launch_map_location">
+                                                <i class="fa fa-map-marker" *ngIf="data.launch_map_location"
+                                                    style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
+                                                    (click)="gotoWebLink(data.launch_map_location)">
+                                                </i>
+                                            </ng-container>
+                                        </label>
+                                    </li>
+                                    <!-- 晚餐 -->
+                                    <li style="color: darkcyan;">
+                                        <label>
+                                            <i class="fa fa-cutlery" style="font-size: 17px;"></i>
+                                            晚餐：{{data.dinner}}
+                                            <!-- 地圖圖示 -->
+                                            <ng-container *ngIf="data.dinner_map_location">
+                                                <i class="fa fa-map-marker"
+                                                    style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
+                                                    (click)="gotoWebLink(data.dinner_map_location)">
+                                                </i>
+                                            </ng-container>
+                                        </label>
                                     </li>
                                 </ul>
+                            </div>
+                            <!-- 購買清單 -->
+                            <div class="col-12 md:col-4 lg:col-4">
+                                <label style="font-size: 25px;">購買清單</label>
+                                <ul>
+                                    <li *ngFor="let item of data.shopping_list">
+                                        <label>{{item}} </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- 行程注記 -->
+                            <div class="col-12 md:col-4 lg:col-4">
+                                <label style="font-size: 25px;">備註</label>
+                                <div [innerHTML]="data.memo">
+                                </div>
+                            </div>
+                            <!-- 住宿 -->
+                            <div class="col-12 md:col-12 lg:col-12">
+                                <div class="hotel">
+                                    <label>{{'住宿'}}</label>
+                                    <ul>
+                                        <li>
+                                            <i class="fa fa-bed"></i>
+                                            <label style="font-size: 20px;">{{data.hotel_name}}</label>
+                                            <!-- 地圖圖示 -->
+                                            <i class="fa fa-map-marker" *ngIf="data.hotel_map_location"
+                                                style="color: red;cursor: pointer;margin-left: 10px;margin-right: 0px;"
+                                                (click)="gotoWebLink(data.hotel_map_location)">
+                                            </i>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -120,4 +123,4 @@
             </div>
         </div>
     </div>
-</div>
+</ng-container>

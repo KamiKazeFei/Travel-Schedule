@@ -1,0 +1,321 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { ConfirmationService, PrimeNGConfig } from 'primeng/api';
+import { TravelDayIntroduce, TravelDaySchedule, TravelSchedule } from '../model/travel-schesule.model';
+import { CommonService } from '../service/common.service';
+import { TravelScheduleService } from '../service/travel-schedule.service';
+
+@Component({
+  selector: 'app-travel-schedule-list',
+  templateUrl: './travel-schedule-list.component.html',
+  styleUrls: ['./travel-schedule-list.component.css']
+})
+export class TravelScheduleListComponent {
+
+  /** 建構子 */
+  constructor(
+    protected router: Router,
+    private commonService: CommonService,
+    protected travelScheduleService: TravelScheduleService,
+    protected confirmationService: ConfirmationService,
+    private config: PrimeNGConfig
+  ) { }
+
+  /** 旅行計畫清單 */
+  travelScheduleList: TravelSchedule[] = [];
+  /** 編輯行程基本資訊視窗 */
+  scheduleEditDialog = false;
+  /** 選取行程 */
+  schedule: TravelSchedule;
+  /** 原選取行程 */
+  oriSchedule: TravelSchedule;
+  /** 現在時間 */
+  now = new Date();
+  /** 已選取行程 */
+  selectedSchedule: TravelSchedule;
+  /** 設定基本資訊 */
+  basicInfoSettingDialog = false;
+  /** 是否為建立中 */
+  isCreating = false;
+  /** 是否編輯中 */
+  isEditMode = false;
+  /** 建立步驟 */
+  creatingStep: number = 1
+  /** 日曆多語 */
+  calendarLocale: Object;
+
+  /** 初始化 */
+  async ngOnInit(): Promise<void> {
+    this.calendarLocale = this.commonService.getCalendarLocale();
+    this.config.setTranslation(this.calendarLocale);
+    this.commonService.setBlock(true);
+    await this.getTravelScheduleData()
+  }
+
+  /** 查詢旅行計畫 */
+  async getTravelScheduleData(queryObj?: Object): Promise<void> {
+    await this.travelScheduleService.getTravelList(queryObj).forEach(
+      async res => {
+        if (this.commonService.afterServerResponse(res)) {
+          const data = res.data as TravelSchedule[];
+          data.forEach(ele => {
+            ele.start_date = new Date(ele.start_date);
+            ele.end_date = new Date(ele.end_date);
+          })
+          this.travelScheduleList = data;
+        }
+      }
+    )
+  }
+
+  /** 僅查單一個行程計畫 */
+  async getTravelSchedule(pk_id: string): Promise<void> {
+    await this.travelScheduleService.getTravelSchedule(pk_id).forEach(
+      res => {
+        if (this.commonService.afterServerResponse(res)) {
+          const data = res.data as TravelSchedule[];
+          data.forEach(ele => {
+            ele.start_date = new Date(ele.start_date);
+            ele.end_date = new Date(ele.end_date);
+          })
+          this.travelScheduleList = data;
+        }
+      }
+    )
+  }
+
+  /** 儲存旅行計畫 */
+  async saveTravelScheduleData(schedule: TravelSchedule): Promise<void> {
+    await this.travelScheduleService.saveTravelSchedule(schedule).forEach(
+      async res => {
+        if (this.commonService.afterServerResponse(res)) {
+          this.commonService.showMsg('s', '已更新資訊!')
+          await this.getTravelScheduleData();
+        }
+      }
+    )
+  }
+
+  /** 移除行程 */
+  deleteSchedule(schedule: TravelSchedule): void {
+    this.confirmationService.confirm({
+      header: '【刪除】確認',
+      message: '您確定要刪除【' + schedule.title + '】行程計畫?',
+      accept: async () => {
+        schedule.isdelete = 'Y'
+        this.commonService.setBlock(true);
+        await this.saveTravelScheduleData(schedule);
+        this.commonService.setBlock(false);
+      }
+    })
+  }
+
+  /** 開啟 / 關閉行程設定視窗 */
+  async setEditScheduleDialog(action: boolean, schedule?: TravelSchedule): Promise<void> {
+    if (action) {
+      this.scheduleEditDialog = true;
+      await this.getTravelScheduleData({ pk_id: schedule.pk_id });
+    } else {
+
+    }
+  }
+
+  /** 新增計畫 */
+  create(): void {
+    this.selectedSchedule = new TravelSchedule();
+    this.selectedSchedule.start_date = this.commonService.setDateDetailToZero(new Date());
+    this.selectedSchedule.end_date = this.commonService.setDateDetailToZero(new Date());
+    this.selectedSchedule.end_date.setDate(this.selectedSchedule.end_date.getDate() + 5);
+    this.selectedSchedule.pass_day = 5;
+    this.creatingStep = 1;
+    this.isCreating = true;
+    this.basicInfoSettingDialog = true;
+  }
+
+  /** 繼續建立的下一步 */
+  gotoNextStep(): void {
+    this.basicInfoSettingDialog = false;
+    this.schedule = { ...this.selectedSchedule };
+    this.creatingStep++;
+    for (let i = 0; i < (this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day); i++) {
+      const date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + i);
+      const dayIntroudece = new TravelDayIntroduce();
+      dayIntroudece.schedule_pk_id = this.schedule.pk_id;
+      dayIntroudece.date = date;
+      this.schedule.day_introduces.push(dayIntroudece);
+    }
+    this.schedule.selected_introduce = this.schedule.day_introduces[0];
+    this.isEditMode = true;
+  }
+
+  /** 異動起訖日期 */
+  changeTravelDate(mode: string): void {
+    switch (mode) {
+      case 'date':
+        if (this.selectedSchedule.start_date && this.selectedSchedule.end_date) {
+          this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24);
+          if (this.selectedSchedule.pass_day < 0) {
+            this.commonService.showMsg('i', '旅行日程不得小於0，已自動調整為適當日期!')
+            this.selectedSchedule.pass_day = 0
+            this.selectedSchedule.end_date = this.commonService.setDateDetailToZero(
+              new Date(this.selectedSchedule.start_date.getFullYear(),
+                this.selectedSchedule.start_date.getMonth(),
+                this.selectedSchedule.start_date.getDate() + this.selectedSchedule.pass_day)
+            );
+          }
+        }
+        break;
+      case 'day':
+        if (this.selectedSchedule.start_date && this.selectedSchedule.pass_day !== undefined && this.selectedSchedule.pass_day !== null) {
+          this.selectedSchedule.end_date = this.commonService.setDateDetailToZero(
+            new Date(this.selectedSchedule.start_date.getFullYear(),
+              this.selectedSchedule.start_date.getMonth(),
+              this.selectedSchedule.start_date.getDate() + this.selectedSchedule.pass_day)
+          );
+        }
+        break;
+    }
+  }
+
+  /** 編輯基本資訊 */
+  openEditBasicInfo(): void {
+    this.selectedSchedule = { ...this.schedule };
+    this.basicInfoSettingDialog = true;
+  }
+
+  /** 確認儲存 */
+  confirmSave(mode?: string) {
+    switch (mode) {
+      case 'basicInfo':
+        if ((JSON.stringify(this.schedule) !== JSON.stringify(this.selectedSchedule))) {
+          this.confirmationService.confirm({
+            header: '確認',
+            message: '未超出天數的資料將被保存並更改日期，超出旅程天數的資料將直接移除，確定要更新行程日期，',
+            accept: () => {
+              this.schedule = { ...this.selectedSchedule };
+              this.basicInfoSettingDialog = false;
+              const length = this.schedule.day_introduces.length;
+              this.schedule.day_introduces = this.schedule.day_introduces.slice(0, this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day);
+              for (let i = 0; i <= (this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day); i++) {
+                const date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + i);
+                if (i < length) {
+                  this.schedule.day_introduces[i].date = date;
+                } else {
+                  const dayIntroudece = new TravelDayIntroduce();
+                  dayIntroudece.schedule_pk_id = this.schedule.pk_id;
+                  dayIntroudece.date = date;
+                  this.schedule.day_introduces.push(dayIntroudece);
+                }
+              }
+              this.schedule.selected_introduce = this.schedule.day_introduces[0];
+            }
+          })
+        } else {
+          this.basicInfoSettingDialog = false;
+          this.selectedSchedule = null;
+        }
+        break;
+      default:
+        if (this.isCreating || (!this.isCreating && (JSON.stringify(this.schedule) !== JSON.stringify(this.oriSchedule)))) {
+          this.confirmationService.confirm({
+            header: '確認',
+            message: this.isCreating ? '確認要取消建立新行程?' : '尚有資料尚未儲存，確定要離開編輯介面?',
+            accept: () => {
+              this.cancel();
+            }
+          })
+        } else {
+          this.cancel()
+        }
+        break
+    }
+  }
+
+  /** 確認儲存 */
+  confirmCancel(mode?: string) {
+    switch (mode) {
+      case 'basicInfo':
+        if ((JSON.stringify(this.schedule) !== JSON.stringify(this.selectedSchedule))) {
+          this.confirmationService.confirm({
+            header: '確認',
+            message: '確定不儲存已更動資訊就離開?',
+            accept: () => {
+              this.basicInfoSettingDialog = false;
+              this.selectedSchedule = null;
+            }
+          })
+        } else {
+          this.basicInfoSettingDialog = false;
+          this.selectedSchedule = null;
+        }
+        break;
+      default:
+        if (this.isCreating || (!this.isCreating && (JSON.stringify(this.schedule) !== JSON.stringify(this.oriSchedule)))) {
+          this.confirmationService.confirm({
+            header: '確認',
+            message: this.isCreating ? '確認要取消建立新行程?' : '尚有資料尚未儲存，確定要離開編輯介面?',
+            accept: () => {
+              this.cancel();
+            }
+          })
+        } else {
+          this.cancel()
+        }
+        break
+    }
+  }
+
+  /** 建立新行程 */
+  createDayIntroduce(): void {
+    const scheduleIntroduce = new TravelDaySchedule();
+    scheduleIntroduce.introduce_pk_id = this.schedule.selected_introduce.pk_id;
+    this.schedule.selected_introduce.schedule_list.push(scheduleIntroduce)
+    this.schedule.selected_introduce.schedule_list.forEach((ele, i) => ele.ser_no = (i + 1));
+  }
+
+  /** 移動行程安排順序 */
+  changeScheduleOrder(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.schedule.selected_introduce.schedule_list, event.previousIndex, event.currentIndex);
+    this.schedule.selected_introduce.schedule_list.forEach((ele, i) => ele.ser_no = (i + 1));
+  }
+
+  /** 移除單一天內的指定行程 */
+  deleteDaysSchedule(index: number): void {
+    this.schedule.selected_introduce.schedule_list = this.schedule.selected_introduce.schedule_list.filter((ele, i) => i !== index);
+    this.schedule.selected_introduce.schedule_list.forEach((ele, i) => ele.ser_no = (i + 1));
+  }
+
+  /** 儲存 */
+  save() {
+
+  }
+
+  /** 取消 */
+  async cancel(): Promise<void> {
+    this.basicInfoSettingDialog = false;
+    this.isCreating = false;
+    this.isEditMode = false;
+    this.creatingStep = 1;
+    this.schedule = null;
+    this.oriSchedule = null;
+    await this.getTravelScheduleData();
+  }
+
+  /** 按鈕無效判斷 */
+  disabelBtn(mode: string): boolean {
+    switch (mode) {
+      // 初始化行程內容
+      case 'schedule_init':
+        const schedule = this.selectedSchedule;
+        return (
+          schedule.title && schedule.start_date && schedule.end_date &&
+          schedule.description && (schedule.start_date.getTime() <= schedule.end_date.getTime())
+        ) ? false : true;
+      case 'save':
+        return this.schedule.title ? false : true;
+      default:
+        return false;
+    }
+  }
+}

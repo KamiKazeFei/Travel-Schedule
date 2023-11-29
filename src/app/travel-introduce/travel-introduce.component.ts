@@ -15,11 +15,41 @@ export class TravelIntroduceComponent {
 
   /** 旅行計畫 */
   travelSchedule: TravelSchedule;
+  /** 旅行計畫清單 */
+  travelScheduleList: TravelSchedule[] = [];
 
   /** 初始化 */
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     AOS.init();
-    this.travelSchedule = this.travelScheduleService.getTravelSchedule();
+    await this.getTravelSchedule('e3f29e67d4574479aea3650aa24a166')
+  }
+
+  /** 查詢行程 */
+  async getTravelSchedule(pk_id?: string): Promise<void> {
+    await this.travelScheduleService.getTravelSchedule(pk_id).forEach(
+      res => {
+        if (!res.error) {
+          if (res.data.length > 0) {
+            this.travelSchedule = res.data[0]
+            this.travelSchedule.day_introduces.forEach(ele => {
+              ele.date = new Date(ele.date);
+            })
+            this.travelSchedule.day_introduces.sort((a, b) => a.date.getTime() - b.date.getTime());
+          }
+        }
+      }
+    )
+  }
+
+  /** 儲存行程 */
+  async saveTravelSchedule(): Promise<void> {
+    await this.travelScheduleService.saveTravelSchedule(this.travelSchedule).forEach(
+      res => {
+        if (!res.error) {
+          this.getTravelSchedule()
+        }
+      }
+    )
   }
 
   /** 前往網址 */

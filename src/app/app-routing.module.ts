@@ -1,14 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
-import { TravelCostRecordComponent } from './travel-cost-record/travel-cost-record.component';
-import { TravelPlanningComponent } from './travel-planning/travel-planning.component';
+import { TravelHomeComponent } from './travel-home/travel-home.component';
+import { TravelLoginComponent } from './travel-login/travel-login.component';
+import { loginGuard } from './login.guard';
+import { TravelScheduleListComponent } from './travel-schedule-list/travel-schedule-list.component';
 
+/** 路由器設定 */
 const routes: Routes = [
-  { path: 'introduce', component: TravelIntroduceComponent },
-  { path: 'cost', component: TravelCostRecordComponent },
-  { path: 'planning', component: TravelPlanningComponent },
-  { path: '**', redirectTo: 'introduce' }
+  { path: 'home', component: TravelHomeComponent, canActivate: [loginGuard] },
+  { path: 'schedule_list', component: TravelScheduleListComponent, canActivate: [loginGuard] },
+  { path: 'login', component: TravelLoginComponent },
+  { path: '', redirectTo: 'home', pathMatch: 'full' }, // 重定向到 introduce
+  { path: '**', redirectTo: 'home' } // 其他未匹配路径也重定向到 introduce
 ];
 
 @NgModule({

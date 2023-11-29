@@ -6,6 +6,8 @@ import { CommonService } from './service/common.service';
 import { MenuService } from './service/menu.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
+import { ApiService } from './service/api.service';
+import { TravelScheduleService } from './service/travel-schedule.service';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +41,9 @@ export class AppComponent {
     protected commonService: CommonService,
     protected menuService: MenuService,
     protected router: Router,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private apiService: ApiService,
+    protected travelScheduleService: TravelScheduleService
   ) {
     this.blockSubscriper = this.commonService.blockEmitter.subscribe(val => {
       this.block = val;
@@ -48,20 +52,32 @@ export class AppComponent {
     this.msgSubscriper = this.commonService.msgEmitter.subscribe(val => {
       this.messageService.add(val);
     })
+    this.loginStatusSubscriper = this.commonService.loginStatusEmitter.subscribe(val => {
+      this.isLogin = val;
+    })
   }
 
+  /** 是否登入 */
+  isLogin = true;
   /** 訊息訂閱器 */
   msgSubscriper: Subscription;
   /** 黑屏訂閱 */
   blockSubscriper: Subscription;
+  /** 登入狀態確認訂閱器 */
+  loginStatusSubscriper: Subscription;
   /** 黑屏 */
   block = false
   /** 選單 */
-  menu: any[];
+  menu = [
+    { label: '我的行程列表', url: 'schedule_list', isLogin: true },
+    { label: '登出', url: 'logout', isLogin: true },
+
+    { label: '登入', url: 'login', isLogin: false },
+    { label: '註冊', url: 'register', isLogin: false }
+  ];
 
   /** 初始化 */
   ngOnInit() {
-    this.menu = this.menuService.getMenu();
     this.translateService.setDefaultLang('zh-TW');
   }
 
@@ -72,7 +88,7 @@ export class AppComponent {
   }
 
   /** 切換索引 */
-  activeIndexChange(index: number): void {
-    this.router.navigate(['/' + this.menu[index]]);
+  goto(url: string): void {
+    this.router.navigate(['/' + url]);
   }
 }

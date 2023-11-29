@@ -1,10 +1,12 @@
 * {
-    font-family: 'Microsoft JhengHei';    
+    font-family: 'Microsoft JhengHei';
+    font-size: 16px;
 }
 
 label {
     text-rendering: optimizeSpeed;
     line-height: normal;
+    font-size: 16px;
 }
 
 /* You can add global styles to this file, and also import other style files */
@@ -133,6 +135,9 @@ body {
 .p-button {
     border-radius: 10px;
     margin: 5px;
+    color: white;
+    background-color: rgb(22, 46, 62);
+    border: 1px solid rgb(22, 46, 62);
 }
 
 .p-inputtext {
@@ -167,4 +172,35 @@ ul {
 
 .p-inputnumber-input {
     width: 100% !important;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.pi {
+    font-size: 20px;
+}
+
+@media screen and (max-width:500px) {
+    .pi {
+        font-size: 16px;
+    }
+}
+
+label {
+    margin-bottom: 0px;
+}
+
+/* 輸入框 */
+textarea {
+    width: 100%;
+    height: 60px;
+    border: 1px solid lightgray;
 }

@@ -9,6 +9,10 @@ class BasicTable {
     last_update_dt: Date;
     /** 版本 */
     version: number = 0;
+    /** 是否刪除 */
+    isdelete: 'Y' | 'N' = 'N';
+    /** 刪除日 */
+    delete_dt: Date;
 }
 
 /** 行程計畫 */
@@ -54,9 +58,9 @@ export class TravelDayIntroduce extends BasicTable {
     /** 旅店位置網址 */
     hotel_map_location: string;
     /** 購物清單 */
-    shopping_list: string[] = [];
+    shopping_list: string;
     /** 備註清單 */
-    memo_list: string[] = [];
+    memo: string
     /** 早餐 */
     breakfirst: string;
     /** 早餐位置 */
@@ -73,6 +77,8 @@ export class TravelDayIntroduce extends BasicTable {
 
 /** 單一行程 */
 export class TravelDaySchedule extends BasicTable {
+    /** 序號 */
+    ser_no: number;
     /** 行程PK */
     introduce_pk_id?: string;
     /** 行程時間 */
@@ -83,6 +89,8 @@ export class TravelDaySchedule extends BasicTable {
     description: string;
     /** 行程位置網址 */
     map_location: string;
+    /** 行程類型 */
+    type: 'move' | 'stay' = 'stay'
 }
 
 /** 花費紀錄 */

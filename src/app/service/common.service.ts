@@ -8,10 +8,12 @@ import { Subject } from 'rxjs';
 export class CommonService {
 
   constructor() { }
-
+  /** 載入發布 */
   blockEmitter: Subject<boolean> = new Subject<boolean>();
-
+  /** 訊息發布 */
   msgEmitter: Subject<Object> = new Subject<Object>();
+  /** 登入狀態更新發布 */
+  loginStatusEmitter: Subject<boolean> = new Subject<boolean>();
 
   /** 設定遮罩 */
   setBlock(action: boolean): void {
@@ -19,7 +21,7 @@ export class CommonService {
   }
 
   /** 顯示訊息 */
-  setMsg(mode: string, msg: string): void {
+  showMsg(mode: string, msg: string): void {
     const obj = { detail: msg };
     switch (mode) {
       case 's':
@@ -49,6 +51,20 @@ export class CommonService {
   /** 設定日期時分秒為0 */
   setDateDetailToZero(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+  }
+
+  /** 接收Server回應後處理 */
+  afterServerResponse(request: any): boolean {
+    this.setBlock(false);
+    // 回傳錯誤訊息
+    if (request.error) {
+      this.showMsg('e', request.error_detail);
+      return false;
+    }
+    // 正常處裡
+    else {
+      return true;
+    }
   }
 
   /** 回傳日曆多語 */
