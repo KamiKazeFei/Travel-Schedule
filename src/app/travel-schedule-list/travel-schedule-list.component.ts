@@ -5,11 +5,15 @@ import { ConfirmationService, PrimeNGConfig } from 'primeng/api';
 import { TravelCostRecord, TravelDayIntroduce, TravelDaySchedule, TravelSchedule } from '../model/travel-schesule.model';
 import { CommonService } from '../service/common.service';
 import { TravelScheduleService } from '../service/travel-schedule.service';
+import * as echarts from 'echarts';
+import { EChartsOption } from 'echarts';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-travel-schedule-list',
   templateUrl: './travel-schedule-list.component.html',
-  styleUrls: ['./travel-schedule-list.component.css']
+  styleUrls: ['./travel-schedule-list.component.css'],
+  providers: [DecimalPipe]
 })
 export class TravelScheduleListComponent {
 
@@ -19,7 +23,8 @@ export class TravelScheduleListComponent {
     private commonService: CommonService,
     protected travelScheduleService: TravelScheduleService,
     protected confirmationService: ConfirmationService,
-    private config: PrimeNGConfig
+    private config: PrimeNGConfig,
+    private decimalPipe: DecimalPipe
   ) { }
 
   /** 旅行計畫清單 */
@@ -44,8 +49,10 @@ export class TravelScheduleListComponent {
   creatingStep: number = 0
   /** 日曆多語 */
   calendarLocale: Object;
-  /** 顯示頁籤 */
-  activeIndex = 0;
+  /** 檢視分析圖表 */
+  costAnanalysisDialog = false;
+  /** 圖表載入 */
+  chartLoading = false;
   /* 顯示模式 **/
   mode: string;
   /** 編輯模式 */
@@ -106,7 +113,6 @@ export class TravelScheduleListComponent {
             })
             ele.day_introduces.sort((a, b) => a.date.getTime() - b.date.getTime());
           })
-          this.activeIndex = 0;
           /** 是否要初始化選取行程 */
           let changeFlag = true
           if (this.schedule && this.schedule.selected_introduce) {
@@ -317,6 +323,16 @@ export class TravelScheduleListComponent {
     }
   }
 
+  /** 增加新旅遊天 */
+  addNewScheduleDay(): void {
+    const dayIntroudece = new TravelDayIntroduce()
+    const endDate = this.schedule.day_introduces.slice(-1)[0].date;
+    dayIntroudece.schedule_pk_id = this.schedule.pk_id;
+    dayIntroudece.date = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+    this.schedule.day_introduces.push(dayIntroudece);
+    this.schedule.end_date = new Date(dayIntroudece.date)
+  }
+
   /** 建立新行程 */
   createDayIntroduce(): void {
     const scheduleIntroduce = new TravelDaySchedule();
@@ -419,5 +435,107 @@ export class TravelScheduleListComponent {
   /** 回傳未刪除資料 */
   returnNotDeleteData(data: any[]): any[] {
     return data.filter(ele => ele.isdelete !== 'Y');
+  }
+
+  /** 開啟圖表 */
+  setCostAnanalysisDialog(action: boolean): void {
+    if (action) {
+      this.costAnanalysisDialog = true;
+      setTimeout(() => {
+        this.drawCostAnanalysisChart();
+      }, 150)
+      window.addEventListener('resize', (() => {
+        this.drawCostAnanalysisChart()
+      }));
+    } else {
+      this.costAnanalysisDialog = false
+      window.removeEventListener('reset', null);
+    }
+  }
+
+  /** 繪製花費分析圖表 */
+  drawCostAnanalysisChart(): void {
+    this.chartLoading = true;
+    setTimeout(() => {
+      this.chartLoading = false;
+      const option: EChartsOption = {
+        grid: {
+          top: '15%',
+          right: '0%',
+          left: '0%',
+          bottom: '15%'
+        },
+        title: {
+          text: '花費分析圖',
+          subtext: '總花費：' + this.schedule.real_cost,
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left'
+        },
+        series: [
+          {
+            type: 'pie',
+            radius: '50%',
+            label: {
+              formatter: ((ele) => {
+                return (ele.value as number) > 1000 ? this.decimalPipe.transform(Number(ele.value), '3.0-0') as any : ele.value
+              })
+            },
+            data: Array.from(new Set(this.schedule.cost_records.map(ele => ele.type))).filter(ele => ele).map(
+              type => {
+                /** 初始值 */
+                const initValue = 0;
+                return {
+                  name: this.costTypeOptions.find(val => val.value === type).label,
+                  value: this.schedule.cost_records.filter(ele => ele.type === type && ele.isdelete !== 'Y').reduce((acc, ele) => acc + ele.final_cost, initValue)
+                }
+              }
+            ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      };
+      setTimeout(() => {
+        const element = document.getElementById('costRecordChart');
+        if (element) {
+          const mychart = echarts.init(element);
+          mychart.setOption(option as any);
+        }
+      }, 100)
+    }, 100)
+  }
+
+  /** 前往網址 */
+  gotoUrl(url: string): void {
+    console.log(url);
+    if (url) {
+      this.confirmationService.confirm({
+        header: '確認',
+        message: '是否確認要前往此網址：\n' + url,
+        accept: () => {
+          window.open(url, '_blank');
+        }
+      })
+    }
+  }
+
+  /** 下載PDF */
+  async downloadPdf(): Promise<void> {
+    await import('../../assets/msjh-normal.js').then(
+      font => {
+        console.log(font);
+      }
+    )
   }
 }

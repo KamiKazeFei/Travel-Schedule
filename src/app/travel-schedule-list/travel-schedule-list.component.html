@@ -57,13 +57,23 @@
 <ng-container *ngIf="isEditMode">
     <!-- 行程資訊 -->
     <div class="grid editPageGrid">
-        <!-- 標題 -->
-        <div class="col-12 title">
-            <label>{{schedule.title}}</label>
-            <span style="float: right;">
-                <p-selectButton [(ngModel)]="mode" [options]="modeOptions" optionLabel="label" optionValue="value">
-                </p-selectButton>
-            </span>
+        <!-- 標題列 -->
+        <div class="col-12">
+            <div class="grid zeroPadding">
+                <!-- 標題 -->
+                <div class="col-12 xl:col-9 lg:col-9 md:col-6 title">
+                    <!-- 調整日期 -->
+                    <button pButton type="button" icon="pi pi-cog" class="roundBtn" (click)="openEditBasicInfo()"
+                        [pTooltip]="'編輯基本資訊'" [tooltipPosition]="'right'" style="width: 40px;height: 40px;">
+                    </button>
+                    <label style="margin-bottom: 10px;">{{schedule.title}}</label>
+                </div>
+                <!-- 顯示模式 -->
+                <div class="col-12 xl:col-3 lg:col-3 md:col-6 modeOption">
+                    <p-selectButton [(ngModel)]="mode" [options]="modeOptions" optionLabel="label" optionValue="value">
+                    </p-selectButton>
+                </div>
+            </div>
         </div>
         <!-- 顯示模式 -->
         <ng-container [ngSwitch]="mode">
@@ -72,24 +82,24 @@
                 <!-- 日期選項 -->
                 <div class="col-12">
                     <div class="grid zeroPadding">
-                        <!-- 調整日期 -->
-                        <div class="col-2 xl:col-1 lg:col-1 md:col-1 center dateSettingBtnCol">
-                            <button pButton type="button" icon="pi pi-cog" class="roundBtn"
-                                (click)="openEditBasicInfo()" style="width: 40px;height: 40px;">
-                            </button>
-                            <br>
-                            <label style="margin: auto;color: white;">調整行程</label>
-                        </div>
-                        <!-- 新增 -->
-                        <div class="col-2 xl:col-1 lg:col-1 md:col-1 center dateSettingBtnCol">
-                            <button pButton type="button" *ngIf="isEditMode" icon="pi pi-plus" class="roundBtn"
+                        <!-- 新增單天行程 -->
+                        <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol">
+                            <button pButton type="button" icon="pi pi-plus" class="roundBtn"
                                 (click)="createDayIntroduce()">
                             </button>
                             <br>
-                            <label style="margin: auto;color: white;">新增行程</label>
+                            <label style="margin: auto;color: #14f014;">新增行程</label>
+                        </div>
+                        <!-- 新增日期 -->
+                        <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol">
+                            <button pButton type="button" *ngIf="isEditMode" icon="pi pi-plus" class="roundBtn"
+                                (click)="addNewScheduleDay()">
+                            </button>
+                            <br>
+                            <label style="margin: auto;color: yellow;">新增天數</label>
                         </div>
                         <!-- 日期列 -->
-                        <div class="col-8 xl:col-10 lg:col-10 md:col-10" style="display: flex;align-items: center;">
+                        <div class="col-12 xl:col-10 lg:col-10 md:col-8" style="display: flex;align-items: center;">
                             <!-- 標題攔 -->
                             <div class="dateOptionBar">
                                 <div class="dateOptionBarDiv">
@@ -105,31 +115,31 @@
                         </div>
                     </div>
                 </div>
-                <!-- 標題列 -->
+                <!-- 標題列(手機模式不顯示) -->
                 <div class="col-12 scheduleListTitle">
                     <div class="grid">
                         <!-- 移動 -->
-                        <div class="col-1 center">
+                        <div class="col-6 xl:col-1 lg:col-2 md:col-3 autoCenter">
                             <label>{{'變更順序'}}</label>
                         </div>
                         <!-- 類型 -->
-                        <div class="col-1">
+                        <div class="col-6 xl:col-1 lg:col-2 md:col-3 autoCenter">
                             <label>{{'行程類型'}}</label>
                         </div>
                         <!-- 停留時間 -->
-                        <div class="col-2">
+                        <div class="col-12 xl:col-3 lg:col-2 md:col-6 autoCenter">
                             <label>{{'時段'}}</label>
                         </div>
                         <!-- 地點名稱 -->
-                        <div class="col-4">
+                        <div class="col-12 xl:col-4 lg:col-4 md:col-6 autoCenter">
                             <label>{{'地點名稱'}}</label>
                         </div>
                         <!-- Google地圖網址 -->
-                        <div class="col-3">
+                        <div class="col-12 xl:col-2 lg:col-1 md:col-4 center">
                             <label>{{'地點網址'}}</label>
                         </div>
                         <!-- 移除 -->
-                        <div class="col-1 center">
+                        <div class="col-12 xl:col-1 lg:col-1 md:col-2 autoCenter">
                             <label>{{'移除'}}</label>
                         </div>
                     </div>
@@ -143,7 +153,7 @@
                             <div class="scheduleBlock">
                                 <div class="grid zeroPadding">
                                     <!-- 移動 -->
-                                    <div class="col-1 autoCenter">
+                                    <div class="col-6 xl:col-1 lg:col-2 md:col-3 autoCenter">
                                         <i class="pi pi-list" cdkDragHandle style="font-size: 25px;float: left;"></i>
                                         <label style="margin-left: 25px;font-size: 25px;">
                                             {{data.ser_no + '.'}}
@@ -156,26 +166,39 @@
                                         </ng-template>
                                     </div>
                                     <!-- 類型 -->
-                                    <div class="col-1 autoCenter">
+                                    <div class="col-6 xl:col-1 lg:col-2 md:col-3 center">
+                                        <!-- 非整列顯示時出現說明 -->
+                                        <label class="notRowLabel">行程類型</label>
                                         <p-radioButton [(ngModel)]="data.type" [label]="'停留'" [value]="'stay'">
                                         </p-radioButton>
                                         <p-radioButton [(ngModel)]="data.type" [label]="'移動'" [value]="'move'">
                                         </p-radioButton>
                                     </div>
                                     <!-- 停留時間 -->
-                                    <div class="col-2">
+                                    <div class="col-12 xl:col-3 lg:col-2 md:col-6 center">
+                                        <!-- 非整列顯示時出現說明 -->
+                                        <label class="notRowLabel">時段</label>
                                         <input pInputText type="text" [(ngModel)]="data.time">
                                     </div>
                                     <!-- 地點名稱 -->
-                                    <div class="col-4">
+                                    <div class="col-12 xl:col-4 lg:col-4 md:col-6 center">
+                                        <!-- 非整列顯示時出現說明 -->
+                                        <label class="notRowLabel">地點名稱</label>
                                         <input pInputText type="text" [(ngModel)]="data.description">
                                     </div>
                                     <!-- Google地圖網址 -->
-                                    <div class="col-3">
-                                        <input pInputText type="text" [(ngModel)]="data.map_location">
+                                    <div class="col-12 xl:col-2 lg:col-1 md:col-4 center">
+                                        <!-- 非整列顯示時出現說明 -->
+                                        <label class="notRowLabel">地點網址</label>
+                                        <div class="p-inputgroup">
+                                            <span class="p-inputgroup-addon" (click)="gotoUrl(data.map_location)">
+                                                📌
+                                            </span>
+                                            <input pInputText type="text" [(ngModel)]="data.map_location">
+                                        </div>
                                     </div>
                                     <!-- 移除 -->
-                                    <div class="col-1 autoCenter">
+                                    <div class="col-12 xl:col-1 lg:col-1 md:col-2 center">
                                         <button pButton type="button" class="deleteBtn" [icon]="'pi pi-trash'"
                                             (click)="deleteDaysSchedule(i)">
                                         </button>
@@ -189,56 +212,68 @@
                 <div class="col-12 subDataGrid">
                     <div class="grid zeroPadding">
                         <!-- 餐食、住宿 -->
-                        <div class="col-5">
+                        <div class="col-12 xl:col-5 lg:col-5">
                             <div class="grid zeroPadding">
-                                <div class="col-7">
+                                <div class="col-12 xl:col-7 lg:col-7 md:col-7">
                                     <label>住宿🌃</label>
                                     <input pInputText type="text"
                                         [(ngModel)]="schedule.selected_introduce.hotel_name" />
                                 </div>
-                                <div class="col-5">
-                                    <label>網址🗺️</label>
-                                    <input pInputText type="text"
+                                <div class="col-12 xl:col-5 lg:col-5 md:col-5">
+                                    <label (click)="gotoUrl(schedule.selected_introduce.hotel_map_location)"
+                                        style="display: inline-flex;">
+                                        網址📌
+                                    </label>
+                                    <input pInputText type="text" style="display: inline-flex;"
                                         [(ngModel)]="schedule.selected_introduce.hotel_map_location" />
                                 </div>
                             </div>
                             <div class="grid zeroPadding">
-                                <div class="col-7">
+                                <div class="col-12 xl:col-7 lg:col-7 md:col-7">
                                     <label>早餐🍽️</label>
                                     <input pInputText type="text"
                                         [(ngModel)]="schedule.selected_introduce.breakfirst" />
                                 </div>
-                                <div class="col-5">
-                                    <label>網址🗺️</label>
-                                    <input pInputText type="text"
+                                <div class="col-12 xl:col-5 lg:col-5 md:col-5">
+                                    <label (click)="gotoUrl(schedule.selected_introduce.breakfirst_map_location)"
+                                        style="display: inline-flex;">
+                                        網址📌
+                                    </label>
+                                    <input pInputText type="text" style="display: inline-flex;"
                                         [(ngModel)]="schedule.selected_introduce.breakfirst_map_location" />
                                 </div>
                             </div>
                             <div class="grid zeroPadding">
-                                <div class="col-7">
+                                <div class="col-12 xl:col-7 lg:col-7 md:col-7">
                                     <label>午餐🍽️</label>
                                     <input pInputText type="text" [(ngModel)]="schedule.selected_introduce.launch" />
                                 </div>
-                                <div class="col-5">
-                                    <label>網址🗺️</label>
-                                    <input pInputText type="text"
+                                <div class="col-12 xl:col-5 lg:col-5 md:col-5">
+                                    <label (click)="gotoUrl(schedule.selected_introduce.launch_map_location)"
+                                        style="display: inline-flex;">
+                                        網址📌
+                                    </label>
+                                    <input pInputText type="text" style="display: inline-flex;"
                                         [(ngModel)]="schedule.selected_introduce.launch_map_location" />
                                 </div>
                             </div>
                             <div class="grid zeroPadding">
-                                <div class="col-7">
+                                <div class="col-12 xl:col-7 lg:col-7 md:col-7">
                                     <label>晚餐🍽️</label>
                                     <input pInputText type="text" [(ngModel)]="schedule.selected_introduce.dinner" />
                                 </div>
-                                <div class="col-5">
-                                    <label>網址🗺️</label>
-                                    <input pInputText type="text"
+                                <div class="col-12 xl:col-5 lg:col-5 md:col-5">
+                                    <label (click)="gotoUrl(schedule.selected_introduce.dinner_map_location)"
+                                        style="display: inline-flex;">
+                                        網址📌
+                                    </label>
+                                    <input pInputText type="text" style="display: inline-flex;"
                                         [(ngModel)]="schedule.selected_introduce.dinner_map_location" />
                                 </div>
                             </div>
                         </div>
                         <!-- 購物清單 -->
-                        <div class="col-4">
+                        <div class="col-12 xl:col-4 lg:col-4">
                             <label>{{'購物項目'}}</label>
                             <p-editor [(ngModel)]="schedule.selected_introduce.shopping_detail"
                                 [style]="{ height: '250px',width:'100%' }">
@@ -247,7 +282,7 @@
                             </p-editor>
                         </div>
                         <!-- 備註 -->
-                        <div class="col-3">
+                        <div class="col-12 xl:col-3 lg:col-3">
                             <label>{{'備註'}}</label>
                             <p-editor [(ngModel)]="schedule.selected_introduce.memo"
                                 [style]="{ height: '250px',width:'100%' }">
@@ -266,10 +301,13 @@
                 </div>
                 <!-- 工具列 -->
                 <div class="col-12" style="min-height: 70px;">
-                    <!-- 新增 -->
-                    <label class="addNewRecordLabel">新增預算紀錄</label>
-                    <button pButton type="button" icon="pi pi-plus" class="roundBtn" style="float: left;"
+                    <!-- 新增預算紀錄 -->
+                    <button pButton type="button" icon="pi pi-plus" [label]="'新增預算紀錄'" style="float: left;"
                         (click)="createCostRecord()">
+                    </button>
+                    <!-- 檢視花費分析 -->
+                    <button pButton type="button" icon="pi pi-eye" style="float: left;"
+                        (click)="setCostAnanalysisDialog(true)" [label]="'檢視花費分析'">
                     </button>
                     <!-- 總花費 -->
                     <label class="totalCostLabel">
@@ -278,13 +316,9 @@
                 </div>
                 <!-- 標題列 -->
                 <div class="col-12">
-                    <div class="grid zeroPadding" style="color: white;">
-                        <!-- 序號 -->
-                        <div class="col-1 center" style="display: flex;justify-content: center;align-items: center;">
-                            <label>{{'序號'}}</label>
-                        </div>
+                    <div class="grid zeroPadding costRecordListTitle" style="color: white;">
                         <!-- 類型 -->
-                        <div class="col-2 center">
+                        <div class="col-1 center">
                             <label>{{'花費類型'}}</label>
                         </div>
                         <!-- 敘述 -->
@@ -292,7 +326,7 @@
                             <label>{{'敘述'}}</label>
                         </div>
                         <!-- 價格 -->
-                        <div class="col-1 center">
+                        <div class="col-2 center">
                             <label>{{'價格'}}</label>
                         </div>
                         <!-- 幣別 -->
@@ -304,7 +338,7 @@
                             <label>{{'匯率'}}</label>
                         </div>
                         <!-- 計算後成本 -->
-                        <div class="col-1 center">
+                        <div class="col-2 center">
                             <label>{{'計算後成本'}}</label>
                         </div>
                         <!-- 移除 -->
@@ -319,13 +353,8 @@
                         <div class="col-12"
                             *ngFor="let data of returnNotDeleteData(schedule.cost_records);let i = index">
                             <div class="grid zeroPadding" style="color: white;">
-                                <!-- 序號 -->
-                                <div class="col-1 center"
-                                    style="display: flex;justify-content: center;align-items: flex-start;font-size: 25px;">
-                                    {{(i + 1).toString()}}
-                                </div>
                                 <!-- 類型 -->
-                                <div class="col-2 center">
+                                <div class="col-1 center">
                                     <select pInputText [(ngModel)]="data.type">
                                         <option *ngFor="let option of costTypeOptions" [label]="option.label"
                                             [value]="option.value">
@@ -337,7 +366,7 @@
                                     <input pInputText type="text" [(ngModel)]="data.description">
                                 </div>
                                 <!-- 價格 -->
-                                <div class="col-1 center">
+                                <div class="col-2 center">
                                     <p-inputNumber [(ngModel)]="data.cost" (ngModelChange)="calcuteCost(data)">
                                     </p-inputNumber>
                                 </div>
@@ -347,13 +376,18 @@
                                 </div>
                                 <!-- 匯率 -->
                                 <div class="col-1 center">
-                                    <p-inputNumber [(ngModel)]="data.exchange_rate" (ngModelChange)="calcuteCost(data)">
+                                    <p-inputNumber [(ngModel)]="data.exchange_rate" (ngModelChange)="calcuteCost(data)"
+                                        [style]="{'text-align':'right'}" [minFractionDigits]="0"
+                                        [maxFractionDigits]="7">
                                     </p-inputNumber>
                                 </div>
                                 <!-- 計算後成本 -->
-                                <div class="col-1 center">
-                                    <input pInputText type="number" [(ngModel)]="data.final_cost" readonly
-                                        style="text-align: right;">
+                                <div class="col-2" style="text-align: right;">
+                                    <label style="margin-top: 9px;">
+                                        {{data.final_cost > 1000 ? (data.final_cost | number:'3.0-0') :
+                                        data.final_cost}}
+                                    </label>
+                                    <hr style="border: 1px solid white;margin-top: 6px;opacity: 0.5;">
                                 </div>
                                 <!-- 移除 -->
                                 <div class="col-1 center">
@@ -372,12 +406,11 @@
     <div class="footer">
         <!-- 編輯模式 -->
         <ng-container *ngIf="isEditMode">
-            <!-- 新增 -->
-            <button pButton type="button" icon="pi pi-plus" class="roundBtn" (click)="createDayIntroduce()">
+            <!-- 輸出PDF -->
+            <button pButton type="button" icon="pi pi-file" class="roundBtn" (click)="downloadPdf()">
             </button>
             <!-- 儲存 -->
-            <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()"
-                [disabled]="disabelBtn('save')">
+            <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()">
             </button>
             <!-- 取消 -->
             <button pButton type="button" icon="pi pi-times" class="roundBtn" (click)="confirmCancel()">
@@ -433,6 +466,21 @@
             <!-- 取消 -->
             <button pButton type="button" icon="pi pi-times"
                 (click)="confirmCancel(creatingStep === 1 ? null : 'basicInfo')" [label]="'取消'">
+            </button>
+        </p-footer>
+    </p-dialog>
+</ng-container>
+
+<!-- 檢視圖表 -->
+<ng-container *ngIf="costAnanalysisDialog">
+    <p-dialog [(visible)]="costAnanalysisDialog" [modal]="true" [style]="{width:'800px','height':'100%'}"
+        [header]="'檢視花費分析'" [closable]="false" [blockScroll]="true">
+        <div style="width: 100%;height: 100%;">
+            <div id="costRecordChart" style="width: 100%;height: 100%;" *ngIf="!chartLoading"></div>
+        </div>
+        <!-- 頁尾 -->
+        <p-footer>
+            <button pButton type="button" class="roundBtn" icon="pi pi-times" (click)="setCostAnanalysisDialog(false)">
             </button>
         </p-footer>
     </p-dialog>

@@ -176,6 +176,7 @@ ul {
     border: 0px !important;
     border-radius: 0px !important;
     border-bottom: 1px solid white !important;
+    text-align: right;
 }
 
 html,

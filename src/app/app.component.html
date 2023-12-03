@@ -51,7 +51,8 @@
 </ng-container>
 
 <!-- 確認視窗 -->
-<p-confirmDialog #cd [style]="{ 'min-width': '400px','font-size':'16px' }" [closable]="false">
+<p-confirmDialog #cd [style]="{'min-width': '400px','max-width': '800px','font-size':'16px','word-break': 'break-all' }"
+    [closable]="false">
     <ng-template pTemplate="footer">
         <button type="button" pButton icon="pi pi-check" label="確認" (click)="cd.accept()"></button>
         <button type="button" pButton icon="pi pi-times" label="取消" (click)="cd.reject()"></button>

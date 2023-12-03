@@ -31,6 +31,7 @@
     font-size: 30px;
     font-weight: 900;
     text-align: center;
+    padding: 5px 25px 0px 0px;
     border-top: 1px solid gray;
 }
 
@@ -219,7 +220,6 @@ hr {
 /* 行程標題 */
 .title {
     padding-left: 25px;
-    margin-bottom: 15px;
 }
 
 /* 行程標題 */
@@ -241,31 +241,7 @@ hr {
     color: white;
 }
 
-@media screen and (max-width:500px) {
 
-    /* 行程刪除按鈕 */
-    .scheduleSettingBtn {
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-    }
-
-    /* 行程卡片標題 */
-    .scheduleCardTitle>label:nth-child(1) {
-        font-size: 19px;
-    }
-
-    /* 行程卡片標題 */
-    .scheduleCardTitle>label:nth-child(2) {
-        font-size: 16px;
-    }
-
-    /* 編輯介面 */
-    .editPage {
-        min-height: 47%;
-        display: block;
-    }
-}
 
 /* 行程編輯方塊 */
 .scheduleBlock {
@@ -273,17 +249,19 @@ hr {
     padding: 5px;
 }
 
+
 /* 行程列表 */
 .dayPerScheduleList {
     min-height: 60px;
-    max-height: 49%;
+    max-height: 48%;
     display: block;
     background: transparent;
     border-radius: 4px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     position: absolute;
     width: 99%;
+    border-bottom: 0.5px solid white;
+    margin-bottom: 10px;
 }
 
 /* 子項目網格下皆為白字 */
@@ -370,10 +348,10 @@ hr {
 .costRecordList {
     min-height: 60px;
     max-height: 65%;
+    min-width: 750px;
     background: transparent;
     border-radius: 4px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: auto;
     position: absolute;
     width: 100%;
     position: static;
@@ -394,7 +372,9 @@ hr {
 }
 
 /* 行程編輯區塊 */
-.scheduleBlock>*>*>.p-inputtext {
+.scheduleBlock>*>*>.p-inputtext,
+input,
+.p-inputgroup-addon {
     background: transparent;
     border: 0px;
     border-bottom: 1px solid white;
@@ -408,7 +388,7 @@ hr {
     margin-top: 7px;
     float: right;
     position: absolute;
-    right: 0px;
+    right: 5%;
 }
 
 /* 新增新的花費紀錄label */
@@ -417,4 +397,87 @@ hr {
     font-size: 20px;
     float: left;
     margin-top: 10px;
+}
+
+/* 預算紀錄表標題列 */
+.costRecordListTitle>div {
+    cursor: pointer;
+}
+
+/* 顯示模式 */
+.modeOption {
+    text-align: right;
+}
+
+/* 非整列顯示時出現說明 */
+.notRowLabel {
+    display: none;
+}
+
+@media screen and (min-width:501px) and (max-width:995px) {
+
+    /* 行程列表標題 */
+    .scheduleListTitle {
+        display: none;
+    }
+
+    /* 行程編輯方塊 */
+    .scheduleBlock {
+        border-bottom: 1px solid orange;
+    }
+
+    /* 非整列顯示時出現說明 */
+    .notRowLabel {
+        display: block;
+        color: burlywood;
+        font-weight: 900;
+    }
+}
+
+@media screen and (max-width:500px) {
+
+    /* 行程刪除按鈕 */
+    .scheduleSettingBtn {
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+    }
+
+    /* 行程卡片標題 */
+    .scheduleCardTitle>label:nth-child(1) {
+        font-size: 19px;
+    }
+
+    /* 行程卡片標題 */
+    .scheduleCardTitle>label:nth-child(2) {
+        font-size: 16px;
+    }
+
+    /* 編輯介面 */
+    .editPage {
+        min-height: 47%;
+        display: block;
+    }
+
+    /* 行程編輯方塊 */
+    .scheduleBlock {
+        border-bottom: 1px solid orange;
+    }
+
+    /* 顯示模式 */
+    .modeOption {
+        text-align: center;
+    }
+
+    /* 行程列表標題 */
+    .scheduleListTitle {
+        display: none;
+    }
+
+    /* 非整列顯示時出現說明 */
+    .notRowLabel {
+        display: block;
+        color: burlywood;
+        font-weight: 900;
+    }
 }
