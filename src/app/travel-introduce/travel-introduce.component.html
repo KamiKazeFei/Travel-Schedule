@@ -45,8 +45,9 @@
                                 <ul>
                                     <!-- 早餐 -->
                                     <li style="color: crimson;">
-                                        <label><i class="fa fa-coffee"
-                                                style="font-size: 17px;"></i>早餐：{{data.breakfirst}}
+                                        <label>
+                                            <i class="fa fa-coffee" style="font-size: 17px;"></i>
+                                            早餐🍽️：{{data.breakfirst}}
                                             <!-- 地圖圖示 -->
                                             <ng-container *ngIf="data.breakfirst_map_location">
                                                 <i class="fa fa-map-marker" *ngIf="data.breakfirst_map_location"
@@ -59,7 +60,8 @@
                                     <!-- 午餐 -->
                                     <li style="color: green;">
                                         <label>
-                                            <i class="fa fa-beer" style="font-size: 17px;"></i>午餐：{{data.launch}}
+                                            <i class="fa fa-beer" style="font-size: 17px;"></i>
+                                            午餐🍽️：{{data.launch}}
                                             <!-- 地圖圖示 -->
                                             <ng-container *ngIf="data.launch_map_location">
                                                 <i class="fa fa-map-marker" *ngIf="data.launch_map_location"
@@ -73,7 +75,7 @@
                                     <li style="color: darkcyan;">
                                         <label>
                                             <i class="fa fa-cutlery" style="font-size: 17px;"></i>
-                                            晚餐：{{data.dinner}}
+                                            晚餐🍽️：{{data.dinner}}
                                             <!-- 地圖圖示 -->
                                             <ng-container *ngIf="data.dinner_map_location">
                                                 <i class="fa fa-map-marker"
@@ -88,11 +90,8 @@
                             <!-- 購買清單 -->
                             <div class="col-12 md:col-4 lg:col-4">
                                 <label style="font-size: 25px;">購買清單</label>
-                                <ul>
-                                    <li *ngFor="let item of data.shopping_list">
-                                        <label>{{item}} </label>
-                                    </li>
-                                </ul>
+                                <div [innerHTML]="data.shopping_detail">
+                                </div>
                             </div>
                             <!-- 行程注記 -->
                             <div class="col-12 md:col-4 lg:col-4">
@@ -103,7 +102,7 @@
                             <!-- 住宿 -->
                             <div class="col-12 md:col-12 lg:col-12">
                                 <div class="hotel">
-                                    <label>{{'住宿'}}</label>
+                                    <label>{{'住宿🌃'}}</label>
                                     <ul>
                                         <li>
                                             <i class="fa fa-bed"></i>

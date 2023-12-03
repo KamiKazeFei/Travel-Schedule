@@ -21,6 +21,10 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { SplitterModule } from 'primeng/splitter';
+import { TabViewModule } from 'primeng/tabview';
+import { SelectButtonModule } from 'primeng/selectbutton';
+
 import { AppRoutingModule, } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApiService } from './service/api.service';
@@ -70,6 +74,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     CheckboxModule,
     RadioButtonModule,
     EditorModule,
+    SplitterModule,
+    TabViewModule,
+    SelectButtonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

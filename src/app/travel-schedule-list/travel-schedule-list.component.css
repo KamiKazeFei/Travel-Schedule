@@ -1,6 +1,7 @@
 /* 包裹行程卡片的網格 */
 .scheduleCol {
     padding: 25px;
+    height: fit-content;
 }
 
 /* 行程顯示 */
@@ -30,7 +31,7 @@
     font-size: 30px;
     font-weight: 900;
     text-align: center;
-    border-bottom: 2px solid rgb(224, 224, 224);
+    border-top: 1px solid gray;
 }
 
 .scheduleCardTitle>* {
@@ -217,9 +218,14 @@ hr {
 
 /* 行程標題 */
 .title {
-    color: white;
-    font-size: 25px;
     padding-left: 25px;
+    margin-bottom: 15px;
+}
+
+/* 行程標題 */
+.title>label {
+    font-size: 25px !important;
+    color: white;
 }
 
 
@@ -280,9 +286,17 @@ hr {
     width: 99%;
 }
 
-/* 子項目網格 */
+/* 子項目網格下皆為白字 */
+.subDataGrid {
+    color: white;
+}
+
+/* 子項目網格的輸入框皆設定簡約風 */
 .subDataGrid>*>*>*>*>.p-inputtext {
     background: transparent;
+    border: 0px;
+    border-bottom: 1px solid white;
+    border-radius: 0px;
 }
 
 /* 子項目小列表 */
@@ -303,7 +317,6 @@ hr {
     color: white;
     background: transparent;
     font-size: 14px;
-    border-bottom: 2px solid white;
 }
 
 .cdk-drag-preview {
@@ -338,4 +351,70 @@ hr {
 ::ng-deep .ql-editor {
     background: transparent;
     color: white;
+}
+
+::ng-deep :host .p-tabview-panels {
+    height: 85%;
+}
+
+::ng-deep .p-selectbutton {
+    transition: 0.3s;
+}
+
+::ng-deep .p-selectbutton .p-button.p-highlight {
+    background: white;
+    color: darkcyan;
+}
+
+/* 花費紀錄列表 */
+.costRecordList {
+    min-height: 60px;
+    max-height: 65%;
+    background: transparent;
+    border-radius: 4px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: absolute;
+    width: 100%;
+    position: static;
+}
+
+.costRecordList>*>*>*>*>.p-inputtext {
+    background: transparent;
+    border: 0px;
+    border-bottom: 1px solid white;
+    border-radius: 0px;
+}
+
+.costRecordList>*>*>*>*>select>option {
+    background: rgb(31, 61, 81) !important;
+    color: white !important;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+/* 行程編輯區塊 */
+.scheduleBlock>*>*>.p-inputtext {
+    background: transparent;
+    border: 0px;
+    border-bottom: 1px solid white;
+    border-radius: 0px;
+}
+
+/* 總花費label */
+.totalCostLabel {
+    color: white;
+    font-size: 26px;
+    margin-top: 7px;
+    float: right;
+    position: absolute;
+    right: 0px;
+}
+
+/* 新增新的花費紀錄label */
+.addNewRecordLabel {
+    color: white;
+    font-size: 20px;
+    float: left;
+    margin-top: 10px;
 }

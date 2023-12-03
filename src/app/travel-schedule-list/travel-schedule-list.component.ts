@@ -2,7 +2,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, PrimeNGConfig } from 'primeng/api';
-import { TravelDayIntroduce, TravelDaySchedule, TravelSchedule } from '../model/travel-schesule.model';
+import { TravelCostRecord, TravelDayIntroduce, TravelDaySchedule, TravelSchedule } from '../model/travel-schesule.model';
 import { CommonService } from '../service/common.service';
 import { TravelScheduleService } from '../service/travel-schedule.service';
 
@@ -41,9 +41,28 @@ export class TravelScheduleListComponent {
   /** 是否編輯中 */
   isEditMode = false;
   /** 建立步驟 */
-  creatingStep: number = 1
+  creatingStep: number = 0
   /** 日曆多語 */
   calendarLocale: Object;
+  /** 顯示頁籤 */
+  activeIndex = 0;
+  /* 顯示模式 **/
+  mode: string;
+  /** 編輯模式 */
+  modeOptions = [
+    { label: '行程安排', value: 'schedule' },
+    { label: '預算紀錄表', value: 'cost_record' }
+  ];
+  /** 花費類型陣列 */
+  costTypeOptions = [
+    { label: '機票/車票', value: 'A' },
+    { label: '住宿', value: 'B' },
+    { label: '景點', value: 'C' },
+    { label: '交通', value: 'D' },
+    { label: '餐食', value: 'E' },
+    { label: '禮物/伴手禮', value: 'F' },
+    { label: '其他', value: 'G' }
+  ];
 
   /** 初始化 */
   async ngOnInit(): Promise<void> {
@@ -78,8 +97,31 @@ export class TravelScheduleListComponent {
           data.forEach(ele => {
             ele.start_date = new Date(ele.start_date);
             ele.end_date = new Date(ele.end_date);
+
+            ele.day_introduces.forEach((val, index) => {
+              val.date = new Date(val.date);
+              val.schedule_list.forEach((val2, i) => {
+                val2.ser_no = (i + 1);
+              })
+            })
+            ele.day_introduces.sort((a, b) => a.date.getTime() - b.date.getTime());
           })
-          this.travelScheduleList = data;
+          this.activeIndex = 0;
+          /** 是否要初始化選取行程 */
+          let changeFlag = true
+          if (this.schedule && this.schedule.selected_introduce) {
+            data[0].selected_introduce = { ...this.schedule.selected_introduce };
+            changeFlag = false
+          }
+          if (!this.mode) {
+            this.mode = this.modeOptions[0].value;
+          }
+          this.schedule = data[0];
+          this.oriSchedule = JSON.parse(JSON.stringify(data[0]));
+          if (!this.schedule.selected_introduce && changeFlag) {
+            this.schedule.selected_introduce = this.schedule.day_introduces[0];
+          }
+          this.isEditMode = true;
         }
       }
     )
@@ -195,11 +237,15 @@ export class TravelScheduleListComponent {
             accept: () => {
               this.schedule = { ...this.selectedSchedule };
               this.basicInfoSettingDialog = false;
-              const length = this.schedule.day_introduces.length;
-              this.schedule.day_introduces = this.schedule.day_introduces.slice(0, this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day);
-              for (let i = 0; i <= (this.schedule.pass_day === 0 ? 1 : this.schedule.pass_day); i++) {
+              const length = (this.schedule.end_date.getTime() - this.schedule.start_date.getTime()) / 1000 / 60 / 60 / 24;
+              this.schedule.end_date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + length);
+
+              this.schedule.day_introduces.forEach((ele, i) => ele.date.getTime() > this.schedule.end_date.getTime() ? ele.isdelete = 'Y' : null);
+              this.schedule.day_introduces = this.schedule.day_introduces.filter(ele => !(ele.isdelete === 'Y' && !ele.create_dt));
+
+              for (let i = 0; i <= length; i++) {
                 const date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + i);
-                if (i < length) {
+                if (this.schedule.day_introduces[i]) {
                   this.schedule.day_introduces[i].date = date;
                 } else {
                   const dayIntroudece = new TravelDayIntroduce();
@@ -220,13 +266,13 @@ export class TravelScheduleListComponent {
         if (this.isCreating || (!this.isCreating && (JSON.stringify(this.schedule) !== JSON.stringify(this.oriSchedule)))) {
           this.confirmationService.confirm({
             header: '確認',
-            message: this.isCreating ? '確認要取消建立新行程?' : '尚有資料尚未儲存，確定要離開編輯介面?',
+            message: '確認要儲存資料嗎?',
             accept: () => {
-              this.cancel();
+              this.save();
             }
           })
         } else {
-          this.cancel()
+          this.commonService.showMsg('i', '資料無異動');
         }
         break
     }
@@ -234,9 +280,13 @@ export class TravelScheduleListComponent {
 
   /** 確認儲存 */
   confirmCancel(mode?: string) {
+    const tempSchedule = JSON.parse(JSON.stringify(this.schedule))
+    const tempOriSchedule = JSON.parse(JSON.stringify(this.schedule))
+    delete tempSchedule.selected_introduce
+    delete tempOriSchedule.selected_introduce
     switch (mode) {
       case 'basicInfo':
-        if ((JSON.stringify(this.schedule) !== JSON.stringify(this.selectedSchedule))) {
+        if ((JSON.stringify(tempSchedule) !== JSON.stringify(tempOriSchedule))) {
           this.confirmationService.confirm({
             header: '確認',
             message: '確定不儲存已更動資訊就離開?',
@@ -251,7 +301,8 @@ export class TravelScheduleListComponent {
         }
         break;
       default:
-        if (this.isCreating || (!this.isCreating && (JSON.stringify(this.schedule) !== JSON.stringify(this.oriSchedule)))) {
+
+        if (this.isCreating || (!this.isCreating && (JSON.stringify(tempSchedule) !== JSON.stringify(tempOriSchedule)))) {
           this.confirmationService.confirm({
             header: '確認',
             message: this.isCreating ? '確認要取消建立新行程?' : '尚有資料尚未儲存，確定要離開編輯介面?',
@@ -272,6 +323,42 @@ export class TravelScheduleListComponent {
     scheduleIntroduce.introduce_pk_id = this.schedule.selected_introduce.pk_id;
     this.schedule.selected_introduce.schedule_list.push(scheduleIntroduce)
     this.schedule.selected_introduce.schedule_list.forEach((ele, i) => ele.ser_no = (i + 1));
+    setTimeout(() => {
+      const element = document.getElementById('dayPerScheduleList');
+      if (element) {
+        element.scrollTo({
+          top: element.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 100)
+  }
+
+  /** 建立預算紀錄 */
+  createCostRecord(): void {
+    const costRecord = new TravelCostRecord();
+    costRecord.schedule_pk_id = this.schedule.pk_id;
+    if (!this.schedule.cost_records) {
+      this.schedule.cost_records = []
+    }
+    this.schedule.cost_records.push(costRecord);
+  }
+
+  /** 移除預算紀錄 */
+  deleteCostRecord(data: TravelCostRecord): void {
+    data.create_dt ? data.isdelete = 'Y' : (this.schedule.cost_records = this.schedule.cost_records.filter(ele => ele.pk_id !== data.pk_id));
+  }
+
+  /** 計算花費成本 */
+  calcuteCost(record: TravelCostRecord): void {
+    if (record.exchange_rate !== undefined && record.exchange_rate !== null) {
+      record.exchange_rate = Number(record.exchange_rate.toFixed(5));
+    }
+    if (record.cost !== undefined && record.cost !== null && record.exchange_rate !== undefined && record.exchange_rate !== null) {
+      record.final_cost = Number((record.cost * record.exchange_rate).toFixed(2));
+    }
+    const initValue = 0;
+    this.schedule.real_cost = Number((this.schedule.cost_records.filter(ele => ele.isdelete !== 'Y').reduce((acc, ele) => acc + ele.final_cost, initValue)).toFixed(2));
   }
 
   /** 移動行程安排順序 */
@@ -287,8 +374,17 @@ export class TravelScheduleListComponent {
   }
 
   /** 儲存 */
-  save() {
-
+  async save(): Promise<void> {
+    this.commonService.setBlock(true)
+    await this.travelScheduleService.saveTravelSchedule(this.schedule).forEach(
+      async res => {
+        this.commonService.setBlock(false)
+        if (this.commonService.afterServerResponse(res)) {
+          this.commonService.showMsg('s', '儲存成功');
+          await this.getTravelSchedule(this.schedule.pk_id);
+        }
+      }
+    )
   }
 
   /** 取消 */
@@ -296,9 +392,10 @@ export class TravelScheduleListComponent {
     this.basicInfoSettingDialog = false;
     this.isCreating = false;
     this.isEditMode = false;
-    this.creatingStep = 1;
+    this.creatingStep = 0;
     this.schedule = null;
     this.oriSchedule = null;
+    this.mode = null
     await this.getTravelScheduleData();
   }
 
@@ -317,5 +414,10 @@ export class TravelScheduleListComponent {
       default:
         return false;
     }
+  }
+
+  /** 回傳未刪除資料 */
+  returnNotDeleteData(data: any[]): any[] {
+    return data.filter(ele => ele.isdelete !== 'Y');
   }
 }

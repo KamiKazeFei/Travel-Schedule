@@ -58,7 +58,7 @@ export class TravelDayIntroduce extends BasicTable {
     /** 旅店位置網址 */
     hotel_map_location: string;
     /** 購物清單 */
-    shopping_list: string;
+    shopping_detail: string;
     /** 備註清單 */
     memo: string
     /** 早餐 */
@@ -95,8 +95,10 @@ export class TravelDaySchedule extends BasicTable {
 
 /** 花費紀錄 */
 export class TravelCostRecord extends BasicTable {
+    /** 行程PK_ID */
+    schedule_pk_id: string;
     /** A機票、B住宿、C景點票券、D交通、E吃喝、F禮物、G其他 */
-    type: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' = 'G';
+    type: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
     /** 說明 */
     description: string;
     /** 備註 */
