@@ -130,9 +130,9 @@
                         <div class="col-12 xl:col-3 lg:col-2 md:col-6 autoCenter">
                             <label>{{'時段'}}</label>
                         </div>
-                        <!-- 地點名稱 -->
+                        <!-- 敘述 -->
                         <div class="col-12 xl:col-4 lg:col-4 md:col-6 autoCenter">
-                            <label>{{'地點名稱'}}</label>
+                            <label>{{'敘述'}}</label>
                         </div>
                         <!-- Google地圖網址 -->
                         <div class="col-12 xl:col-2 lg:col-1 md:col-4 center">
@@ -166,7 +166,7 @@
                                         </ng-template>
                                     </div>
                                     <!-- 類型 -->
-                                    <div class="col-6 xl:col-1 lg:col-2 md:col-3 center">
+                                    <div class="col-6 xl:col-1 lg:col-2 md:col-3 autoCenter">
                                         <!-- 非整列顯示時出現說明 -->
                                         <label class="notRowLabel">行程類型</label>
                                         <p-radioButton [(ngModel)]="data.type" [label]="'停留'" [value]="'stay'">
@@ -180,10 +180,10 @@
                                         <label class="notRowLabel">時段</label>
                                         <input pInputText type="text" [(ngModel)]="data.time">
                                     </div>
-                                    <!-- 地點名稱 -->
+                                    <!-- 敘述 -->
                                     <div class="col-12 xl:col-4 lg:col-4 md:col-6 center">
                                         <!-- 非整列顯示時出現說明 -->
-                                        <label class="notRowLabel">地點名稱</label>
+                                        <label class="notRowLabel">敘述</label>
                                         <input pInputText type="text" [(ngModel)]="data.description">
                                     </div>
                                     <!-- Google地圖網址 -->
