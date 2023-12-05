@@ -86,4 +86,31 @@ export class CommonService {
       "clear": "清除"
     }
   }
+
+  /** 是否為測試區 */
+  isTestArea(): boolean {
+    // return true;
+    return !location.hostname.toLowerCase().includes('kamikaze');
+  }
+
+  /** 設定Cookies */
+  setCookie(cookieName: string, cookieValue: string, expirationDays = 14) {
+    this.clearAllCookie();
+    const d = new Date();
+    d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    let cookieString = cookieName + "=" + cookieValue + ";" + expires + ";path=/;";
+    document.cookie = cookieString;
+  }
+
+  /** 請除所有Cookies */
+  clearAllCookie() {
+    const date = new Date();
+    date.setTime(date.getTime() - 10000);
+    var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+    if (keys) {
+      for (var i = keys.length; i--;)
+        document.cookie = keys[i] + "=0; expire=" + date.toUTCString() + "; path=/";
+    }
+  }
 }

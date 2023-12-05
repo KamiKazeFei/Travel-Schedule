@@ -84,56 +84,103 @@ export class TravelScheduleListComponent {
 
   /** 查詢旅行計畫 */
   async getTravelScheduleData(queryObj?: Object): Promise<void> {
-    await this.travelScheduleService.getTravelList(queryObj).forEach(
-      async res => {
-        if (this.commonService.afterServerResponse(res)) {
-          const data = res.data as TravelSchedule[];
-          data.forEach(ele => {
-            ele.start_date = new Date(ele.start_date);
-            ele.end_date = new Date(ele.end_date);
-          })
-          this.travelScheduleList = data;
+    if (this.commonService.isTestArea()) {
+      const cookieValue = document.cookie.split("; ").find((row) => row.startsWith("schedule_list="))?.split("=")[1];
+      cookieValue ? this.travelScheduleList = JSON.parse(cookieValue) : this.travelScheduleList = [];
+      this.commonService.setBlock(false);
+    } else {
+      await this.travelScheduleService.getTravelList(queryObj).forEach(
+        async res => {
+          if (this.commonService.afterServerResponse(res)) {
+            const data = res.data as TravelSchedule[];
+            data.forEach(ele => {
+              ele.start_date = new Date(ele.start_date);
+              ele.end_date = new Date(ele.end_date);
+            })
+            this.travelScheduleList = data;
+            this.commonService.setBlock(false);
+          }
         }
-      }
-    )
+      )
+    }
   }
 
   /** 僅查單一個行程計畫 */
   async getTravelSchedule(pk_id: string): Promise<void> {
-    await this.travelScheduleService.getTravelSchedule(pk_id).forEach(
-      res => {
-        if (this.commonService.afterServerResponse(res)) {
-          const data = res.data as TravelSchedule[];
-          data.forEach(ele => {
-            ele.start_date = new Date(ele.start_date);
-            ele.end_date = new Date(ele.end_date);
+    // 測試區
+    if (this.commonService.isTestArea()) {
+      this.schedule = JSON.parse(JSON.stringify(this.travelScheduleList.find(ele => ele.pk_id === pk_id)));
+      this.oriSchedule = JSON.parse(JSON.stringify(this.travelScheduleList.find(ele => ele.pk_id === pk_id)));
 
-            ele.day_introduces.forEach((val, index) => {
-              val.date = new Date(val.date);
-              val.schedule_list.forEach((val2, i) => {
-                val2.ser_no = (i + 1);
-              })
-            })
-            ele.day_introduces.sort((a, b) => a.date.getTime() - b.date.getTime());
-          })
-          /** 是否要初始化選取行程 */
-          let changeFlag = true
-          if (this.schedule && this.schedule.selected_introduce) {
-            data[0].selected_introduce = { ...this.schedule.selected_introduce };
-            changeFlag = false
-          }
-          if (!this.mode) {
-            this.mode = this.modeOptions[0].value;
-          }
-          this.schedule = data[0];
-          this.oriSchedule = JSON.parse(JSON.stringify(data[0]));
-          if (!this.schedule.selected_introduce && changeFlag) {
-            this.schedule.selected_introduce = this.schedule.day_introduces[0];
-          }
-          this.isEditMode = true;
-        }
+      // 處理查詢檔
+      this.schedule.start_date = new Date(this.schedule.start_date)
+      this.schedule.end_date = new Date(this.schedule.end_date)
+      this.schedule.cost_records = this.schedule.cost_records.map(ele => ({ ...ele }))
+      this.schedule.day_introduces = this.schedule.day_introduces.map(ele => {
+        const obj = Object.assign({}, ele);
+        obj.schedule_list = obj.schedule_list.map(val => ({ ...val }));
+        return obj
+      })
+
+      this.schedule.selected_introduce = this.schedule.day_introduces[0];
+
+      // 複製原檔
+      this.oriSchedule.start_date = new Date(this.oriSchedule.start_date)
+      this.oriSchedule.end_date = new Date(this.oriSchedule.end_date)
+      this.oriSchedule.cost_records = this.oriSchedule.cost_records.map(ele => ({ ...ele }))
+      this.oriSchedule.day_introduces = this.oriSchedule.day_introduces.map(ele => {
+        const obj = Object.assign({}, ele);
+        obj.schedule_list = obj.schedule_list.map(val => ({ ...val }));
+        return obj
+      })
+
+      this.schedule.day_introduces.forEach(ele => {
+        ele.date = new Date(ele.date);
+      })
+
+
+      if (!this.mode) {
+        this.mode = this.modeOptions[0].value;
       }
-    )
+      this.isEditMode = true;
+    }
+    // 正式環境
+    else {
+      await this.travelScheduleService.getTravelSchedule(pk_id).forEach(
+        res => {
+          if (this.commonService.afterServerResponse(res)) {
+            const data = res.data as TravelSchedule[];
+            data.forEach(ele => {
+              ele.start_date = new Date(ele.start_date);
+              ele.end_date = new Date(ele.end_date);
+
+              ele.day_introduces.forEach((val, index) => {
+                val.date = new Date(val.date);
+                val.schedule_list.forEach((val2, i) => {
+                  val2.ser_no = (i + 1);
+                })
+              })
+              ele.day_introduces.sort((a, b) => a.date.getTime() - b.date.getTime());
+            })
+            /** 是否要初始化選取行程 */
+            let changeFlag = true
+            if (this.schedule && this.schedule.selected_introduce) {
+              data[0].selected_introduce = { ...this.schedule.selected_introduce };
+              changeFlag = false
+            }
+            if (!this.mode) {
+              this.mode = this.modeOptions[0].value;
+            }
+            this.schedule = data[0];
+            this.oriSchedule = JSON.parse(JSON.stringify(data[0]));
+            if (!this.schedule.selected_introduce && changeFlag) {
+              this.schedule.selected_introduce = this.schedule.day_introduces[0];
+            }
+            this.isEditMode = true;
+          }
+        }
+      )
+    }
   }
 
   /** 儲存旅行計畫 */
@@ -181,6 +228,7 @@ export class TravelScheduleListComponent {
     this.selectedSchedule.pass_day = 5;
     this.creatingStep = 1;
     this.isCreating = true;
+    this.mode = 'schedule'
     this.basicInfoSettingDialog = true;
   }
 
@@ -205,7 +253,7 @@ export class TravelScheduleListComponent {
     switch (mode) {
       case 'date':
         if (this.selectedSchedule.start_date && this.selectedSchedule.end_date) {
-          this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24);
+          this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24) - 1;
           if (this.selectedSchedule.pass_day < 0) {
             this.commonService.showMsg('i', '旅行日程不得小於0，已自動調整為適當日期!')
             this.selectedSchedule.pass_day = 0
@@ -222,7 +270,7 @@ export class TravelScheduleListComponent {
           this.selectedSchedule.end_date = this.commonService.setDateDetailToZero(
             new Date(this.selectedSchedule.start_date.getFullYear(),
               this.selectedSchedule.start_date.getMonth(),
-              this.selectedSchedule.start_date.getDate() + this.selectedSchedule.pass_day)
+              this.selectedSchedule.start_date.getDate() + this.selectedSchedule.pass_day - 1)
           );
         }
         break;
@@ -246,13 +294,12 @@ export class TravelScheduleListComponent {
             accept: () => {
               this.schedule = { ...this.selectedSchedule };
               this.basicInfoSettingDialog = false;
-              const length = (this.schedule.end_date.getTime() - this.schedule.start_date.getTime()) / 1000 / 60 / 60 / 24;
-              this.schedule.end_date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + length);
+              this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24);
+              this.schedule.end_date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + this.selectedSchedule.pass_day);
 
               this.schedule.day_introduces.forEach((ele, i) => ele.date.getTime() > this.schedule.end_date.getTime() ? ele.isdelete = 'Y' : null);
               this.schedule.day_introduces = this.schedule.day_introduces.filter(ele => !(ele.isdelete === 'Y' && !ele.create_dt));
-
-              for (let i = 0; i <= length; i++) {
+              for (let i = 0; i <= this.selectedSchedule.pass_day; i++) {
                 const date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + i);
                 if (this.schedule.day_introduces[i]) {
                   this.schedule.day_introduces[i].date = date;
@@ -289,12 +336,13 @@ export class TravelScheduleListComponent {
 
   /** 確認儲存 */
   confirmCancel(mode?: string) {
-    const tempSchedule = JSON.parse(JSON.stringify(this.schedule))
-    const tempOriSchedule = JSON.parse(JSON.stringify(this.schedule))
-    delete tempSchedule.selected_introduce
-    delete tempOriSchedule.selected_introduce
+
     switch (mode) {
       case 'basicInfo':
+        const tempSchedule = JSON.parse(JSON.stringify(this.schedule))
+        const tempOriSchedule = JSON.parse(JSON.stringify(this.oriSchedule))
+        delete tempSchedule.selected_introduce
+        delete tempOriSchedule.selected_introduce
         if ((JSON.stringify(tempSchedule) !== JSON.stringify(tempOriSchedule))) {
           this.confirmationService.confirm({
             header: '確認',
@@ -310,8 +358,7 @@ export class TravelScheduleListComponent {
         }
         break;
       default:
-
-        if (this.isCreating || (!this.isCreating && (JSON.stringify(tempSchedule) !== JSON.stringify(tempOriSchedule)))) {
+        if (this.isCreating) {
           this.confirmationService.confirm({
             header: '確認',
             message: this.isCreating ? '確認要取消建立新行程?' : '尚有資料尚未儲存，確定要離開編輯介面?',
@@ -320,7 +367,21 @@ export class TravelScheduleListComponent {
             }
           })
         } else {
-          this.cancel()
+          const tempSchedule: TravelSchedule = JSON.parse(JSON.stringify(this.schedule))
+          const tempOriSchedule: TravelSchedule = JSON.parse(JSON.stringify(this.oriSchedule))
+          delete tempSchedule.selected_introduce
+          delete tempOriSchedule.selected_introduce
+          if (JSON.stringify(tempSchedule) !== JSON.stringify(tempOriSchedule)) {
+            this.confirmationService.confirm({
+              header: '確認',
+              message: this.isCreating ? '確認要取消建立新行程?' : '尚有資料尚未儲存，確定要離開編輯介面?',
+              accept: () => {
+                this.cancel();
+              }
+            })
+          } else {
+            this.cancel()
+          }
         }
         break
     }
@@ -395,16 +456,45 @@ export class TravelScheduleListComponent {
 
   /** 儲存 */
   async save(): Promise<void> {
-    this.commonService.setBlock(true)
-    await this.travelScheduleService.saveTravelSchedule(this.schedule).forEach(
-      async res => {
-        this.commonService.setBlock(false)
-        if (this.commonService.afterServerResponse(res)) {
-          this.commonService.showMsg('s', '儲存成功');
-          await this.getTravelSchedule(this.schedule.pk_id);
-        }
+    // 測試環境
+    if (this.commonService.isTestArea()) {
+
+      if (this.travelScheduleList.find(ele => ele.pk_id === this.schedule.pk_id)) {
+        this.travelScheduleList[this.travelScheduleList.map(ele => ele.pk_id).indexOf(this.schedule.pk_id)] = { ...this.schedule };
+      } else {
+        this.travelScheduleList.push({ ...this.schedule })
       }
-    )
+      this.schedule.selected_introduce = this.schedule.day_introduces[0];
+
+      // 複製原檔
+      this.oriSchedule = JSON.parse(JSON.stringify(this.schedule));
+      this.oriSchedule.start_date = new Date(this.oriSchedule.start_date)
+      this.oriSchedule.end_date = new Date(this.oriSchedule.end_date)
+      this.oriSchedule.cost_records = this.oriSchedule.cost_records.map(ele => ({ ...ele }))
+      this.oriSchedule.day_introduces = this.oriSchedule.day_introduces.map(ele => {
+        const obj = Object.assign({}, ele);
+        obj.schedule_list = obj.schedule_list.map(val => ({ ...val }));
+        return obj
+      })
+
+      this.creatingStep = 0;
+      this.isCreating = false;
+      this.commonService.setCookie('schedule_list', JSON.stringify(this.travelScheduleList));
+      this.commonService.showMsg('s', '儲存成功');
+    }
+    // 正式環境
+    else {
+      this.commonService.setBlock(true)
+      await this.travelScheduleService.saveTravelSchedule(this.schedule).forEach(
+        async res => {
+          this.commonService.setBlock(false)
+          if (this.commonService.afterServerResponse(res)) {
+            this.commonService.showMsg('s', '儲存成功');
+            await this.getTravelSchedule(this.schedule.pk_id);
+          }
+        }
+      )
+    }
   }
 
   /** 取消 */
@@ -434,6 +524,11 @@ export class TravelScheduleListComponent {
       default:
         return false;
     }
+  }
+
+  /** 切換目前選取單檔 */
+  switchSelectedData(data: TravelDayIntroduce): void {
+    this.schedule.selected_introduce = data;
   }
 
   /** 回傳未刪除資料 */
@@ -522,7 +617,6 @@ export class TravelScheduleListComponent {
 
   /** 前往網址 */
   gotoUrl(url: string): void {
-    console.log(url);
     if (url) {
       this.confirmationService.confirm({
         header: '確認',
@@ -536,6 +630,7 @@ export class TravelScheduleListComponent {
 
   /** 下載PDF */
   async downloadPdf(): Promise<void> {
+    this.commonService.setBlock(true);
     await import('../../assets/msjh-normal.js').then(font => {
       if (font) {
         const nowTime = this.datePipe.transform(new Date(), 'yyyy/MM/dd HH:mm:ss');
@@ -556,7 +651,7 @@ export class TravelScheduleListComponent {
           startY: 10,
           columns: [{ header: '', dataKey: '0' }],
           body: topArray.map(ele => ({ '0': ele })),
-          columnStyles: { 0: { cellWidth: 187.5 } },
+          columnStyles: { 0: { cellWidth: 190 } },
           styles: { font: 'msjh', fontSize: 12 },
           didParseCell: ((data) => {
             if (data.section === 'body') {
@@ -575,12 +670,11 @@ export class TravelScheduleListComponent {
         let c = 0
         // 每日行程
         for (const ele of this.schedule.day_introduces) {
-
           autoTable(doc, {
             startY: !firstDayCheck ? doc['previousAutoTable']['finalY'] : 15,
             columns: [{ header: '', dataKey: '0' }],
             body: [{ 0: this.datePipe.transform(ele.date, 'MM/dd(EE)') }],
-            columnStyles: { 0: { cellWidth: 190 } },
+            columnStyles: { 0: { cellWidth: 183 } },
             styles: { font: 'msjh', fontSize: 15 },
             didParseCell: ((data) => {
               if (data.section === 'body') {
@@ -596,18 +690,18 @@ export class TravelScheduleListComponent {
               { header: '時段', dataKey: 'time' },
               { header: '敘述', dataKey: 'description' },
             ],
-            body: ele.schedule_list.map(daySchedule => {
+            body: ele.schedule_list.length > 0 ? ele.schedule_list.map(daySchedule => {
               const obj = {
                 type: daySchedule.type == 'move' ? '移動' : '停留',
                 time: daySchedule.time,
                 description: daySchedule.description
               }
               return obj;
-            }),
+            }) : [{ type: '', time: '', description: '查無此日行程' }],
             columnStyles: {
               'type': { cellWidth: 15 },
               'time': { cellWidth: 30 },
-              'description': { cellWidth: 145 },
+              'description': { cellWidth: 138 },
             },
             styles: { font: 'msjh', fontSize: 12 },
             didParseCell: ((data) => {
@@ -619,19 +713,21 @@ export class TravelScheduleListComponent {
               }
             })
           })
-
           autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'],
+            startY: doc['previousAutoTable']['finalY'] + 10,
             columns: [
               { header: '住宿&餐食', dataKey: 'detail' },
             ],
             body: [
               {
-                detail: '【住宿】：' + ele.hotel_name + '\n' + '【早餐】：' + ele.breakfirst + '\n' + '【午餐】：' + ele.launch + '\n' + '【晚餐】：' + ele.dinner,
+                detail: '【住宿】：' + (ele.hotel_name ? ele.hotel_name : '無') + '\n' +
+                  '【早餐】：' + (ele.breakfirst ? ele.breakfirst : '無') + '\n' +
+                  '【午餐】：' + (ele.launch ? ele.launch : '無') + '\n' +
+                  '【晚餐】：' + (ele.dinner ? ele.dinner : '無'),
               }
             ],
             columnStyles: {
-              'detail': { cellWidth: 190 },
+              'detail': { cellWidth: 183 },
             },
             styles: { font: 'msjh', fontSize: 12 },
             didParseCell: ((data) => {
@@ -643,9 +739,8 @@ export class TravelScheduleListComponent {
               }
             })
           })
-
           autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'],
+            startY: doc['previousAutoTable']['finalY'] + 5,
             columns: [
               { header: '購物清單', dataKey: 'shopping' },
               { header: '備註', dataKey: 'memo' },
@@ -657,7 +752,7 @@ export class TravelScheduleListComponent {
               }
             ],
             columnStyles: {
-              'shopping': { cellWidth: 110 },
+              'shopping': { cellWidth: 103 },
               'memo': { cellWidth: 80 },
             },
             styles: { font: 'msjh', fontSize: 10.5 },
@@ -670,11 +765,64 @@ export class TravelScheduleListComponent {
               }
             })
           })
-
-
           c++;
           c < this.schedule.day_introduces.length ? doc.addPage() : null;
           firstDayCheck = true
+        }
+
+        if (this.schedule.cost_records.length > 0) {
+          doc.addPage();
+          // 標題列
+          autoTable(doc, {
+            startY: 10,
+            columns: [{ header: '', dataKey: '0' }],
+            body: [{ '0': '預算紀錄表' }],
+            columnStyles: { 0: { cellWidth: 180 } },
+            styles: { font: 'msjh', fontSize: 22 }
+          })
+          autoTable(doc, {
+            startY: doc['previousAutoTable']['finalY'],
+            columns: [
+              { header: '預計花費', dataKey: 'guess' },
+              { header: '實際花費', dataKey: 'real' },
+            ],
+            body: [{
+              guess: [null, undefined, NaN].includes(this.schedule.preparation_cost) ? '0' : this.decimalPipe.transform(this.schedule.preparation_cost, '3.0-0'),
+              real: [null, undefined, NaN].includes(this.schedule.real_cost) ? '0' : this.decimalPipe.transform(this.schedule.real_cost, '3.0-0')
+            }],
+            columnStyles: { guess: { cellWidth: 90 }, real: { cellWidth: 90 } },
+            styles: { font: 'msjh', fontSize: 14 },
+            didParseCell: ((data) => {
+              data.cell.styles.halign = 'center';
+              if (data.section === 'body') {
+                data.cell.styles.fillColor = 'white';
+              }
+            }),
+          })
+          autoTable(doc, {
+            startY: doc['previousAutoTable']['finalY'],
+            columns: [
+              { header: '類型', dataKey: 'type' },
+              { header: '敘述', dataKey: 'description' },
+              { header: '價格', dataKey: 'cost' },
+            ],
+            body: this.schedule.cost_records.map(ele => {
+              return {
+                type: this.costTypeOptions.find(val => val.value == ele.type) ? this.costTypeOptions.find(val => val.value == ele.type).label : '-',
+                description: ele.description,
+                cost: this.decimalPipe.transform(ele.final_cost, '3.0-0')
+              }
+            }),
+            columnStyles: { type: { cellWidth: 25 }, description: { cellWidth: 125 }, cost: { cellWidth: 30 } },
+            styles: { font: 'msjh', fontSize: 11 },
+            didParseCell: ((data) => {
+              if (data.section === 'body') {
+                if (data.column.dataKey === 'cost') {
+                  data.cell.styles.halign = 'right';
+                }
+              }
+            }),
+          })
         }
 
         // 加圖片
@@ -709,10 +857,11 @@ export class TravelScheduleListComponent {
           //   }
           // }
         }
-        const fileName = 'twe'
+        const fileName = this.schedule.title
         doc.save(fileName)
       }
     })
+    this.commonService.setBlock(false);
   }
 
   decodeHtmlEntities(inputStr: string): string {
