@@ -70,6 +70,13 @@
                 </div>
                 <!-- 顯示模式 -->
                 <div class="col-12 xl:col-3 lg:col-3 md:col-6 modeOption">
+                    <!-- 新增單天行程 -->
+                    <div class="center dateSettingBtnCol addNewDayBtn" *ngIf="mode === 'schedule'">
+                        <button pButton type="button" icon="pi pi-plus" class="roundBtn" (click)="createDayIntroduce()">
+                        </button>
+                        <br>
+                        <label style="margin: auto;color: white;">新增行程</label>
+                    </div>
                     <p-selectButton [(ngModel)]="mode" [options]="modeOptions" optionLabel="label" optionValue="value">
                     </p-selectButton>
                 </div>
@@ -83,7 +90,7 @@
                 <div class="col-12">
                     <div class="grid zeroPadding">
                         <!-- 新增單天行程 -->
-                        <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol">
+                        <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol bigAddNewDayBtn">
                             <button pButton type="button" icon="pi pi-plus" class="roundBtn"
                                 (click)="createDayIntroduce()">
                             </button>
@@ -153,22 +160,33 @@
                             <div class="scheduleBlock">
                                 <div class="grid zeroPadding">
                                     <!-- 移動 -->
-                                    <div class="col-6 xl:col-1 lg:col-2 md:col-3 autoCenter">
-                                        <i class="pi pi-list" cdkDragHandle style="font-size: 25px;float: left;"></i>
-                                        <label style="margin-left: 25px;font-size: 25px;">
-                                            {{data.ser_no + '.'}}
-                                        </label>
-                                        <ng-container *ngIf="data.type === 'move';else stay">
-                                            <label style="font-size: 45px;">🚝</label>
-                                        </ng-container>
-                                        <ng-template #stay>
-                                            <label style="font-size: 45px;">🖼️</label>
-                                        </ng-template>
+                                    <div class="col-3 xl:col-1 lg:col-2 md:col-3 autoCenter">
+                                        <!-- 行動裝置專用顯示序號 -->
+                                        <div class="smallMoveContent">
+                                            <label style="margin-left: 25px;font-size: 25px;">
+                                                {{data.ser_no + '.'}}
+                                            </label>
+                                        </div>
+                                        <!-- 移動區域內容 -->
+                                        <div class="moveContent">
+                                            <!-- 拖曳 -->
+                                            <i class="pi pi-list" cdkDragHandle style="font-size: 25px;float: left;">
+                                            </i>
+                                            <label style="margin-left: 25px;font-size: 25px;">
+                                                {{data.ser_no + '.'}}
+                                            </label>
+                                            <ng-container *ngIf="data.type === 'move';else stay">
+                                                <label style="font-size: 45px;">🚝</label>
+                                            </ng-container>
+                                            <ng-template #stay>
+                                                <label style="font-size: 45px;">🖼️</label>
+                                            </ng-template>
+                                        </div>
                                     </div>
                                     <!-- 類型 -->
-                                    <div class="col-6 xl:col-1 lg:col-2 md:col-3 autoCenter">
+                                    <div class="col-9 xl:col-1 lg:col-2 md:col-3 autoCenter">
                                         <!-- 非整列顯示時出現說明 -->
-                                        <label class="notRowLabel">行程類型</label>
+                                        <label class="notRowLabel" style="margin-right: 10px;">行程類型</label>
                                         <p-radioButton [(ngModel)]="data.type" [label]="'停留'" [value]="'stay'">
                                         </p-radioButton>
                                         <p-radioButton [(ngModel)]="data.type" [label]="'移動'" [value]="'move'">
@@ -187,7 +205,7 @@
                                         <input pInputText type="text" [(ngModel)]="data.description">
                                     </div>
                                     <!-- Google地圖網址 -->
-                                    <div class="col-12 xl:col-2 lg:col-1 md:col-4 center">
+                                    <div class="col-10 xl:col-2 lg:col-1 md:col-4 center">
                                         <!-- 非整列顯示時出現說明 -->
                                         <label class="notRowLabel">地點網址</label>
                                         <div class="p-inputgroup">
@@ -198,7 +216,7 @@
                                         </div>
                                     </div>
                                     <!-- 移除 -->
-                                    <div class="col-12 xl:col-1 lg:col-1 md:col-2 center">
+                                    <div class="col-2 xl:col-1 lg:col-1 md:col-2 center">
                                         <button pButton type="button" class="deleteBtn" [icon]="'pi pi-trash'"
                                             (click)="deleteDaysSchedule(i)">
                                         </button>
@@ -295,110 +313,115 @@
             </ng-container>
             <!-- 預算紀錄表 -->
             <ng-container *ngSwitchCase="'cost_record'">
-                <!-- 標題 -->
-                <div class="col-12 grayBottom center">
-                    <label style="color: white;font-size: 26px;margin-top: 7px;">預算紀錄表</label>
-                </div>
-                <!-- 工具列 -->
-                <div class="col-12" style="min-height: 70px;">
-                    <!-- 新增預算紀錄 -->
-                    <button pButton type="button" icon="pi pi-plus" [label]="'新增預算紀錄'" style="float: left;"
-                        (click)="createCostRecord()">
-                    </button>
-                    <!-- 檢視花費分析 -->
-                    <button pButton type="button" icon="pi pi-eye" style="float: left;"
-                        (click)="setCostAnanalysisDialog(true)" [label]="'檢視花費分析'">
-                    </button>
-                    <!-- 預計花費 -->
-                    <label class="totalCostLabel" style="margin-right: 120px;">
-                        預計花費：<p-inputNumber [(ngModel)]="schedule.preparation_cost" [minFractionDigits]="0"
-                            [maxFractionDigits]="5"></p-inputNumber>
-                    </label>
-                    <!-- 總花費 -->
-                    <label class="totalCostLabel">
-                        總花費：{{schedule.real_cost | number:'3.0-0'}}
-                    </label>
-                </div>
-                <!-- 標題列 -->
-                <div class="col-12">
-                    <div class="grid zeroPadding costRecordListTitle" style="color: white;">
-                        <!-- 類型 -->
-                        <div class="col-1 center">
-                            <label>{{'花費類型'}}</label>
+                <div class="col-12" style="overflow: auto;max-width: 100%;">
+                    <div class="grid zeroPadding costRecordGrid">
+                        <!-- 標題 -->
+                        <div class="col-12 grayBottom center">
+                            <label style="color: white;font-size: 26px;margin-top: 7px;">預算紀錄表</label>
                         </div>
-                        <!-- 敘述 -->
-                        <div class="col-4 center">
-                            <label>{{'敘述'}}</label>
+                        <!-- 工具列 -->
+                        <div class="col-12" style="min-height: 70px;">
+                            <!-- 新增預算紀錄 -->
+                            <button pButton type="button" class="addNewCostRecordBtn" icon="pi pi-plus"
+                                [label]="'新增預算紀錄'" style="float: left;" (click)="createCostRecord()">
+                            </button>
+                            <!-- 檢視花費分析 -->
+                            <button pButton type="button" icon="pi pi-eye" style="float: left;"
+                                (click)="setCostAnanalysisDialog(true)" [label]="'檢視花費分析'">
+                            </button>
+                            <!-- 預計花費 -->
+                            <label class="budgetLabel">
+                                預計花費：<p-inputNumber [(ngModel)]="schedule.preparation_cost" [minFractionDigits]="0"
+                                    [maxFractionDigits]="5"></p-inputNumber>
+                            </label>
+                            <!-- 總花費 -->
+                            <label class="totalCostLabel">
+                                總花費：{{schedule.real_cost | number:'3.0-0'}}
+                            </label>
                         </div>
-                        <!-- 價格 -->
-                        <div class="col-2 center">
-                            <label>{{'價格'}}</label>
-                        </div>
-                        <!-- 幣別 -->
-                        <div class="col-1 center">
-                            <label>{{'幣別'}}</label>
-                        </div>
-                        <!-- 匯率 -->
-                        <div class="col-1 center">
-                            <label>{{'匯率'}}</label>
-                        </div>
-                        <!-- 計算後成本 -->
-                        <div class="col-2 center">
-                            <label>{{'計算後成本'}}</label>
-                        </div>
-                        <!-- 移除 -->
-                        <div class="col-1 center">
-                            <label>{{'移除'}}</label>
-                        </div>
-                    </div>
-                </div>
-                <!-- 預算列表 -->
-                <div class="col-12 costRecordList grayBottom">
-                    <div class="grid zeroPadding ">
-                        <div class="col-12"
-                            *ngFor="let data of returnNotDeleteData(schedule.cost_records);let i = index">
-                            <div class="grid zeroPadding" style="color: white;">
+                        <!-- 標題列 -->
+                        <div class="col-12 costRecordHeader">
+                            <div class="grid zeroPadding costRecordListTitle" style="color: white;">
                                 <!-- 類型 -->
                                 <div class="col-1 center">
-                                    <select pInputText [(ngModel)]="data.type">
-                                        <option *ngFor="let option of costTypeOptions" [label]="option.label"
-                                            [value]="option.value">
-                                        </option>
-                                    </select>
+                                    <label>{{'類型'}}</label>
                                 </div>
                                 <!-- 敘述 -->
                                 <div class="col-4 center">
-                                    <input pInputText type="text" [(ngModel)]="data.description">
+                                    <label>{{'敘述'}}</label>
                                 </div>
                                 <!-- 價格 -->
                                 <div class="col-2 center">
-                                    <p-inputNumber [(ngModel)]="data.cost" (ngModelChange)="calcuteCost(data)">
-                                    </p-inputNumber>
+                                    <label>{{'價格'}}</label>
                                 </div>
                                 <!-- 幣別 -->
                                 <div class="col-1 center">
-                                    <input pInputText type="text" [(ngModel)]="data.currency_type" class="center">
+                                    <label>{{'幣別'}}</label>
                                 </div>
                                 <!-- 匯率 -->
                                 <div class="col-1 center">
-                                    <p-inputNumber [(ngModel)]="data.exchange_rate" (ngModelChange)="calcuteCost(data)"
-                                        [style]="{'text-align':'right'}" [minFractionDigits]="0"
-                                        [maxFractionDigits]="7">
-                                    </p-inputNumber>
+                                    <label>{{'匯率'}}</label>
                                 </div>
                                 <!-- 計算後成本 -->
-                                <div class="col-2" style="text-align: right;">
-                                    <label style="margin-top: 9px;">
-                                        {{data.final_cost > 1000 ? (data.final_cost | number:'3.0-0') :
-                                        data.final_cost}}
-                                    </label>
-                                    <hr style="border: 1px solid white;margin-top: 6px;opacity: 0.5;">
+                                <div class="col-2 center">
+                                    <label>{{'計算後成本'}}</label>
                                 </div>
                                 <!-- 移除 -->
                                 <div class="col-1 center">
-                                    <button pButton type="button" class="deleteBtn" [icon]="'pi pi-trash'"
-                                        (click)="deleteCostRecord(data)">
-                                    </button>
+                                    <label>{{'移除'}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 預算列表 -->
+                        <div class="col-12 costRecordList grayBottom">
+                            <div class="grid zeroPadding ">
+                                <div class="col-12"
+                                    *ngFor="let data of returnNotDeleteData(schedule.cost_records);let i = index">
+                                    <div class="grid zeroPadding" style="color: white;">
+                                        <!-- 類型 -->
+                                        <div class="col-1 center">
+                                            <select pInputText [(ngModel)]="data.type">
+                                                <option *ngFor="let option of costTypeOptions" [label]="option.label"
+                                                    [value]="option.value">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <!-- 敘述 -->
+                                        <div class="col-4 center">
+                                            <input pInputText type="text" [(ngModel)]="data.description">
+                                        </div>
+                                        <!-- 價格 -->
+                                        <div class="col-2 center">
+                                            <p-inputNumber [(ngModel)]="data.cost" (ngModelChange)="calcuteCost(data)">
+                                            </p-inputNumber>
+                                        </div>
+                                        <!-- 幣別 -->
+                                        <div class="col-1 center">
+                                            <input pInputText type="text" [(ngModel)]="data.currency_type"
+                                                class="center">
+                                        </div>
+                                        <!-- 匯率 -->
+                                        <div class="col-1 center">
+                                            <p-inputNumber [(ngModel)]="data.exchange_rate"
+                                                (ngModelChange)="calcuteCost(data)" [style]="{'text-align':'right'}"
+                                                [minFractionDigits]="0" [maxFractionDigits]="7">
+                                            </p-inputNumber>
+                                        </div>
+                                        <!-- 計算後成本 -->
+                                        <div class="col-2" style="text-align: right;">
+                                            <label style="margin-top: 9px;">
+                                                {{data.final_cost > 1000 ? (data.final_cost | number:'3.0-0') :
+                                                data.final_cost}}
+                                            </label>
+                                            <hr style="border: 1px solid white;margin-top: 6px;opacity: 0.5;">
+                                        </div>
+                                        <!-- 移除 -->
+                                        <div class="col-1 center">
+                                            <button pButton type="button" class="deleteBtn" [icon]="'pi pi-trash'"
+                                                (click)="deleteCostRecord(data)">
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

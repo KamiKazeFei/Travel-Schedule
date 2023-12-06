@@ -414,6 +414,28 @@ input,
     display: none;
 }
 
+/* 行動裝置專用顯示序號 */
+.smallMoveContent {
+    display: none;
+}
+
+/* 行動裝置新增單天行程 */
+.addNewDayBtn {
+    display: none;
+}
+
+/* 大螢幕的新增單天行程按鈕 */
+.bigAddNewDayBtn {
+    display: unset;
+}
+
+
+/** 預算標籤 */
+.budgetLabel {
+    color: white;
+    font-size: 26px;
+}
+
 @media screen and (min-width:501px) and (max-width:995px) {
 
     /* 行程列表標題 */
@@ -435,6 +457,11 @@ input,
 }
 
 @media screen and (max-width:500px) {
+
+    /* 每日行程列表 */
+    .dayPerScheduleList {
+        position: unset;
+    }
 
     /* 行程刪除按鈕 */
     .scheduleSettingBtn {
@@ -467,6 +494,7 @@ input,
     /* 顯示模式 */
     .modeOption {
         text-align: center;
+        display: flex;
     }
 
     /* 行程列表標題 */
@@ -479,5 +507,64 @@ input,
         display: block;
         color: burlywood;
         font-weight: 900;
+    }
+
+    /* 新增單天行程 */
+    .addNewDayBtn {
+        position: fixed;
+        bottom: 0px;
+        display: block;
+    }
+
+    /* 大螢幕的新增單天行程按鈕 */
+    .bigAddNewDayBtn {
+        display: none;
+    }
+
+    /* 移動顯示內容 */
+    .moveContent {
+        display: none;
+    }
+
+    /* 行動裝置專用顯示序號 */
+    .smallMoveContent {
+        display: block;
+    }
+
+    /* 子項目 */
+    .subDataGrid {
+        position: relative;
+    }
+
+    /* 預算紀錄標網格 */
+    .costRecordGrid {
+        overflow-x: auto;
+        min-width: fit-content;
+        padding-bottom: 5%;
+    }
+
+    /* 預算列表 */
+    .costRecordList {
+        overflow: unset;
+    }
+
+    /** 預算標籤 */
+    .budgetLabel {}
+
+    /* 總花費label */
+    .totalCostLabel {
+        margin-top: unset;
+        float: unset;
+        position: unset;
+        margin-right: 0px !important;
+        float: right;
+    }
+
+    /* 增加新預算按鈕 */
+    .addNewCostRecordBtn {
+        position: fixed;
+        bottom: 18px;
+        left: 0px;
+        background: cadetblue;
     }
 }
