@@ -527,7 +527,7 @@
 
 <!-- 檢視圖表 -->
 <ng-container *ngIf="costAnanalysisDialog">
-    <p-dialog [(visible)]="costAnanalysisDialog" [modal]="true" [style]="{width:'800px','height':'100%'}"
+    <p-dialog [(visible)]="costAnanalysisDialog" [modal]="true" [style]="{width:'800px','height':'80%'}"
         [header]="'檢視花費分析'" [closable]="false" [blockScroll]="true">
         <div style="width: 100%;height: 100%;">
             <div id="costRecordChart" style="width: 100%;height: 100%;" *ngIf="!chartLoading"></div>

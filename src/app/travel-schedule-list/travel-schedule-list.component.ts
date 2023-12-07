@@ -562,19 +562,19 @@ export class TravelScheduleListComponent {
       this.chartLoading = false;
       const option: EChartsOption = {
         grid: {
-          top: '15%',
+          top: '30%',
           right: '0%',
           left: '0%',
-          bottom: '15%'
+          bottom: '2%'
         },
         title: {
           text: '花費分析圖',
           textStyle: {
-            fontSize: 36
+            fontSize: 32
           },
           subtext: '總花費：' + this.schedule.real_cost,
           subtextStyle: {
-            fontSize: 25
+            fontSize: 21
           },
           left: 'center'
         },
@@ -588,7 +588,7 @@ export class TravelScheduleListComponent {
         series: [
           {
             type: 'pie',
-            radius: '50%',
+            radius: '70%',
             label: {
               formatter: ((ele) => {
                 return (ele.value as number) > 1000 ? this.decimalPipe.transform(Number(ele.value), '3.0-0') as any : ele.value

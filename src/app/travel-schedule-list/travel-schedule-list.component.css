@@ -356,6 +356,7 @@ hr {
     position: absolute;
     width: 100%;
     position: static;
+    padding-bottom: 25px;
 }
 
 .costRecordList>*>*>*>*>.p-inputtext {
@@ -536,7 +537,7 @@ input,
     /* 新增單天行程 */
     .addNewDayBtn {
         position: fixed;
-        bottom: 0px;
+        bottom: 10px;
         display: block;
         z-index: 999999999;
     }
