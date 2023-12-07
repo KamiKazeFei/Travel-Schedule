@@ -73,6 +73,10 @@ export class TravelScheduleListComponent {
     { label: '禮物/伴手禮', value: 'F' },
     { label: '其他', value: 'G' }
   ];
+  /** 花費排序 */
+  costRecordSortMode: string;
+  /** 排序紀錄 */
+  costRecordSortMap = {};
 
   /** 初始化 */
   async ngOnInit(): Promise<void> {
@@ -336,7 +340,6 @@ export class TravelScheduleListComponent {
 
   /** 確認儲存 */
   confirmCancel(mode?: string) {
-
     switch (mode) {
       case 'basicInfo':
         const tempSchedule = JSON.parse(JSON.stringify(this.schedule))
@@ -566,7 +569,13 @@ export class TravelScheduleListComponent {
         },
         title: {
           text: '花費分析圖',
+          textStyle: {
+            fontSize: 36
+          },
           subtext: '總花費：' + this.schedule.real_cost,
+          subtextStyle: {
+            fontSize: 25
+          },
           left: 'center'
         },
         tooltip: {
@@ -585,13 +594,12 @@ export class TravelScheduleListComponent {
                 return (ele.value as number) > 1000 ? this.decimalPipe.transform(Number(ele.value), '3.0-0') as any : ele.value
               })
             },
-            data: Array.from(new Set(this.schedule.cost_records.map(ele => ele.type))).filter(ele => ele).map(
+            data: Array.from(new Set(this.schedule.cost_records.map(ele => ele.type))).map(
               type => {
                 /** 初始值 */
-                const initValue = 0;
                 return {
-                  name: this.costTypeOptions.find(val => val.value === type).label,
-                  value: this.schedule.cost_records.filter(ele => ele.type === type && ele.isdelete !== 'Y').reduce((acc, ele) => acc + ele.final_cost, initValue)
+                  name: type ? this.costTypeOptions.find(val => val.value === type).label : '未指定',
+                  value: this.schedule.cost_records.filter(ele => ele.type === type && ele.isdelete !== 'Y').reduce((acc, ele) => acc + ele.final_cost, 0)
                 }
               }
             ),
@@ -605,6 +613,7 @@ export class TravelScheduleListComponent {
           }
         ]
       };
+
       setTimeout(() => {
         const element = document.getElementById('costRecordChart');
         if (element) {
@@ -864,15 +873,30 @@ export class TravelScheduleListComponent {
     this.commonService.setBlock(false);
   }
 
+  /** 移除HTML Code */
   decodeHtmlEntities(inputStr: string): string {
     const element = document.createElement('div');
     element.innerHTML = inputStr;
     return element.textContent || element.innerText || '';
   }
 
+  /** 移除HTML Code */
   removeHtmlTagsAndEntities(inputStr: string): string {
     const withoutTags = inputStr.replace(/<.*?>/g, '');
     const withoutEntities = this.decodeHtmlEntities(withoutTags);
     return withoutEntities;
+  }
+
+  /** 進行預算紀錄表排序 */
+  sortCostRecordsData(column: string): void {
+    this.costRecordSortMap[column] = !this.costRecordSortMap[column];
+    ['cost', 'final_cost'].includes(column)
+      ? this.schedule.cost_records.sort((a, b) => this.costRecordSortMap[column] ? a[column] - b[column] : b[column] - a[column])
+      : this.schedule.cost_records.sort((a, b) => this.costRecordSortMap[column] ? a[column].localeCompare(b[column]) : b[column].localeCompare(a[column]))
+  }
+
+  /** 檢查排序鍵值是否已經在Map中 */
+  checkSortKeyInMap(columnName: string): boolean {
+    return Object.keys(this.costRecordSortMap).includes(columnName)
   }
 }

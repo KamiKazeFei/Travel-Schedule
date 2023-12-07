@@ -339,42 +339,61 @@
                             <button pButton type="button" icon="pi pi-eye" style="float: left;"
                                 (click)="setCostAnanalysisDialog(true)" [label]="'檢視花費分析'">
                             </button>
+                            <!-- 總花費 -->
+                            <label class="totalCostLabel">
+                                總花費：{{schedule.real_cost | number:'3.0-0'}}
+                            </label>
                             <!-- 預計花費 -->
                             <label class="budgetLabel">
                                 預計花費：<p-inputNumber [(ngModel)]="schedule.preparation_cost" [minFractionDigits]="0"
                                     [maxFractionDigits]="5"></p-inputNumber>
-                            </label>
-                            <!-- 總花費 -->
-                            <label class="totalCostLabel">
-                                總花費：{{schedule.real_cost | number:'3.0-0'}}
                             </label>
                         </div>
                         <!-- 標題列 -->
                         <div class="col-12 costRecordHeader">
                             <div class="grid zeroPadding costRecordListTitle" style="color: white;">
                                 <!-- 類型 -->
-                                <div class="col-2 xl:col-1 lg:col-1 md:col-1 sm:col-1 center">
+                                <div class="col-2 xl:col-1 lg:col-1 md:col-1 sm:col-1 center sortColumn"
+                                    (click)="sortCostRecordsData('type')">
                                     <label>{{'類型'}}</label>
+                                    <!-- 顯示icon -->
+                                    <ng-container *ngTemplateOutlet="icon;context:{columnName:'type'}">
+                                    </ng-container>
                                 </div>
                                 <!-- 敘述 -->
-                                <div class="col-7 xl:col-4 lg:col-4 md:col-4 sm:col-4 center">
+                                <div class="col-7 xl:col-4 lg:col-4 md:col-4 sm:col-4 center sortColumn"
+                                    (click)="sortCostRecordsData('description')">
                                     <label>{{'敘述'}}</label>
+                                    <!-- 顯示icon -->
+                                    <ng-container *ngTemplateOutlet="icon;context:{columnName:'description'}">
+                                    </ng-container>
                                 </div>
                                 <!-- 價格 -->
-                                <div class="col-2 center">
+                                <div class="col-2 center sortColumn" (click)="sortCostRecordsData('cost')">
                                     <label>{{'價格'}}</label>
+                                    <!-- 顯示icon -->
+                                    <ng-container *ngTemplateOutlet="icon;context:{columnName:'cost'}">
+                                    </ng-container>
                                 </div>
                                 <!-- 幣別 -->
-                                <div class="col-1 center mobileCostRecordColumn">
+                                <div class="col-1 center mobileCostRecordColumn sortColumn"
+                                    (click)="sortCostRecordsData('currency_type')">
                                     <label>{{'幣別'}}</label>
+                                    <!-- 顯示icon -->
+                                    <ng-container *ngTemplateOutlet="icon;context:{columnName:'currency_type'}">
+                                    </ng-container>
                                 </div>
                                 <!-- 匯率 -->
                                 <div class="col-1 center mobileCostRecordColumn">
                                     <label>{{'匯率'}}</label>
                                 </div>
                                 <!-- 計算後成本 -->
-                                <div class="col-2 center mobileCostRecordColumn">
+                                <div class="col-2 center mobileCostRecordColumn sortColumn"
+                                    (click)="sortCostRecordsData('final_cost')">
                                     <label>{{'計算後成本'}}</label>
+                                    <!-- 顯示icon -->
+                                    <ng-container *ngTemplateOutlet="icon;context:{columnName:'final_cost'}">
+                                    </ng-container>
                                 </div>
                                 <!-- 移除 -->
                                 <div class="col-1 center">
@@ -520,3 +539,17 @@
         </p-footer>
     </p-dialog>
 </ng-container>
+
+<!-- 顯示ICON -->
+<ng-template #icon let-columnName="columnName">
+    <ng-container *ngIf="checkSortKeyInMap(columnName)">
+        <!-- 遞增 -->
+        <ng-container *ngIf="costRecordSortMap[columnName];else reverse">
+            <label>▲</label>
+        </ng-container>
+        <!-- 遞減 -->
+        <ng-template #reverse>
+            <label>▼</label>
+        </ng-template>
+    </ng-container>
+</ng-template>

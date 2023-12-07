@@ -385,11 +385,9 @@ input,
 /* 總花費label */
 .totalCostLabel {
     color: white;
-    font-size: 26px;
-    margin-top: 7px;
+    font-size: 20px;
+    margin-top: 3px;
     float: right;
-    position: absolute;
-    right: 5%;
 }
 
 /* 新增新的花費紀錄label */
@@ -433,7 +431,9 @@ input,
 /** 預算標籤 */
 .budgetLabel {
     color: white;
-    font-size: 26px;
+    font-size: 20px;
+    float: right;
+    margin-right: 10px;
 }
 
 /* 手機顯示的移除按鈕 */
@@ -445,6 +445,20 @@ input,
 .mobileTotalCostLabel {
     display: none;
 }
+
+/* 排序格 */
+.sortColumn,
+.sortColumn>* {
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+
+/* 排序格的變換 */
+.sortColumn:hover {
+    background: rgb(34, 187, 187);
+}
+
 
 @media screen and (min-width:501px) and (max-width:995px) {
 
@@ -604,6 +618,11 @@ input,
         color: white;
         float: right;
         display: flex;
-        margin: 0px auto;        
+        margin: 0px auto;
+    }
+
+    /* 一般版總花費 */
+    .totalCostLabel {
+        display: none;
     }
 }
