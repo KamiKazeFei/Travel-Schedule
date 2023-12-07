@@ -342,6 +342,9 @@ export class TravelScheduleListComponent {
   confirmCancel(mode?: string) {
     switch (mode) {
       case 'basicInfo':
+        if (!this.oriSchedule) {
+          this.oriSchedule = {} as any
+        }
         const tempSchedule = JSON.parse(JSON.stringify(this.schedule))
         const tempOriSchedule = JSON.parse(JSON.stringify(this.oriSchedule))
         delete tempSchedule.selected_introduce
@@ -560,7 +563,7 @@ export class TravelScheduleListComponent {
     this.chartLoading = true;
     setTimeout(() => {
       this.chartLoading = false;
-      const option: EChartsOption = {
+      let option: EChartsOption = {
         grid: {
           top: '30%',
           right: '0%',
@@ -619,6 +622,21 @@ export class TravelScheduleListComponent {
         if (element) {
           const mychart = echarts.init(element);
           mychart.setOption(option as any);
+          setTimeout(() => {
+            var imageDataURL = mychart.getDataURL({
+              pixelRatio: 5,
+              backgroundColor: '#fff',
+            });
+            var imgElement = document.createElement('img');
+            imgElement.src = imageDataURL;
+
+            var downloadLink = document.createElement('a');
+            downloadLink.href = imageDataURL;
+            downloadLink.download = 'echart_chart.png'; // 设置下载文件的名称            
+            downloadLink.click();
+            imgElement.remove();
+            downloadLink.remove();
+          }, 3000)
         }
       }, 100)
     }, 100)
@@ -819,7 +837,7 @@ export class TravelScheduleListComponent {
               return {
                 type: this.costTypeOptions.find(val => val.value == ele.type) ? this.costTypeOptions.find(val => val.value == ele.type).label : '-',
                 description: ele.description,
-                cost: this.decimalPipe.transform(ele.final_cost, '3.0-0')
+                cost: ele.final_cost > 1000 ? this.decimalPipe.transform(ele.final_cost, '3.0-0') : ele.final_cost
               }
             }),
             columnStyles: { type: { cellWidth: 25 }, description: { cellWidth: 125 }, cost: { cellWidth: 30 } },

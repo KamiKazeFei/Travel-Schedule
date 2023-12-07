@@ -345,8 +345,10 @@
                             </label>
                             <!-- 預計花費 -->
                             <label class="budgetLabel">
-                                預計花費：<p-inputNumber [(ngModel)]="schedule.preparation_cost" [minFractionDigits]="0"
-                                    [maxFractionDigits]="5"></p-inputNumber>
+                                預計花費：
+                                <p-inputNumber [(ngModel)]="schedule.preparation_cost" [minFractionDigits]="0"
+                                    [maxFractionDigits]="5">
+                                </p-inputNumber>
                             </label>
                         </div>
                         <!-- 標題列 -->
@@ -501,8 +503,9 @@
             </div>
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
                 <label>行程天數<span style="color: red;">*</span></label>
-                <input pInputText type="number" [(ngModel)]="selectedSchedule.pass_day" [min]="0" [step]="1"
-                    (ngModelChange)="changeTravelDate('day')" style="border: 1px solid lightgray;" />
+                <p-inputNumber [(ngModel)]="selectedSchedule.pass_day" [minFractionDigits]="0" [maxFractionDigits]="0"
+                    (ngModelChange)="changeTravelDate('day')" [style]="{border: '1px solid lightgray'}">
+                </p-inputNumber>
             </div>
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
                 <label>結束日期<span style="color: red;">*</span></label>
