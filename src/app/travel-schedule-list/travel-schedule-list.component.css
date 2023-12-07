@@ -95,9 +95,10 @@ hr {
 .scheduleList {
     overflow-y: auto;
     overflow-x: hidden;
-    min-height: 77%;
-    max-height: 77%;
+    min-height: 86%;
+    max-height: 86%;
     border-bottom: 2px solid white;
+    align-content: baseline;
 }
 
 /* 頁尾 */
@@ -429,11 +430,20 @@ input,
     display: unset;
 }
 
-
 /** 預算標籤 */
 .budgetLabel {
     color: white;
     font-size: 26px;
+}
+
+/* 手機顯示的移除按鈕 */
+.mobileDeleteBtn {
+    display: none;
+}
+
+/* 行動版總花費 */
+.mobileTotalCostLabel {
+    display: none;
 }
 
 @media screen and (min-width:501px) and (max-width:995px) {
@@ -514,6 +524,7 @@ input,
         position: fixed;
         bottom: 0px;
         display: block;
+        z-index: 999999999;
     }
 
     /* 大螢幕的新增單天行程按鈕 */
@@ -548,8 +559,25 @@ input,
         overflow: unset;
     }
 
-    /** 預算標籤 */
-    .budgetLabel {}
+    /* 手機顯示的移除按鈕 */
+    .mobileDeleteBtn {
+        display: flex;
+    }
+
+    /* 行程的網址 */
+    .scheduleMapLocation {
+        display: none;
+    }
+
+    /* 寬螢幕的移除行程按鈕 */
+    .widthScreenDeleteBtn {
+        display: none;
+    }
+
+    /** 手機編輯預算 */
+    .mobileCostRecordColumn {
+        display: none;
+    }
 
     /* 總花費label */
     .totalCostLabel {
@@ -565,6 +593,17 @@ input,
         position: fixed;
         bottom: 18px;
         left: 0px;
-        background: cadetblue;
+        background: darkcyan;
+        z-index: 9999999999999999;
+    }
+
+    /* 行動版總花費 */
+    .mobileTotalCostLabel {
+        font-size: 19.5px;
+        font-weight: 900;
+        color: white;
+        float: right;
+        display: flex;
+        margin: 0px auto;        
     }
 }

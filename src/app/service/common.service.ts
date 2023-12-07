@@ -89,8 +89,8 @@ export class CommonService {
 
   /** 是否為測試區 */
   isTestArea(): boolean {
-    return false;
-    // return !location.hostname.toLowerCase().includes('kamikaze');
+    // return false;
+    return !location.hostname.toLowerCase().includes('kamikaze');
   }
 
   /** 設定Cookies */
