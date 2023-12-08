@@ -468,7 +468,8 @@
         <ng-container *ngIf="isEditMode">
             <label style="color: white;">輸出PDF</label>
             <!-- 輸出PDF -->
-            <button pButton type="button" icon="pi pi-file" class="roundBtn" (click)="downloadPdf()">
+            <button pButton type="button" icon="pi pi-file" class="roundBtn"
+                (click)="drawCostAnanalysisChart('hiddenChart',true)">
             </button>
             <!-- 儲存 -->
             <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()">
@@ -496,9 +497,8 @@
             </div>
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
                 <label>起始日期<span style="color: red;">*</span></label>
-                <p-calendar [(ngModel)]="selectedSchedule.start_date" [minDate]="now" [yearNavigator]="true"
-                    [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')" [dateFormat]="'yy/mm/dd'"
-                    [appendTo]="'body'">
+                <p-calendar [(ngModel)]="selectedSchedule.start_date" [yearNavigator]="true" [monthNavigator]="true"
+                    (ngModelChange)="changeTravelDate('date')" [dateFormat]="'yy/mm/dd'" [appendTo]="'body'">
                 </p-calendar>
             </div>
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
@@ -509,9 +509,9 @@
             </div>
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
                 <label>結束日期<span style="color: red;">*</span></label>
-                <p-calendar [(ngModel)]="selectedSchedule.end_date" [minDate]="now" [yearNavigator]="true"
-                    [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')" [appendTo]="'body'"
-                    [dateFormat]="'yy/mm/dd'">
+                <p-calendar [(ngModel)]="selectedSchedule.end_date" [minDate]="selectedSchedule.start_date"
+                    [yearNavigator]="true" [monthNavigator]="true" (ngModelChange)="changeTravelDate('date')"
+                    [appendTo]="'body'" [dateFormat]="'yy/mm/dd'">
                 </p-calendar>
             </div>
         </div>
@@ -530,8 +530,9 @@
 
 <!-- 檢視圖表 -->
 <ng-container *ngIf="costAnanalysisDialog">
-    <p-dialog [(visible)]="costAnanalysisDialog" [modal]="true" [style]="{width:'800px','height':'80%'}"
-        [header]="'檢視花費分析'" [closable]="false" [blockScroll]="true">
+    <p-dialog [(visible)]="costAnanalysisDialog" [modal]="true"
+        [style]="{width:'800px','height':'80%','display':pdfLoading ? 'none':''}" [header]="'檢視花費分析'" [closable]="false"
+        [blockScroll]="true">
         <div style="width: 100%;height: 100%;">
             <div id="costRecordChart" style="width: 100%;height: 100%;" *ngIf="!chartLoading"></div>
         </div>
@@ -556,3 +557,5 @@
         </ng-template>
     </ng-container>
 </ng-template>
+
+<img id="hiddenChart" style="width: 720px;height: 800px;" hidden="true">

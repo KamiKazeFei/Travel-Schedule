@@ -56,6 +56,8 @@ export class TravelScheduleListComponent {
   costAnanalysisDialog = false;
   /** 圖表載入 */
   chartLoading = false;
+  /** pdf載入中 */
+  pdfLoading = false;
   /* 顯示模式 **/
   mode: string;
   /** 編輯模式 */
@@ -257,7 +259,7 @@ export class TravelScheduleListComponent {
     switch (mode) {
       case 'date':
         if (this.selectedSchedule.start_date && this.selectedSchedule.end_date) {
-          this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24) - 1;
+          this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24) + 1;
           if (this.selectedSchedule.pass_day < 0) {
             this.commonService.showMsg('i', '旅行日程不得小於0，已自動調整為適當日期!')
             this.selectedSchedule.pass_day = 0
@@ -547,10 +549,10 @@ export class TravelScheduleListComponent {
     if (action) {
       this.costAnanalysisDialog = true;
       setTimeout(() => {
-        this.drawCostAnanalysisChart();
+        this.drawCostAnanalysisChart('costRecordChart');
       }, 150)
       window.addEventListener('resize', (() => {
-        this.drawCostAnanalysisChart()
+        this.drawCostAnanalysisChart('costRecordChart')
       }));
     } else {
       this.costAnanalysisDialog = false
@@ -558,12 +560,16 @@ export class TravelScheduleListComponent {
     }
   }
 
+  costAnanalysisChartImageDataURL: string
+
   /** 繪製花費分析圖表 */
-  drawCostAnanalysisChart(): void {
+  async drawCostAnanalysisChart(id: string, download = false): Promise<void> {
+    download ? this.commonService.setBlock(true) : false
     this.chartLoading = true;
     setTimeout(() => {
       this.chartLoading = false;
-      let option: EChartsOption = {
+      // 圖表設定
+      const option: EChartsOption = {
         grid: {
           top: '30%',
           right: '0%',
@@ -616,29 +622,23 @@ export class TravelScheduleListComponent {
           }
         ]
       };
-
-      setTimeout(() => {
-        const element = document.getElementById('costRecordChart');
-        if (element) {
-          const mychart = echarts.init(element);
-          mychart.setOption(option as any);
-          setTimeout(() => {
-            var imageDataURL = mychart.getDataURL({
+      // 畫面物件
+      const element = document.getElementById(id);
+      if (element) {
+        const mychart = echarts.init(element);
+        mychart.setOption(option as any);
+        // 如果要下載
+        if (download) {
+          mychart.on('finished', () => {
+            const imageDataURL = mychart.getDataURL({
               pixelRatio: 5,
               backgroundColor: '#fff',
             });
-            var imgElement = document.createElement('img');
-            imgElement.src = imageDataURL;
-
-            var downloadLink = document.createElement('a');
-            downloadLink.href = imageDataURL;
-            downloadLink.download = 'echart_chart.png'; // 设置下载文件的名称            
-            downloadLink.click();
-            imgElement.remove();
-            downloadLink.remove();
-          }, 3000)
+            this.costAnanalysisChartImageDataURL = imageDataURL
+            this.downloadPdf();
+          })
         }
-      }, 100)
+      }
     }, 100)
   }
 
@@ -657,250 +657,287 @@ export class TravelScheduleListComponent {
 
   /** 下載PDF */
   async downloadPdf(): Promise<void> {
+    this.pdfLoading = true;
     this.commonService.setBlock(true);
-    await import('../../assets/msjh-normal.js').then(font => {
-      if (font) {
-        const nowTime = this.datePipe.transform(new Date(), 'yyyy/MM/dd HH:mm:ss');
-        const doc = new jsPDF();
-        doc.setFont('msjh');
-        /** 標題列 */
-        const topArray = [
-          // 旅程標題
-          this.schedule.title,
-          // 旅程時段
-          (this.datePipe.transform(this.schedule.start_date, 'yyyy/MM/dd (EE)')) + '~' + (this.datePipe.transform(this.schedule.end_date, 'yyyy/MM/dd (EE)')),
-          // 敘述
-          this.schedule.description,
-          '_________________________________________________________________________________________________'
-        ]
-        // 標題列
-        autoTable(doc, {
-          startY: 10,
-          columns: [{ header: '', dataKey: '0' }],
-          body: topArray.map(ele => ({ '0': ele })),
-          columnStyles: { 0: { cellWidth: 190 } },
-          styles: { font: 'msjh', fontSize: 12 },
-          didParseCell: ((data) => {
-            if (data.section === 'body') {
-              data.cell.styles.fillColor = 'white';
-              data.cell.styles.halign = 'left';
-              data.cell.styles.minCellHeight = 1
-              if (data.cell.text.join('') === this.schedule.title) {
-                data.cell.styles.fontSize = 25
-              }
-            }
-          }),
-        })
+    await import('../../assets/msjh-normal.js').then(
+      async font => {
+        if (font) {
 
-        /** 檢查是否為第一天 */
-        let firstDayCheck = false
-        let c = 0
-        // 每日行程
-        for (const ele of this.schedule.day_introduces) {
-          autoTable(doc, {
-            startY: !firstDayCheck ? doc['previousAutoTable']['finalY'] : 15,
-            columns: [{ header: '', dataKey: '0' }],
-            body: [{ 0: this.datePipe.transform(ele.date, 'MM/dd(EE)') }],
-            columnStyles: { 0: { cellWidth: 183 } },
-            styles: { font: 'msjh', fontSize: 15 },
-            didParseCell: ((data) => {
-              if (data.section === 'body') {
-                data.cell.styles.fillColor = 'white';
-                data.cell.styles.minCellHeight = 1;
-              }
-            })
-          })
-          autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'],
-            columns: [
-              { header: '', dataKey: 'type' },
-              { header: '時段', dataKey: 'time' },
-              { header: '敘述', dataKey: 'description' },
-            ],
-            body: ele.schedule_list.length > 0 ? ele.schedule_list.map(daySchedule => {
-              const obj = {
-                type: daySchedule.type == 'move' ? '移動' : '停留',
-                time: daySchedule.time,
-                description: daySchedule.description
-              }
-              return obj;
-            }) : [{ type: '', time: '', description: '查無此日行程' }],
-            columnStyles: {
-              'type': { cellWidth: 15 },
-              'time': { cellWidth: 30 },
-              'description': { cellWidth: 138 },
-            },
-            styles: { font: 'msjh', fontSize: 12 },
-            didParseCell: ((data) => {
-              if (data.section === 'body') {
-                data.cell.styles.minCellHeight = 1;
-              } else if (data.section === 'head') {
-                data.cell.styles.fillColor = 'darkcyan';
-                data.cell.styles.textColor = 'white'
-              }
-            })
-          })
-          autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'] + 10,
-            columns: [
-              { header: '住宿&餐食', dataKey: 'detail' },
-            ],
-            body: [
-              {
-                detail: '【住宿】：' + (ele.hotel_name ? ele.hotel_name : '無') + '\n' +
-                  '【早餐】：' + (ele.breakfirst ? ele.breakfirst : '無') + '\n' +
-                  '【午餐】：' + (ele.launch ? ele.launch : '無') + '\n' +
-                  '【晚餐】：' + (ele.dinner ? ele.dinner : '無'),
-              }
-            ],
-            columnStyles: {
-              'detail': { cellWidth: 183 },
-            },
-            styles: { font: 'msjh', fontSize: 12 },
-            didParseCell: ((data) => {
-              if (data.section === 'body') {
-                data.cell.styles.minCellHeight = 1;
-              } else if (data.section === 'head') {
-                data.cell.styles.fillColor = 'darkcyan';
-                data.cell.styles.textColor = 'white'
-              }
-            })
-          })
-          autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'] + 5,
-            columns: [
-              { header: '購物清單', dataKey: 'shopping' },
-              { header: '備註', dataKey: 'memo' },
-            ],
-            body: [
-              {
-                shopping: ele.shopping_detail ? this.removeHtmlTagsAndEntities(ele.shopping_detail) : '無',
-                memo: ele.memo ? this.removeHtmlTagsAndEntities(ele.memo) : '無'
-              }
-            ],
-            columnStyles: {
-              'shopping': { cellWidth: 103 },
-              'memo': { cellWidth: 80 },
-            },
-            styles: { font: 'msjh', fontSize: 10.5 },
-            didParseCell: ((data) => {
-              if (data.section === 'body') {
-                data.cell.styles.minCellHeight = 1;
-              } else if (data.section === 'head') {
-                data.cell.styles.fillColor = 'darkcyan';
-                data.cell.styles.textColor = 'white'
-              }
-            })
-          })
-          c++;
-          c < this.schedule.day_introduces.length ? doc.addPage() : null;
-          firstDayCheck = true
-        }
+          // 現在時間
+          const nowTime = this.datePipe.transform(new Date(), 'yyyy/MM/dd HH:mm:ss');
+          const doc = new jsPDF();
+          doc.setFont('msjh');
 
-        if (this.schedule.cost_records.length > 0) {
-          doc.addPage();
+          // 標題列
+          const topArray = [
+            // 旅程標題
+            this.schedule.title,
+            // 旅程時段
+            (this.datePipe.transform(this.schedule.start_date, 'yyyy/MM/dd (EE)')) + '~' + (this.datePipe.transform(this.schedule.end_date, 'yyyy/MM/dd (EE)')),
+            // 敘述
+            this.schedule.description,
+            '_________________________________________________________________________________________________'
+          ]
+
           // 標題列
           autoTable(doc, {
             startY: 10,
             columns: [{ header: '', dataKey: '0' }],
-            body: [{ '0': '預算紀錄表' }],
-            columnStyles: { 0: { cellWidth: 180 } },
-            styles: { font: 'msjh', fontSize: 22 }
-          })
-          autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'],
-            columns: [
-              { header: '預計花費', dataKey: 'guess' },
-              { header: '實際花費', dataKey: 'real' },
-            ],
-            body: [{
-              guess: [null, undefined, NaN].includes(this.schedule.preparation_cost) ? '0' : this.decimalPipe.transform(this.schedule.preparation_cost, '3.0-0'),
-              real: [null, undefined, NaN].includes(this.schedule.real_cost) ? '0' : this.decimalPipe.transform(this.schedule.real_cost, '3.0-0')
-            }],
-            columnStyles: { guess: { cellWidth: 90 }, real: { cellWidth: 90 } },
-            styles: { font: 'msjh', fontSize: 14 },
+            body: topArray.map(ele => ({ '0': ele })),
+            columnStyles: { 0: { cellWidth: 190 } },
+            styles: { font: 'msjh', fontSize: 12 },
             didParseCell: ((data) => {
-              data.cell.styles.halign = 'center';
               if (data.section === 'body') {
                 data.cell.styles.fillColor = 'white';
-              }
-            }),
-          })
-          autoTable(doc, {
-            startY: doc['previousAutoTable']['finalY'],
-            columns: [
-              { header: '類型', dataKey: 'type' },
-              { header: '敘述', dataKey: 'description' },
-              { header: '價格', dataKey: 'cost' },
-            ],
-            body: this.schedule.cost_records.map(ele => {
-              return {
-                type: this.costTypeOptions.find(val => val.value == ele.type) ? this.costTypeOptions.find(val => val.value == ele.type).label : '-',
-                description: ele.description,
-                cost: ele.final_cost > 1000 ? this.decimalPipe.transform(ele.final_cost, '3.0-0') : ele.final_cost
-              }
-            }),
-            columnStyles: { type: { cellWidth: 25 }, description: { cellWidth: 125 }, cost: { cellWidth: 30 } },
-            styles: { font: 'msjh', fontSize: 11 },
-            didParseCell: ((data) => {
-              if (data.section === 'body') {
-                if (data.column.dataKey === 'cost') {
-                  data.cell.styles.halign = 'right';
+                data.cell.styles.halign = 'left';
+                data.cell.styles.minCellHeight = 1
+                if (data.cell.text.join('') === this.schedule.title) {
+                  data.cell.styles.fontSize = 25
                 }
               }
             }),
           })
-        }
 
-        // 加圖片
-        for (let i = 0; i < doc.getNumberOfPages(); i++) {
-          doc.setPage(i + 1);
-          doc.setGState(new GState({ opacity: 1 }));
-          doc.setFontSize(10);
-          doc.text(`${i + 1} / ${doc.getNumberOfPages()}`, 100, 290);
-          /** 編號 */
-          // doc.text(this.selectedHbcMeetingApplication.application_no, 5.5, 290);
-          /** 頁尾 */
-          doc.text(nowTime, 170, 290);
-          doc.setGState(new GState({ opacity: 0.065 }));
-          doc.setFontSize(11);
-          doc.setGState(new GState({ opacity: 1 }));
-          /** 圖片 */
-          // const image = document.getElementById(this.master.secret_level) as HTMLImageElement;
-          // doc.addImage(image, 184, 4.5, image.width * 0.6, image.height * 0.6);
-          doc.setGState(new GState({ opacity: 0.1 }));
-          // const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-          // const context = canvas.getContext("2d");
-          // context.font = "16px Microsoft JhengHei";
-          // context.textAlign = "left";
-          // context.fillStyle = 'teal';
-          // context.fillText(this.empInfo.collea_id + ' ' + this.empInfo.name, 10, 25);
-          // const myImg = document.querySelector("#img1") as any;
-          // myImg.src = canvas.toDataURL("image/png");
-          // const hat = document.getElementById('img1') as HTMLImageElement;
-          // for (let i = 0; i < 295; i += 5) {
-          //   for (let j = 0; j <= 207; j += 34.5) {
-          //     doc.addImage(hat, j, i, hat.width * 0.25, hat.height * 0.25);
-          //   }
-          // }
+          /** 檢查是否為第一天 */
+          let firstDayCheck = false
+          let c = 0
+
+          // 加上每日行程表
+          for (const ele of this.schedule.day_introduces) {
+            autoTable(doc, {
+              startY: !firstDayCheck ? doc['previousAutoTable']['finalY'] : 15,
+              columns: [{ header: '', dataKey: '0' }],
+              body: [{ 0: this.datePipe.transform(ele.date, 'MM/dd(EE)') }],
+              columnStyles: { 0: { cellWidth: 183 } },
+              styles: { font: 'msjh', fontSize: 16, halign: 'center' },
+              didParseCell: ((data) => {
+                data.cell.styles.textColor = 'darkCyan';
+                data.cell.styles.fontSize = 20;
+              })
+            })
+            autoTable(doc, {
+              startY: doc['previousAutoTable']['finalY'],
+              columns: [
+                { header: '', dataKey: 'type' },
+                { header: '時段', dataKey: 'time' },
+                { header: '敘述', dataKey: 'description' },
+              ],
+              body: ele.schedule_list.length > 0 ? ele.schedule_list.map(daySchedule => {
+                const obj = {
+                  type: daySchedule.type == 'move' ? '移動' : '停留',
+                  time: daySchedule.time,
+                  description: daySchedule.description
+                }
+                return obj;
+              }) : [{ type: '', time: '', description: '查無此日行程' }],
+              columnStyles: {
+                'type': { cellWidth: 15 },
+                'time': { cellWidth: 38 },
+                'description': { cellWidth: 130 },
+              },
+              styles: { font: 'msjh', fontSize: 12 },
+              didParseCell: ((data) => {
+                if (data.cell.raw === '移動') {
+                  data.cell.styles.textColor = 'darkcyan'
+                }
+                if (data.cell.raw === '停留') {
+                  data.cell.styles.textColor = 'green'
+                }
+                if (data.section === 'body') {
+                  data.cell.styles.minCellHeight = 1;
+                } else if (data.section === 'head') {
+                  data.cell.styles.fillColor = 'darkcyan';
+                  data.cell.styles.textColor = 'white'
+                }
+              })
+            })
+
+            // 加上住宿 & 餐食
+            autoTable(doc, {
+              startY: doc['previousAutoTable']['finalY'] + 10,
+              columns: [
+                { header: '住宿&餐食', dataKey: 'detail' },
+              ],
+              body: [
+                {
+                  detail: '【住宿】：' + (ele.hotel_name ? ele.hotel_name : '無') + '\n' +
+                    '【早餐】：' + (ele.breakfirst ? ele.breakfirst : '無') + '\n' +
+                    '【午餐】：' + (ele.launch ? ele.launch : '無') + '\n' +
+                    '【晚餐】：' + (ele.dinner ? ele.dinner : '無'),
+                }
+              ],
+              columnStyles: {
+                'detail': { cellWidth: 183 },
+              },
+              styles: { font: 'msjh', fontSize: 12 },
+              didParseCell: ((data) => {
+                if (data.section === 'body') {
+                  data.cell.styles.minCellHeight = 1;
+                } else if (data.section === 'head') {
+                  data.cell.styles.fillColor = 'darkcyan';
+                  data.cell.styles.textColor = 'white'
+                }
+                data.cell.styles.minCellHeight = 1.5;
+              })
+            })
+
+            // 加上購物清單列表
+            autoTable(doc, {
+              startY: doc['previousAutoTable']['finalY'] + 5,
+              columns: [{ header: '購物清單', dataKey: 'shopping' }],
+              body: [{ shopping: ele.shopping_detail ? this.decodeHtmlEntities(ele.shopping_detail) : '無' }],
+              columnStyles: { 'shopping': { cellWidth: 183 } },
+              styles: { font: 'msjh', fontSize: 12 },
+              didParseCell: ((data) => {
+                if (data.section === 'body') {
+                  data.cell.styles.minCellHeight = 1;
+                } else if (data.section === 'head') {
+                  data.cell.styles.fillColor = 'darkcyan';
+                  data.cell.styles.textColor = 'white'
+                }
+              })
+            })
+
+            // 加上備註
+            autoTable(doc, {
+              startY: doc['previousAutoTable']['finalY'] + 5,
+              columns: [
+                { header: '備註', dataKey: 'memo' },
+              ],
+              body: [{ memo: ele.memo ? this.decodeHtmlEntities(ele.memo) : '無' }],
+              columnStyles: { 'memo': { cellWidth: 183 }, },
+              styles: { font: 'msjh', fontSize: 12 },
+              didParseCell: ((data) => {
+                if (data.section === 'body') {
+                  data.cell.styles.minCellHeight = 1;
+                } else if (data.section === 'head') {
+                  data.cell.styles.fillColor = 'darkcyan';
+                  data.cell.styles.textColor = 'white'
+                }
+              })
+            })
+
+            c++;
+            c < this.schedule.day_introduces.length ? doc.addPage() : null;
+            firstDayCheck = true
+          }
+
+          // 增加預算表
+          if (this.schedule.cost_records.length > 0) {
+            doc.addPage();
+            // 標題列
+            autoTable(doc, {
+              startY: 10,
+              columns: [{ header: '', dataKey: '0' }],
+              body: [{ '0': '預算紀錄表' }],
+              columnStyles: { 0: { cellWidth: 180 } },
+              styles: { font: 'msjh', fontSize: 22 }
+            })
+            autoTable(doc, {
+              startY: doc['previousAutoTable']['finalY'],
+              columns: [
+                { header: '預計花費', dataKey: 'guess' },
+                { header: '實際花費', dataKey: 'real' },
+              ],
+              body: [{
+                guess: [null, undefined, NaN].includes(this.schedule.preparation_cost) ? '0' : this.decimalPipe.transform(this.schedule.preparation_cost, '3.0-0'),
+                real: [null, undefined, NaN].includes(this.schedule.real_cost) ? '0' : this.decimalPipe.transform(this.schedule.real_cost, '3.0-0')
+              }],
+              columnStyles: { guess: { cellWidth: 90 }, real: { cellWidth: 90 } },
+              styles: { font: 'msjh', fontSize: 14 },
+              didParseCell: ((data) => {
+                data.cell.styles.halign = 'center';
+                if (data.section === 'body') {
+                  data.cell.styles.fillColor = 'white';
+                }
+              }),
+            })
+            autoTable(doc, {
+              startY: doc['previousAutoTable']['finalY'],
+              columns: [
+                { header: '類型', dataKey: 'type' },
+                { header: '敘述', dataKey: 'description' },
+                { header: '價格', dataKey: 'cost' },
+              ],
+              body: this.schedule.cost_records.map(ele => {
+                return {
+                  type: this.costTypeOptions.find(val => val.value == ele.type) ? this.costTypeOptions.find(val => val.value == ele.type).label : '-',
+                  description: ele.description,
+                  cost: ele.final_cost > 1000 ? this.decimalPipe.transform(ele.final_cost, '3.0-0') : ele.final_cost
+                }
+              }),
+              columnStyles: { type: { cellWidth: 25 }, description: { cellWidth: 125 }, cost: { cellWidth: 30 } },
+              styles: { font: 'msjh', fontSize: 11 },
+              didParseCell: ((data) => {
+                if (data.section === 'body') {
+                  if (data.column.dataKey === 'cost') {
+                    data.cell.styles.halign = 'right';
+                  }
+                }
+              }),
+            })
+          }
+
+          // 增加預算圖表
+          doc.addPage()
+          doc.addImage(this.costAnanalysisChartImageDataURL, 10, 15, 195, 220);
+
+          // 印上頁碼
+          for (let i = 0; i < doc.getNumberOfPages(); i++) {
+            doc.setPage(i + 1);
+            doc.setGState(new GState({ opacity: 1 }));
+            doc.setFontSize(10);
+            doc.text(`${i + 1} / ${doc.getNumberOfPages()}`, 100, 290);
+            /** 頁尾 */
+            doc.text(nowTime, 170, 290);
+            doc.setGState(new GState({ opacity: 0.065 }));
+            doc.setFontSize(11);
+            doc.setGState(new GState({ opacity: 1 }));
+            // const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+            // const context = canvas.getContext("2d");
+            // context.font = "16px Microsoft JhengHei";
+            // context.textAlign = "left";
+            // context.fillStyle = 'teal';
+            // context.fillText(this.empInfo.collea_id + ' ' + this.empInfo.name, 10, 25);
+            // const myImg = document.querySelector("#img1") as any;
+            // myImg.src = canvas.toDataURL("image/png");
+            // const hat = document.getElementById('img1') as HTMLImageElement;
+            // for (let i = 0; i < 295; i += 5) {
+            //   for (let j = 0; j <= 207; j += 34.5) {
+            //     doc.addImage(hat, j, i, hat.width * 0.25, hat.height * 0.25);
+            //   }
+            // }
+          }
+          const fileName = this.schedule.title
+          doc.save(fileName)
         }
-        const fileName = this.schedule.title
-        doc.save(fileName)
-      }
-    })
+      })
     this.commonService.setBlock(false);
   }
 
   /** 移除HTML Code */
   decodeHtmlEntities(inputStr: string): string {
-    const element = document.createElement('div');
-    element.innerHTML = inputStr;
-    return element.textContent || element.innerText || '';
+    inputStr = inputStr.replace(/<.*?>/g, '\n').replace(/\n+/g, '\n');
+    const entities = [
+      { char: '&lt;', replacement: '<' },
+      { char: '&gt;', replacement: '>' },
+      { char: '&amp;', replacement: '&' },
+      { char: '&quot;', replacement: '"' },
+      { char: '&apos;', replacement: "'" },
+      { char: '&#39;', replacement: "'" }
+    ];
+
+    for (let i = 0; i < entities.length; i++) {
+      const entity = entities[i];
+      const regex = new RegExp(entity.char, 'g');
+      inputStr = inputStr.replace(regex, entity.replacement);
+    }
+    return inputStr.replace(/^\n+/, '').replace(/\n$/, '')
   }
 
   /** 移除HTML Code */
   removeHtmlTagsAndEntities(inputStr: string): string {
-    const withoutTags = inputStr.replace(/<.*?>/g, '');
+    const withoutTags = inputStr.replace(/<.*?>/g, '\n');
     const withoutEntities = this.decodeHtmlEntities(withoutTags);
     return withoutEntities;
   }
