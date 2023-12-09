@@ -79,6 +79,8 @@ export class TravelScheduleListComponent {
   costRecordSortMode: string;
   /** 排序紀錄 */
   costRecordSortMap = {};
+  /** 圖表花費圖片網址 */
+  costAnanalysisChartImageDataURL: string
 
   /** 初始化 */
   async ngOnInit(): Promise<void> {
@@ -301,7 +303,6 @@ export class TravelScheduleListComponent {
               this.schedule = { ...this.selectedSchedule };
               this.basicInfoSettingDialog = false;
               this.selectedSchedule.pass_day = Math.floor((this.selectedSchedule.end_date.getTime() - this.selectedSchedule.start_date.getTime()) / 1000 / 60 / 60 / 24);
-              this.schedule.end_date = new Date(this.schedule.start_date.getFullYear(), this.schedule.start_date.getMonth(), this.schedule.start_date.getDate() + this.selectedSchedule.pass_day);
 
               this.schedule.day_introduces.forEach((ele, i) => ele.date.getTime() > this.schedule.end_date.getTime() ? ele.isdelete = 'Y' : null);
               this.schedule.day_introduces = this.schedule.day_introduces.filter(ele => !(ele.isdelete === 'Y' && !ele.create_dt));
@@ -427,6 +428,7 @@ export class TravelScheduleListComponent {
   createCostRecord(): void {
     const costRecord = new TravelCostRecord();
     costRecord.schedule_pk_id = this.schedule.pk_id;
+    costRecord.ser_no = this.schedule.cost_records.length + 1
     if (!this.schedule.cost_records) {
       this.schedule.cost_records = []
     }
@@ -548,26 +550,21 @@ export class TravelScheduleListComponent {
   setCostAnanalysisDialog(action: boolean): void {
     if (action) {
       this.costAnanalysisDialog = true;
+      this.chartLoading = true;
       setTimeout(() => {
         this.drawCostAnanalysisChart('costRecordChart');
-      }, 150)
-      window.addEventListener('resize', (() => {
-        this.drawCostAnanalysisChart('costRecordChart')
-      }));
+      }, 100)
     } else {
       this.costAnanalysisDialog = false
       window.removeEventListener('reset', null);
     }
   }
 
-  costAnanalysisChartImageDataURL: string
-
   /** 繪製花費分析圖表 */
   async drawCostAnanalysisChart(id: string, download = false): Promise<void> {
     download ? this.commonService.setBlock(true) : false
-    this.chartLoading = true;
+    this.chartLoading = false;
     setTimeout(() => {
-      this.chartLoading = false;
       // 圖表設定
       const option: EChartsOption = {
         grid: {
@@ -579,11 +576,11 @@ export class TravelScheduleListComponent {
         title: {
           text: '花費分析圖',
           textStyle: {
-            fontSize: 32
+            fontSize: 28
           },
           subtext: '總花費：' + this.schedule.real_cost,
           subtextStyle: {
-            fontSize: 21
+            fontSize: 18
           },
           left: 'center'
         },
@@ -631,7 +628,7 @@ export class TravelScheduleListComponent {
         if (download) {
           mychart.on('finished', () => {
             const imageDataURL = mychart.getDataURL({
-              pixelRatio: 5,
+              pixelRatio: 1.2,
               backgroundColor: '#fff',
             });
             this.costAnanalysisChartImageDataURL = imageDataURL
@@ -910,6 +907,7 @@ export class TravelScheduleListComponent {
           }
           const fileName = this.schedule.title
           doc.save(fileName)
+          this.costAnanalysisChartImageDataURL = null;
         }
       })
     this.commonService.setBlock(false);
@@ -948,6 +946,7 @@ export class TravelScheduleListComponent {
     ['cost', 'final_cost'].includes(column)
       ? this.schedule.cost_records.sort((a, b) => this.costRecordSortMap[column] ? a[column] - b[column] : b[column] - a[column])
       : this.schedule.cost_records.sort((a, b) => this.costRecordSortMap[column] ? a[column].localeCompare(b[column]) : b[column].localeCompare(a[column]))
+    this.schedule.cost_records.forEach((ele, i) => ele.ser_no = i + 1);
   }
 
   /** 檢查排序鍵值是否已經在Map中 */

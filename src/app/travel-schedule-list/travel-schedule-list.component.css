@@ -237,12 +237,10 @@ hr {
 
 /* 編輯介面 */
 .editPage {
-    min-height: 50%;
+    min-height: 60%;
     display: block;
     color: white;
 }
-
-
 
 /* 行程編輯方塊 */
 .scheduleBlock {
@@ -250,11 +248,10 @@ hr {
     padding: 5px;
 }
 
-
 /* 行程列表 */
 .dayPerScheduleList {
     min-height: 60px;
-    max-height: 48%;
+    max-height: 60%;
     display: block;
     background: transparent;
     border-radius: 4px;

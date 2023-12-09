@@ -99,6 +99,8 @@ export class TravelCostRecord extends BasicTable {
     schedule_pk_id: string;
     /** A機票、B住宿、C景點票券、D交通、E吃喝、F禮物、G其他 */
     type: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+    /** 序號 */
+    ser_no: number;
     /** 說明 */
     description: string;
     /** 備註 */
