@@ -457,6 +457,57 @@ input,
     background: rgb(34, 187, 187);
 }
 
+/* 檔案列表標題 */
+.fileListTitle {
+    padding-left: 115px;
+    padding-bottom: 15px;
+}
+
+/* 檔案標題 */
+.fileListTitle>label {
+    font-size: 26px;
+    color: white;
+    display: inline-flex;
+}
+
+/* 上傳按鈕 */
+.fileListTitle>div {
+    display: inline-flex;
+    position: relative;
+    right: 0px;
+    float: right;
+}
+
+/* 檔案列表 */
+.fileList {
+    min-height: 60px;
+    max-height: 60%;
+    display: block;
+    background: transparent;
+    border-radius: 4px;
+    overflow-x: auto;
+    position: absolute;
+    width: 99%;
+    border-top: 0.5px solid white;
+    border-bottom: 0.5px solid white;
+    margin-bottom: 10px;
+}
+
+/* 檔案上傳區域 */
+::ng-deep .p-fileupload-content {
+    max-height: 90%;
+    min-height: 90%;
+    height: 90%;
+    border: 3px solid;
+    border-radius: 15px;
+    background: rgb(22, 46, 62);
+    color: white;
+    overflow: auto;
+}
+
+:host p-inputnumber {
+    width: 100%;
+}
 
 @media screen and (min-width:501px) and (max-width:995px) {
 
@@ -557,6 +608,7 @@ input,
     /* 子項目 */
     .subDataGrid {
         position: relative;
+        padding-bottom: 85px;
     }
 
     /* 預算紀錄標網格 */
@@ -606,7 +658,7 @@ input,
         bottom: 18px;
         left: 0px;
         background: darkcyan;
-        z-index: 9999999999999999;
+        z-index: 9;
     }
 
     /* 行動版總花費 */
@@ -622,5 +674,11 @@ input,
     /* 一般版總花費 */
     .totalCostLabel {
         display: none;
+    }
+
+    /* 檔案列表標題 */
+    .fileListTitle {
+        display: inline-flex;
+        align-items: center;
     }
 }

@@ -53,6 +53,8 @@
     </div>
 </ng-container>
 
+
+
 <!-- 編輯行程 -->
 <ng-container *ngIf="isEditMode">
     <!-- 行程資訊 -->
@@ -460,6 +462,28 @@
                     </div>
                 </div>
             </ng-container>
+            <!-- 附檔上傳 -->
+            <ng-container *ngSwitchCase="'file_list'">
+                <div class="col-12" style="overflow: auto;max-width: 100%;">
+                    <!-- 檔案列表標題 -->
+                    <div class="col-12 center fileListTitle">
+                        <label>檔案列表標題</label>
+                        <div>
+                            <button pButton type="button" icon="pi pi-upload" class="roundBtn"
+                                (click)="setUploadDialogDialog(true)">
+                            </button>
+                            <br>
+                            <label style="margin: auto;color: white;">上傳檔案</label>
+                        </div>
+                    </div>
+                    <!-- 檔案列表 -->
+                    <div class="col-12">
+                        <div class="grid zeroPadding fileList">
+
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
         </ng-container>
     </div>
     <!-- 頁尾 -->
@@ -504,7 +528,8 @@
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
                 <label>行程天數<span style="color: red;">*</span></label>
                 <p-inputNumber [(ngModel)]="selectedSchedule.pass_day" [minFractionDigits]="0" [maxFractionDigits]="0"
-                    (ngModelChange)="changeTravelDate('day')" [style]="{border: '1px solid lightgray'}">
+                    (ngModelChange)="changeTravelDate('day')"
+                    [style]="{border: '0.5px solid lightgray','border-radius':'5px'}">
                 </p-inputNumber>
             </div>
             <div class="col-12 xl:col-4 lg:col-4 md:col-4">
@@ -531,7 +556,7 @@
 <!-- 檢視圖表 -->
 <ng-container *ngIf="costAnanalysisDialog">
     <p-dialog [(visible)]="costAnanalysisDialog" [modal]="true"
-        [style]="{width:'800px','height':'80%','display':pdfLoading ? 'none':''}" [header]="'檢視花費分析'" [closable]="false"
+        [style]="{width:'800px','height':'83%','display':pdfLoading ? 'none':''}" [header]="'檢視花費分析'" [closable]="false"
         [blockScroll]="true">
         <div style="width: 100%;height: 100%;">
             <div id="costRecordChart" style="width: 100%;height: 100%;" *ngIf="!chartLoading"></div>
@@ -539,6 +564,33 @@
         <!-- 頁尾 -->
         <p-footer>
             <button pButton type="button" class="roundBtn" icon="pi pi-times" (click)="setCostAnanalysisDialog(false)">
+            </button>
+        </p-footer>
+    </p-dialog>
+</ng-container>
+
+<!-- 上傳附檔視窗 -->
+<ng-container *ngIf="uploadFileDialog">
+    <p-dialog [(visible)]="uploadFileDialog" [modal]="true" [style]="{'width':'800px','height':'80%'}">
+        <div class="grid" style="min-height: 100%;">
+            <div class="col-12" style="min-height: 100%;">
+                <!-- url="http://127.0.0.1:8000/travel/upload/" -->
+                <p-fileUpload #fileUpload name="uploadData" (onUpload)="onUpload($event)"
+                    url="http://127.0.0.1:8000/travel/upload/" (onSelect)="onSelect($event,fileUpload)"
+                    [multiple]="true" [ngStyle]="{'height': '100% ','display': 'grid'}">
+                    <ng-template pTemplate="content">
+                        <ul *ngIf="uploadedFiles.length">
+                            <li *ngFor="let file of uploadedFiles">
+                                {{ file.name }} - {{ file.size }} bytes
+                            </li>
+                        </ul>
+                    </ng-template>
+                </p-fileUpload>
+            </div>
+        </div>
+        <!-- 頁尾 -->
+        <p-footer>
+            <button pButton type="button" class="roundBtn" icon="pi pi-times" (click)="setUploadDialogDialog(false)">
             </button>
         </p-footer>
     </p-dialog>

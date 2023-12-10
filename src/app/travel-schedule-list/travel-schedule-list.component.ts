@@ -10,6 +10,8 @@ import { EChartsOption } from 'echarts';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import jsPDF, { GState } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { FileUpload } from 'primeng/fileupload';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-travel-schedule-list',
@@ -60,10 +62,15 @@ export class TravelScheduleListComponent {
   pdfLoading = false;
   /* 顯示模式 **/
   mode: string;
+  /** 檔案上傳視窗 */
+  uploadFileDialog = false;
+  /** 以上傳檔案 */
+  uploadedFiles = [];
   /** 編輯模式 */
   modeOptions = [
     { label: '行程安排', value: 'schedule' },
-    { label: '預算紀錄表', value: 'cost_record' }
+    { label: '預算紀錄表', value: 'cost_record' },
+    // { label: '檔案列表', value: 'file_list' },
   ];
   /** 花費類型陣列 */
   costTypeOptions = [
@@ -438,6 +445,7 @@ export class TravelScheduleListComponent {
   /** 移除預算紀錄 */
   deleteCostRecord(data: TravelCostRecord): void {
     data.create_dt ? data.isdelete = 'Y' : (this.schedule.cost_records = this.schedule.cost_records.filter(ele => ele.pk_id !== data.pk_id));
+    this.schedule.real_cost = Number((this.schedule.cost_records.filter(ele => ele.isdelete !== 'Y').reduce((acc, ele) => acc + ele.final_cost, 0)).toFixed(2));
   }
 
   /** 計算花費成本 */
@@ -578,7 +586,7 @@ export class TravelScheduleListComponent {
           textStyle: {
             fontSize: 28
           },
-          subtext: '總花費：' + this.schedule.real_cost,
+          subtext: '總花費：' + (this.schedule.real_cost !== undefined && this.schedule.real_cost !== null ? this.schedule.real_cost : 0),
           subtextStyle: {
             fontSize: 18
           },
@@ -908,8 +916,11 @@ export class TravelScheduleListComponent {
           const fileName = this.schedule.title
           doc.save(fileName)
           this.costAnanalysisChartImageDataURL = null;
+        } else {
+          this.commonService.showMsg('e', '下載失敗')
         }
-      })
+      }
+    )
     this.commonService.setBlock(false);
   }
 
@@ -952,5 +963,63 @@ export class TravelScheduleListComponent {
   /** 檢查排序鍵值是否已經在Map中 */
   checkSortKeyInMap(columnName: string): boolean {
     return Object.keys(this.costRecordSortMap).includes(columnName)
+  }
+
+  /** 開關視窗上傳視窗 */
+  setUploadDialogDialog(action): void {
+    if (action) {
+      this.uploadedFiles = []
+      this.uploadFileDialog = true
+    } else {
+      this.uploadFileDialog = false
+      this.uploadedFiles = []
+    }
+  }
+
+  /** 檔案上傳 */
+  onUpload(event: any): void {
+    console.log(event);
+  }
+
+  /** 選取檔案上傳 */
+  async onSelect(event: any, fileUpload: FileUpload): Promise<void> {
+    const array = [];
+    event.currentFiles.forEach(file => {
+
+      // var formData = new FormData();
+      // formData.append('file', { ...file });
+      // formData.append('file_ext', file.name.split('.')[1]);
+      // formData.append('file_size', file.size);
+      // formData.append('type', file.size);
+      // formData.append('pk_id', uuidv4().replace(/-/g, ''));
+      // formData.append('schedule_pk_id', this.schedule.pk_id);
+
+      const newFile = {
+        lastModified: file.lastModified,
+        lastModifiedDate: file.lastModifiedDate,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        webkitRelativePath: file.webkitRelativePath
+      }
+
+      const obj = {
+        pk_id: uuidv4().replace(/-/g, ''),
+        file: { ...newFile },
+        file_size: file.size,
+        schedule_pk_id: this.schedule.pk_id,
+        file_ext: file.name.split('.')[1]
+      }
+      array.push(obj);
+    })
+    console.log(array);
+
+    // await this.travelScheduleService.saveTravelScheduleFiles({ files: array }).forEach(
+    //   async res => {
+    //     if (this.commonService.afterServerResponse(res)) {
+
+    //     }
+    //   }
+    // )
   }
 }

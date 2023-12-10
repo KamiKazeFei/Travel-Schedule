@@ -34,4 +34,9 @@ export class TravelScheduleService {
     const body = { schedule: travelSchedule };
     return this.apiService.postApi('save/', body);
   }
+
+  /** 儲存檔案 */
+  saveTravelScheduleFiles(requestObj): Observable<any> {
+    return this.apiService.postApi('save_upload/', requestObj);
+  }
 }

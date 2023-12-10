@@ -36,6 +36,7 @@ import { TravelLoginComponent } from './travel-login/travel-login.component';
 import { TravelRegisterComponent } from './travel-register/travel-register.component';
 import { TravelScheduleListComponent } from './travel-schedule-list/travel-schedule-list.component';
 import { EditorModule } from 'primeng/editor';
+import { FileUploadModule } from 'primeng/fileupload';
 
 registerLocaleData(localeZh);
 
@@ -77,6 +78,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SplitterModule,
     TabViewModule,
     SelectButtonModule,
+    FileUploadModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
