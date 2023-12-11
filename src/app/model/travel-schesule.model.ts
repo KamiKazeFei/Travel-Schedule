@@ -28,9 +28,9 @@ export class TravelSchedule extends BasicTable {
     /** 行程備註 */
     memo: string;
     /** 行程預計花費 */
-    preparation_cost: number;
+    preparation_cost: number = 0;
     /** 行程實際花費 */
-    real_cost: number;
+    real_cost: number = 0;
     /** 行程介紹 */
     day_introduces: TravelDayIntroduce[] = [];
     /** 花費紀錄 */

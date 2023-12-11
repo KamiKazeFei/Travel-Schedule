@@ -70,10 +70,10 @@ export class AppComponent {
   /** 選單 */
   menu = [
     { label: '我的行程列表', url: 'schedule_list', isLogin: true },
-    { label: '登出', url: 'logout', isLogin: true },
+    // { label: '登出', url: 'logout', isLogin: true },
 
-    { label: '登入', url: 'login', isLogin: false },
-    { label: '註冊', url: 'register', isLogin: false }
+    // { label: '登入', url: 'login', isLogin: false },
+    // { label: '註冊', url: 'register', isLogin: false }
   ];
 
   /** 初始化 */

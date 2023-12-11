@@ -634,14 +634,18 @@ export class TravelScheduleListComponent {
         mychart.setOption(option as any);
         // 如果要下載
         if (download) {
-          mychart.on('finished', () => {
-            const imageDataURL = mychart.getDataURL({
-              pixelRatio: 1.2,
-              backgroundColor: '#fff',
-            });
-            this.costAnanalysisChartImageDataURL = imageDataURL
+          if (this.schedule.cost_records.find(ele => ele.isdelete !== 'Y')) {
+            mychart.on('finished', () => {
+              const imageDataURL = mychart.getDataURL({
+                pixelRatio: 1.2,
+                backgroundColor: '#fff',
+              });
+              this.costAnanalysisChartImageDataURL = imageDataURL
+              this.downloadPdf();
+            })
+          } else {
             this.downloadPdf();
-          })
+          }
         }
       }
     }, 100)
@@ -667,12 +671,10 @@ export class TravelScheduleListComponent {
     await import('../../assets/msjh-normal.js').then(
       async font => {
         if (font) {
-
           // 現在時間
           const nowTime = this.datePipe.transform(new Date(), 'yyyy/MM/dd HH:mm:ss');
           const doc = new jsPDF();
           doc.setFont('msjh');
-
           // 標題列
           const topArray = [
             // 旅程標題
@@ -884,8 +886,10 @@ export class TravelScheduleListComponent {
           }
 
           // 增加預算圖表
-          doc.addPage()
-          doc.addImage(this.costAnanalysisChartImageDataURL, 10, 15, 195, 220);
+          if (this.costAnanalysisChartImageDataURL && this.schedule.cost_records.find(ele => ele.isdelete !== 'Y')) {
+            doc.addPage()
+            doc.addImage(this.costAnanalysisChartImageDataURL, 10, 15, 195, 220);
+          }
 
           // 印上頁碼
           for (let i = 0; i < doc.getNumberOfPages(); i++) {
@@ -1023,3 +1027,4 @@ export class TravelScheduleListComponent {
     // )
   }
 }
+

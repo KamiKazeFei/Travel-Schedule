@@ -53,8 +53,6 @@
     </div>
 </ng-container>
 
-
-
 <!-- 編輯行程 -->
 <ng-container *ngIf="isEditMode">
     <!-- 行程資訊 -->
@@ -343,7 +341,9 @@
                             </button>
                             <!-- 總花費 -->
                             <label class="totalCostLabel">
-                                總花費：{{schedule.real_cost | number:'3.0-0'}}
+                                總花費：
+                                {{schedule.real_cost > 1000 ? (schedule.real_cost | number:'3.0-0') :
+                                schedule.real_cost}}
                             </label>
                             <!-- 預計花費 -->
                             <label class="budgetLabel">
