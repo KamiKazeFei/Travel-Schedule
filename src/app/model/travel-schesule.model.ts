@@ -35,6 +35,8 @@ export class TravelSchedule extends BasicTable {
     day_introduces: TravelDayIntroduce[] = [];
     /** 花費紀錄 */
     cost_records: TravelCostRecord[] = [];
+    /** 檔案附檔 */
+    file_list: TravelScheduleFile[] = [];
     /** 天數 */
     pass_day: number = 1;
     /** 選擇天數 */
@@ -75,7 +77,7 @@ export class TravelDayIntroduce extends BasicTable {
     dinner_map_location: string;
 }
 
-/** 單一行程 */
+/** 單天行程 */
 export class TravelDaySchedule extends BasicTable {
     /** 序號 */
     ser_no: number;
@@ -91,6 +93,20 @@ export class TravelDaySchedule extends BasicTable {
     map_location: string;
     /** 行程類型 */
     type: 'move' | 'stay' = 'stay'
+}
+
+/** 行程附檔 */
+export class TravelScheduleFile extends BasicTable {
+    /** 行程PK */
+    schedule_pk_id?: string;
+    /** 檔案PK_ID */
+    file_pk_id: string;
+    /** 檔案名 */
+    file_name: string;
+    /** 檔案類型 */
+    file_type: 'A' | 'B';
+    /** 使用者pk_id */
+    user_pk_id: string;
 }
 
 /** 花費紀錄 */

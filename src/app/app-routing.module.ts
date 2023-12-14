@@ -10,8 +10,8 @@ const routes: Routes = [
   { path: 'home', component: TravelHomeComponent, canActivate: [loginGuard] },
   { path: 'schedule_list', component: TravelScheduleListComponent, canActivate: [loginGuard] },
   { path: 'login', component: TravelLoginComponent },
-  { path: '', redirectTo: !location.hostname.toLowerCase().includes('kamikaze') ? 'schedule_list' : 'home', pathMatch: 'full' }, // 重定向到 introduce
-  { path: '**', redirectTo: !location.hostname.toLowerCase().includes('kamikaze') ? 'schedule_list' : 'home' } // 其他未匹配路径也重定向到 introduce
+  { path: '', redirectTo: 'schedule_list', pathMatch: 'full' }, // 重定向到 introduce
+  { path: '**', redirectTo: 'schedule_list' } // 其他未匹配路径也重定向到 introduce
 ];
 
 @NgModule({

@@ -1,8 +1,8 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, PrimeNGConfig } from 'primeng/api';
-import { TravelCostRecord, TravelDayIntroduce, TravelDaySchedule, TravelSchedule } from '../model/travel-schesule.model';
+import { TravelCostRecord, TravelDayIntroduce, TravelDaySchedule, TravelSchedule, TravelScheduleFile } from '../model/travel-schesule.model';
 import { CommonService } from '../service/common.service';
 import { TravelScheduleService } from '../service/travel-schedule.service';
 import * as echarts from 'echarts';
@@ -32,6 +32,8 @@ export class TravelScheduleListComponent {
     private datePipe: DatePipe
   ) { }
 
+  /** 上傳檔案 */
+  @ViewChild('fileUpload', { static: false }) fileUpload: FileUpload;
   /** 旅行計畫清單 */
   travelScheduleList: TravelSchedule[] = [];
   /** 編輯行程基本資訊視窗 */
@@ -70,7 +72,7 @@ export class TravelScheduleListComponent {
   modeOptions = [
     { label: '行程安排', value: 'schedule' },
     { label: '預算紀錄表', value: 'cost_record' },
-    // { label: '檔案列表', value: 'file_list' },
+    { label: '檔案列表', value: 'file_list' },
   ];
   /** 花費類型陣列 */
   costTypeOptions = [
@@ -981,26 +983,35 @@ export class TravelScheduleListComponent {
   }
 
   /** 檔案上傳 */
-  onUpload(event: any): void {
-    console.log(event);
+  async uploadFinish(event: any): Promise<void> {
+    this.uploadFileDialog = false;
+    this.commonService.setBlock(true);
+    const uploadReturnData = event.originalEvent.body
+    if (this.commonService.afterServerResponse(uploadReturnData)) {
+      this.commonService.showMsg('s', '上傳成功');
+      if (!this.schedule.file_list) {
+        this.schedule.file_list = [];
+      }
+      (uploadReturnData.data as any[]).forEach((file, i) => {
+        const scheduleFile = new TravelScheduleFile();
+        scheduleFile.schedule_pk_id = this.schedule.pk_id;
+        scheduleFile.file_name = file.name;
+        scheduleFile.file_pk_id = file.pk_id;
+        scheduleFile.file_type = event.files[i].type.includes('image') ? 'A' : 'B';
+        this.schedule.file_list.push(scheduleFile);
+      })
+    }
+    console.log(this.schedule.file_list);
+    this.commonService.setBlock(false);
   }
 
   /** 選取檔案上傳 */
   async onSelect(event: any, fileUpload: FileUpload): Promise<void> {
     const array = [];
-    event.currentFiles.forEach(file => {
-
-      // var formData = new FormData();
-      // formData.append('file', { ...file });
-      // formData.append('file_ext', file.name.split('.')[1]);
-      // formData.append('file_size', file.size);
-      // formData.append('type', file.size);
-      // formData.append('pk_id', uuidv4().replace(/-/g, ''));
-      // formData.append('schedule_pk_id', this.schedule.pk_id);
-
+    this.fileUpload._files.forEach(file => {
       const newFile = {
         lastModified: file.lastModified,
-        lastModifiedDate: file.lastModifiedDate,
+        lastModifiedDate: file['lastModifiedDate'],
         name: file.name,
         size: file.size,
         type: file.type,
@@ -1025,6 +1036,17 @@ export class TravelScheduleListComponent {
     //     }
     //   }
     // )
+  }
+
+  /** 檢視檔案 */
+  async checkUploadFile(pk_id: string): Promise<void> {
+    window.open('http://127.0.0.1:8000/travel/file?file_pk_id=' + pk_id, '_blank');
+  }
+
+  /** 移除檔案 */
+  deleteFile(file: TravelScheduleFile): void {
+    file.create_dt ? file.isdelete = 'Y' : this.schedule.file_list = this.schedule.file_list.filter(ele => ele.pk_id !== file.pk_id);
+    this.commonService.showMsg('s', '已刪除附檔');
   }
 }
 

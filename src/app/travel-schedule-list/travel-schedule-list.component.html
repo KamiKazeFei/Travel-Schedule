@@ -467,19 +467,37 @@
                 <div class="col-12" style="overflow: auto;max-width: 100%;">
                     <!-- 檔案列表標題 -->
                     <div class="col-12 center fileListTitle">
-                        <label>檔案列表標題</label>
+                        <label>附檔列表</label>
                         <div>
-                            <button pButton type="button" icon="pi pi-upload" class="roundBtn"
-                                (click)="setUploadDialogDialog(true)">
-                            </button>
-                            <br>
-                            <label style="margin: auto;color: white;">上傳檔案</label>
+                            <p-fileUpload #fileUpload name="uploadData" mode="basic" chooseLabel="上傳檔案"
+                                [multiple]="true" (onUpload)="uploadFinish($event)" [auto]="true"
+                                url="http://127.0.0.1:8000/travel/upload/">
+                            </p-fileUpload>
                         </div>
                     </div>
                     <!-- 檔案列表 -->
                     <div class="col-12">
                         <div class="grid zeroPadding fileList">
-
+                            <div class="col-12 xl:col-3 lg:col-4 md:col-4 fileBlock"
+                                *ngFor="let file of returnNotDeleteData(schedule.file_list)">
+                                <!-- 檔名 -->
+                                <div class="maxWidth center">
+                                    <!-- 檔名 -->
+                                    <label>{{file.file_name}}</label>
+                                    <br>
+                                    <!-- 操作列 -->
+                                    <div class="fileFuncBar">
+                                        <!-- 檢視附檔 -->
+                                        <button pButton type="button" icon="pi pi-search" class="roundBtn"
+                                            (click)="checkUploadFile(file.file_pk_id)">
+                                        </button>
+                                        <!-- 移除 -->
+                                        <button pButton type="button" icon="pi pi-trash" class="roundBtn"
+                                            (click)="deleteFile(file)">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -571,20 +589,11 @@
 
 <!-- 上傳附檔視窗 -->
 <ng-container *ngIf="uploadFileDialog">
-    <p-dialog [(visible)]="uploadFileDialog" [modal]="true" [style]="{'width':'800px','height':'80%'}">
-        <div class="grid" style="min-height: 100%;">
-            <div class="col-12" style="min-height: 100%;">
-                <!-- url="http://127.0.0.1:8000/travel/upload/" -->
-                <p-fileUpload #fileUpload name="uploadData" (onUpload)="onUpload($event)"
-                    url="http://127.0.0.1:8000/travel/upload/" (onSelect)="onSelect($event,fileUpload)"
-                    [multiple]="true" [ngStyle]="{'height': '100% ','display': 'grid'}">
-                    <ng-template pTemplate="content">
-                        <ul *ngIf="uploadedFiles.length">
-                            <li *ngFor="let file of uploadedFiles">
-                                {{ file.name }} - {{ file.size }} bytes
-                            </li>
-                        </ul>
-                    </ng-template>
+    <p-dialog [(visible)]="uploadFileDialog" [modal]="true" [style]="{'width':'800px'}">
+        <div class="grid">
+            <div class="col-12">
+                <p-fileUpload #fileUpload name="uploadData" mode="basic" chooseLabel="Choose" [multiple]="true"
+                    (onUpload)="uploadFinish($event)" url="http://127.0.0.1:8000/travel/upload/">
                 </p-fileUpload>
             </div>
         </div>

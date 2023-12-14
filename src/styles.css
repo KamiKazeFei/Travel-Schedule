@@ -1,3 +1,11 @@
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+
+/* 上傳檔案擋掉 */
+input[type=file] {
+    display: none !important;
+}
+
 * {
     font-family: 'Microsoft JhengHei';
     font-size: 16px;
@@ -176,7 +184,7 @@ ul {
     border: 0px !important;
     border-radius: 5px !important;
     border-bottom: 1px solid white !important;
-    text-align: right;    
+    text-align: right;
 }
 
 html,
