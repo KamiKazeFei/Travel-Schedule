@@ -893,6 +893,20 @@ export class TravelScheduleListComponent {
             doc.addImage(this.costAnanalysisChartImageDataURL, 10, 15, 195, 220);
           }
 
+          // 增加附檔
+          if (this.returnNotDeleteData(this.schedule.file_list).length > 0) {
+            const fileArray: TravelScheduleFile[] = this.returnNotDeleteData(this.schedule.file_list);
+            for (const file of fileArray) {
+              if (file.file_type === 'A') {
+                const element = document.createElement('img');
+                element.src = 'http://127.0.0.1:8000/travel/file?file_pk_id=' + file.file_pk_id;
+                doc.addPage()
+                doc.addImage(element, 10, 10, ((file.width * 0.263) >= 190 ? 190 : Number((file.width * 0.263).toFixed(0))), ((file.height * 0.195) >= 270 ? 270 : Number((file.height * 0.195).toFixed(0))));
+                element.remove()
+              }
+            }
+          }
+
           // 印上頁碼
           for (let i = 0; i < doc.getNumberOfPages(); i++) {
             doc.setPage(i + 1);
@@ -998,44 +1012,28 @@ export class TravelScheduleListComponent {
         scheduleFile.file_name = file.name;
         scheduleFile.file_pk_id = file.pk_id;
         scheduleFile.file_type = event.files[i].type.includes('image') ? 'A' : 'B';
+        scheduleFile.width = file.width
+        scheduleFile.height = file.height
         this.schedule.file_list.push(scheduleFile);
       })
     }
-    console.log(this.schedule.file_list);
+    this.schedule.file_list.sort((a, b) => a.file_name.localeCompare(b.file_name));
+    this.fileUpload.clear();
     this.commonService.setBlock(false);
   }
 
-  /** 選取檔案上傳 */
-  async onSelect(event: any, fileUpload: FileUpload): Promise<void> {
-    const array = [];
-    this.fileUpload._files.forEach(file => {
-      const newFile = {
-        lastModified: file.lastModified,
-        lastModifiedDate: file['lastModifiedDate'],
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        webkitRelativePath: file.webkitRelativePath
-      }
-
-      const obj = {
-        pk_id: uuidv4().replace(/-/g, ''),
-        file: { ...newFile },
-        file_size: file.size,
-        schedule_pk_id: this.schedule.pk_id,
-        file_ext: file.name.split('.')[1]
-      }
-      array.push(obj);
-    })
-    console.log(array);
-
-    // await this.travelScheduleService.saveTravelScheduleFiles({ files: array }).forEach(
-    //   async res => {
-    //     if (this.commonService.afterServerResponse(res)) {
-
-    //     }
-    //   }
-    // )
+  /** 開始編輯檔名 */
+  editFileNameMode(file: TravelScheduleFile): void {
+    file.selected = true;
+    file.ori_file_name = file.file_name;
+    setTimeout(() => {
+      const inputElement = document.getElementById('fileNameEditInput');
+      inputElement.focus();
+      inputElement.addEventListener('blur', () => {
+        file.selected = false
+        inputElement.removeEventListener('blur', null);
+      })
+    }, 100)
   }
 
   /** 檢視檔案 */

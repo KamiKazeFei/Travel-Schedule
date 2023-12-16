@@ -482,19 +482,33 @@
                                 *ngFor="let file of returnNotDeleteData(schedule.file_list)">
                                 <!-- 檔名 -->
                                 <div class="maxWidth center">
-                                    <!-- 檔名 -->
-                                    <label>{{file.file_name}}</label>
+                                    <!-- 編輯 -->
+                                    <ng-container *ngIf="file.selected;else readOnly">
+                                        <input pInputText type="text" id="fileNameEditInput"
+                                            [(ngModel)]="file.file_name">
+                                    </ng-container>
+                                    <!-- 檢視檔名 -->
+                                    <ng-template #readOnly>
+                                        <label>{{file.file_name}}
+                                        </label>
+                                    </ng-template>
                                     <br>
                                     <!-- 操作列 -->
                                     <div class="fileFuncBar">
-                                        <!-- 檢視附檔 -->
-                                        <button pButton type="button" icon="pi pi-search" class="roundBtn"
-                                            (click)="checkUploadFile(file.file_pk_id)">
-                                        </button>
-                                        <!-- 移除 -->
-                                        <button pButton type="button" icon="pi pi-trash" class="roundBtn"
-                                            (click)="deleteFile(file)">
-                                        </button>
+                                        <ng-container *ngIf="!file.selected">
+                                            <!-- 編輯附檔 -->
+                                            <button pButton type="button" icon="pi pi-pencil" class="roundBtn"
+                                                (click)="editFileNameMode(file)">
+                                            </button>
+                                            <!-- 移除 -->
+                                            <button pButton type="button" icon="pi pi-trash" class="roundBtn"
+                                                (click)="deleteFile(file)">
+                                            </button>
+                                            <!-- 檢視附檔 -->
+                                            <button pButton type="button" icon="pi pi-search" class="roundBtn"
+                                                (click)="checkUploadFile(file.file_pk_id)">
+                                            </button>
+                                        </ng-container>
                                     </div>
                                 </div>
                             </div>

@@ -11,6 +11,8 @@ class BasicTable {
     version: number = 0;
     /** 是否刪除 */
     isdelete: 'Y' | 'N' = 'N';
+    /** 選取狀態 */
+    selected = false;
     /** 刪除日 */
     delete_dt: Date;
 }
@@ -103,10 +105,18 @@ export class TravelScheduleFile extends BasicTable {
     file_pk_id: string;
     /** 檔案名 */
     file_name: string;
+    /** 原檔名 */
+    ori_file_name: string;
     /** 檔案類型 */
     file_type: 'A' | 'B';
     /** 使用者pk_id */
     user_pk_id: string;
+    /** 寬 */
+    width: number;
+    /** 高 */
+    height: number;
+    /** 是否為pdf */
+    is_pdf: boolean
 }
 
 /** 花費紀錄 */

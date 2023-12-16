@@ -1,3 +1,7 @@
+* {
+    --main-background-color: rgb(8, 65, 65)
+}
+
 /* 包裹行程卡片的網格 */
 .scheduleCol {
     padding: 25px;
@@ -10,7 +14,7 @@
     height: 200px;
     text-align: left;
     padding: 15px 10px 15px 20px;
-    box-shadow: 5px 5px 0px 0px rgb(8, 65, 65);
+    box-shadow: 5px 5px 0px 0px var(--main-background-color);
     border: 2px solid white;
     background: linear-gradient(45deg, black, transparent);
     cursor: pointer;
@@ -533,7 +537,7 @@ input,
     background: transparent;
     border-radius: 15px;
     color: white;
-    min-height: 100px;
+    min-height: 130px;
     font-size: 20px;
     padding: 15px 10px 0px 10px;
 }
@@ -541,9 +545,9 @@ input,
 /* 檔名 */
 .fileBlock>div>label {
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     margin-bottom: 10px;
+    word-break: break-all;
+    min-height: 40px;
 }
 
 /* 檔案操作列 */
@@ -551,6 +555,12 @@ input,
     justify-content: space-between;
     width: 100%;
     border-top: 1px solid lightgray;
+}
+
+/* 編輯檔名輸入框 */
+#fileNameEditInput {
+    background: #285b6b;
+    border-radius: 5px;
 }
 
 @media screen and (min-width:501px) and (max-width:995px) {
