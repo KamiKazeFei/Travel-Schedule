@@ -12,6 +12,8 @@ import jsPDF, { GState } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FileUpload } from 'primeng/fileupload';
 import { v4 as uuidv4 } from 'uuid';
+import * as pdfjs from 'pdfjs';
+import * as pdfjsLib from 'pdfjs-dist';
 
 @Component({
   selector: 'app-travel-schedule-list',
@@ -897,12 +899,16 @@ export class TravelScheduleListComponent {
           if (this.returnNotDeleteData(this.schedule.file_list).length > 0) {
             const fileArray: TravelScheduleFile[] = this.returnNotDeleteData(this.schedule.file_list);
             for (const file of fileArray) {
+              doc.addPage()
               if (file.file_type === 'A') {
                 const element = document.createElement('img');
                 element.src = 'http://127.0.0.1:8000/travel/file?file_pk_id=' + file.file_pk_id;
-                doc.addPage()
-                doc.addImage(element, 10, 10, ((file.width * 0.263) >= 190 ? 190 : Number((file.width * 0.263).toFixed(0))), ((file.height * 0.195) >= 270 ? 270 : Number((file.height * 0.195).toFixed(0))));
+                doc.text(file.file_name, 10, 10);
+                doc.addImage(element, 10, 15, ((file.width * 0.263) >= 190 ? 190 : Number((file.width * 0.263).toFixed(0))), ((file.height * 0.195) >= 280 ? 280 : Number((file.height * 0.195).toFixed(0))));
                 element.remove()
+              }
+              if (file.is_pdf) {
+                await this.convertPDFToImages(file, doc);
               }
             }
           }
@@ -942,6 +948,45 @@ export class TravelScheduleListComponent {
       }
     )
     this.commonService.setBlock(false);
+  }
+
+  /** 將上傳檔案轉為圖片放到行程輸出PDF */
+  async convertPDFToImages(file: TravelScheduleFile, doc: jsPDF) {
+    // 載入PDF文件
+    const pdf = await pdfjsLib.getDocument(new URL('http://127.0.0.1:8000/travel/file?file_pk_id=' + file.file_pk_id)).promise;
+    // 遍歷每一頁
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      // 提取每一頁的內容
+      const page = await pdf.getPage(pageNum);
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+      var viewport = page.getViewport({ scale: 2 });
+
+      // 設置canvas的大小
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      // 渲染PDF內容到canvas
+      var renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      await page.render(renderContext).promise.then();
+      // 將canvas轉換為圖片
+      var image = new Image();
+      image.src = canvas.toDataURL('image/jpeg');
+
+      const images = [];
+      images.push(image);
+
+      if (pageNum == 1) {
+        doc.text(file.file_name, 10, 10);
+        doc.addImage(image, 'JPEG', -1, 15, 213, 285);
+      } else {
+        doc.addImage(image, 'JPEG', -1, -1, 213, 300);
+      }
+      pageNum < pdf.numPages ? doc.addPage() : false;
+    }
   }
 
   /** 移除HTML Code */
@@ -1025,11 +1070,14 @@ export class TravelScheduleListComponent {
   /** 開始編輯檔名 */
   editFileNameMode(file: TravelScheduleFile): void {
     file.selected = true;
-    file.ori_file_name = file.file_name;
     setTimeout(() => {
       const inputElement = document.getElementById('fileNameEditInput');
       inputElement.focus();
       inputElement.addEventListener('blur', () => {
+        if (!file.file_name?.trim()) {
+          file.file_name = '未命名檔案'
+        }
+        file.file_name = file.file_name.trim();
         file.selected = false
         inputElement.removeEventListener('blur', null);
       })
@@ -1047,4 +1095,3 @@ export class TravelScheduleListComponent {
     this.commonService.showMsg('s', '已刪除附檔');
   }
 }
-

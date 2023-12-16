@@ -105,8 +105,6 @@ export class TravelScheduleFile extends BasicTable {
     file_pk_id: string;
     /** 檔案名 */
     file_name: string;
-    /** 原檔名 */
-    ori_file_name: string;
     /** 檔案類型 */
     file_type: 'A' | 'B';
     /** 使用者pk_id */
