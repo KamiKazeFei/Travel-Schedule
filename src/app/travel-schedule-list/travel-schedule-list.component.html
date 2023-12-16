@@ -164,21 +164,21 @@
                             <div class="scheduleBlock">
                                 <div class="grid zeroPadding">
                                     <!-- 移除 -->
-                                    <div class="col-2 xl:col-1 lg:col-1 md:col-2 center">
+                                    <div class="col-2 xl:col-1 lg:col-1 md:col-2 center mobileDeleteBtn">
                                         <button pButton type="button" class="deleteBtn" [icon]="'pi pi-trash'"
                                             (click)="deleteDaysSchedule(i)">
                                         </button>
                                     </div>
                                     <!-- 移動 -->
-                                    <div class="col-2 xl:col-1 lg:col-2 md:col-3 autoCenter mobileDeleteBtn">
+                                    <div class="col-2 xl:col-1 lg:col-2 md:col-3 autoCenter">
                                         <!-- 行動裝置專用顯示序號 -->
-                                        <div class="smallMoveContent">
+                                        <div class="smallMoveContent autoCenter">
                                             <label style="margin-left: 25px;font-size: 25px;">
                                                 {{data.ser_no + '.'}}
                                             </label>
                                         </div>
                                         <!-- 移動區域內容 -->
-                                        <div class="moveContent">
+                                        <div class="moveContent autoCenter">
                                             <!-- 拖曳 -->
                                             <i class="pi pi-list" cdkDragHandle style="font-size: 25px;float: left;">
                                             </i>
@@ -477,9 +477,9 @@
                     </div>
                     <!-- 檔案列表 -->
                     <div class="col-12">
-                        <div class="grid zeroPadding fileList">
-                            <div class="col-12 xl:col-3 lg:col-4 md:col-4 fileBlock"
-                                *ngFor="let file of returnNotDeleteData(schedule.file_list)">
+                        <div class="fileList grid zeroPadding">
+                            <div *ngFor="let file of returnNotDeleteData(schedule.file_list)"
+                                class="col-12 xl:col-3 lg:col-4 md:col-4 fileBlock">
                                 <!-- 檔名 -->
                                 <div class="maxWidth center">
                                     <!-- 編輯 -->
@@ -524,8 +524,7 @@
         <ng-container *ngIf="isEditMode">
             <label style="color: white;">輸出PDF</label>
             <!-- 輸出PDF -->
-            <button pButton type="button" icon="pi pi-file" class="roundBtn"
-                (click)="drawCostAnanalysisChart('hiddenChart',true)">
+            <button pButton type="button" icon="pi pi-file" class="roundBtn" (click)="setExportPdfSettingDialog(true)">
             </button>
             <!-- 儲存 -->
             <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()">
@@ -535,6 +534,33 @@
             </button>
         </ng-container>
     </div>
+</ng-container>
+
+<!-- 輸出PDF設定 -->
+<ng-container *ngIf="exportPdfSettingDialog">
+    <p-dialog [(visible)]="exportPdfSettingDialog" [modal]="true" [style]="{width:'400px','font-size':'16px'}"
+        [header]="'輸出行程PDF設定'" [closable]="false" [blockScroll]="true">
+        <div class="grid">
+            <!-- 是否要輸出預算表 -->
+            <div class="col-12">
+                <p-checkbox [(ngModel)]="schedule.selected" [binary]="true" [label]="'是否要輸出預算表'"></p-checkbox>
+            </div>
+            <!-- 是否要一同輸出上傳附檔 -->
+            <div class="col-12" *ngIf="returnNotDeleteData(this.schedule.file_list).length > 0">
+                <p-checkbox [(ngModel)]="schedule.file_selected" [binary]="true" [label]="'是否要一同輸出上傳附檔(僅限圖片和pdf類型)'">
+                </p-checkbox>
+            </div>
+        </div>
+        <p-footer>
+            <!-- 確認 -->
+            <button pButton type="button" icon="pi pi-check" [label]="'確認'"
+                (click)="drawCostAnanalysisChart('hiddenChart',true)">
+            </button>
+            <!-- 取消 -->
+            <button pButton type="button" icon="pi pi-times" (click)="setExportPdfSettingDialog(false)" [label]="'取消'">
+            </button>
+        </p-footer>
+    </p-dialog>
 </ng-container>
 
 <!-- 基本資訊編輯 -->
@@ -596,24 +622,6 @@
         <!-- 頁尾 -->
         <p-footer>
             <button pButton type="button" class="roundBtn" icon="pi pi-times" (click)="setCostAnanalysisDialog(false)">
-            </button>
-        </p-footer>
-    </p-dialog>
-</ng-container>
-
-<!-- 上傳附檔視窗 -->
-<ng-container *ngIf="uploadFileDialog">
-    <p-dialog [(visible)]="uploadFileDialog" [modal]="true" [style]="{'width':'800px'}">
-        <div class="grid">
-            <div class="col-12">
-                <p-fileUpload #fileUpload name="uploadData" mode="basic" chooseLabel="Choose" [multiple]="true"
-                    (onUpload)="uploadFinish($event)" url="http://127.0.0.1:8000/travel/upload/">
-                </p-fileUpload>
-            </div>
-        </div>
-        <!-- 頁尾 -->
-        <p-footer>
-            <button pButton type="button" class="roundBtn" icon="pi pi-times" (click)="setUploadDialogDialog(false)">
             </button>
         </p-footer>
     </p-dialog>

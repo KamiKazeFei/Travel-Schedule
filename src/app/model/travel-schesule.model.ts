@@ -43,6 +43,8 @@ export class TravelSchedule extends BasicTable {
     pass_day: number = 1;
     /** 選擇天數 */
     selected_introduce?: TravelDayIntroduce;
+    /** 上傳檔案選取 */
+    file_selected = false;
 }
 
 /** 旅遊單天規劃 */
@@ -115,6 +117,8 @@ export class TravelScheduleFile extends BasicTable {
     height: number;
     /** 是否為pdf */
     is_pdf: boolean
+    /** 序號 */
+    ser_no: number;
 }
 
 /** 花費紀錄 */
