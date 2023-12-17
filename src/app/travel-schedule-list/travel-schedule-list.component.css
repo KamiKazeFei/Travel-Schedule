@@ -254,9 +254,8 @@ hr {
 
 /* 行程列表 */
 .dayPerScheduleList {
-    min-height: 60px;
-    max-height: 60%;
-    display: block;
+    /* max-height: 60%; */
+    display: contents;
     background: transparent;
     border-radius: 4px;
     overflow-x: auto;
@@ -362,6 +361,16 @@ hr {
     width: 100%;
     position: static;
     padding-bottom: 25px;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0%);
+    }
 }
 
 .costRecordList>*>*>*>*>.p-inputtext {

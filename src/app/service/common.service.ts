@@ -114,4 +114,9 @@ export class CommonService {
         document.cookie = keys[i] + "=0; expire=" + date.toUTCString() + "; path=/";
     }
   }
+
+  /** 是否為行動裝置 */
+  isMobileDevice(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
 }

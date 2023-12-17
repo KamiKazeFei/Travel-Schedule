@@ -443,7 +443,10 @@ export class TravelScheduleListComponent {
     if (!this.schedule.cost_records) {
       this.schedule.cost_records = []
     }
-    this.schedule.cost_records.push(costRecord);
+    // 行動裝置的話往下加，反之從頭插入
+    this.commonService.isMobileDevice()
+      ? this.schedule.cost_records.push(costRecord)
+      : this.schedule.cost_records.splice(0, 0, costRecord)
   }
 
   /** 移除預算紀錄 */
@@ -578,6 +581,7 @@ export class TravelScheduleListComponent {
     setTimeout(async () => {
       // 圖表設定
       const option: EChartsOption = {
+        animation: !download,
         grid: {
           top: '30%',
           right: '0%',
@@ -639,13 +643,17 @@ export class TravelScheduleListComponent {
         if (download) {
           // 如果要載入圖表
           if (this.schedule.cost_records.some(ele => ele.isdelete !== 'Y')) {
-            const imageDataURL = mychart.getDataURL({
-              pixelRatio: 1.2,
-              backgroundColor: '#fff',
-            });
-            this.costAnanalysisChartImageDataURL = imageDataURL
+            setTimeout(() => {
+              const imageDataURL = mychart.getDataURL({
+                pixelRatio: 1.2,
+                backgroundColor: '#fff',
+              });
+              this.costAnanalysisChartImageDataURL = imageDataURL
+              this.downloadPdf()
+            }, 300);
+          } else {
+            this.downloadPdf()
           }
-          setTimeout(() => this.downloadPdf(), 300)
         }
       }
     }, 100)
