@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { CommonService } from './service/common.service';
 import { MenuService } from './service/menu.service';
 import { TranslateService } from '@ngx-translate/core';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiService } from './service/api.service';
 import { TravelScheduleService } from './service/travel-schedule.service';
 
@@ -42,7 +42,7 @@ export class AppComponent {
     protected menuService: MenuService,
     protected router: Router,
     private messageService: MessageService,
-    private apiService: ApiService,
+    protected confirmationService: ConfirmationService,
     protected travelScheduleService: TravelScheduleService
   ) {
     this.blockSubscriper = this.commonService.blockEmitter.subscribe(val => {
@@ -70,10 +70,9 @@ export class AppComponent {
   /** 選單 */
   menu = [
     { label: '我的行程列表', url: 'schedule_list', isLogin: true },
-    // { label: '登出', url: 'logout', isLogin: true },
-
-    // { label: '登入', url: 'login', isLogin: false },
-    // { label: '註冊', url: 'register', isLogin: false }
+    { label: '登出', url: 'logout', isLogin: true },
+    { label: '登入', url: 'login', isLogin: false },
+    { label: '註冊', url: 'register', isLogin: false }
   ];
 
   /** 初始化 */
@@ -90,5 +89,16 @@ export class AppComponent {
   /** 切換索引 */
   goto(url: string): void {
     this.router.navigate(['/' + url]);
+  }
+
+  /** 前往GoogleMap */
+  gotoGoogleMap(): void {
+    this.confirmationService.confirm({
+      header: '確認',
+      message: '是否確認要前往Google Map',
+      accept: () => {
+        window.open('https://www.google.com.tw/maps', '_blank');
+      }
+    })
   }
 }

@@ -11,9 +11,8 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import jsPDF, { GState } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FileUpload } from 'primeng/fileupload';
-import { v4 as uuidv4 } from 'uuid';
-import * as pdfjs from 'pdfjs';
 import * as pdfjsLib from 'pdfjs-dist';
+import { fileurl } from '../globals';
 
 @Component({
   selector: 'app-travel-schedule-list',
@@ -26,7 +25,7 @@ export class TravelScheduleListComponent {
   /** 建構子 */
   constructor(
     protected router: Router,
-    private commonService: CommonService,
+    public commonService: CommonService,
     protected travelScheduleService: TravelScheduleService,
     protected confirmationService: ConfirmationService,
     private config: PrimeNGConfig,
@@ -36,6 +35,8 @@ export class TravelScheduleListComponent {
 
   /** 上傳檔案 */
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUpload;
+  /** 上傳檔案網址 */
+  fileurl = fileurl;
   /** 旅行計畫清單 */
   travelScheduleList: TravelSchedule[] = [];
   /** 編輯行程基本資訊視窗 */
@@ -64,6 +65,8 @@ export class TravelScheduleListComponent {
   chartLoading = false;
   /** pdf載入中 */
   pdfLoading = false;
+  /** 儲存中 */
+  saveLoading = false;
   /* 顯示模式 **/
   mode: string;
   /** 以上傳檔案 */
@@ -468,9 +471,9 @@ export class TravelScheduleListComponent {
   }
 
   /** 移動行程安排順序 */
-  changeScheduleOrder(event: CdkDragDrop<string[]>) {
+  changeScheduleOrder(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.schedule.selected_introduce.schedule_list, event.previousIndex, event.currentIndex);
-    this.schedule.selected_introduce.schedule_list.forEach((ele, i) => ele.ser_no = (i + 1));
+    this.returnNotDeleteData(this.schedule.selected_introduce.schedule_list).forEach((ele, i) => ele.ser_no = (i + 1));
   }
 
   /** 移除單一天內的指定行程 */
@@ -508,13 +511,23 @@ export class TravelScheduleListComponent {
     }
     // 正式環境
     else {
+      this.saveLoading = true;
       this.commonService.setBlock(true)
       await this.travelScheduleService.saveTravelSchedule(this.schedule).forEach(
         async res => {
           this.commonService.setBlock(false)
           if (this.commonService.afterServerResponse(res)) {
+            this.creatingStep = 0;
             this.commonService.showMsg('s', '儲存成功');
-            await this.getTravelSchedule(this.schedule.pk_id);
+            const pkId = this.schedule.pk_id
+            const selectedSchedulePk = this.schedule.selected_introduce.pk_id
+            this.schedule = null;
+            this.oriSchedule = null;
+            this.selectedSchedule = null
+            await this.getTravelSchedule(pkId);
+            const selectedData = this.schedule.day_introduces.find(ele => ele.pk_id === selectedSchedulePk)
+            this.schedule.selected_introduce = selectedData ? selectedData : this.schedule.day_introduces[0];
+            this.saveLoading = false;
           }
         }
       )
@@ -907,7 +920,7 @@ export class TravelScheduleListComponent {
           doc.addPage()
           if (file.file_type === 'A') {
             const element = document.createElement('img');
-            element.src = 'http://127.0.0.1:8000/travel/file?file_pk_id=' + file.file_pk_id;
+            element.src = fileurl + '/travel/file?file_pk_id=' + file.file_pk_id;
             doc.text(file.file_name, 10, 10);
             doc.addImage(element, 10, 15, ((file.width * 0.263) >= 190 ? 190 : Number((file.width * 0.263).toFixed(0))), ((file.height * 0.195) >= 280 ? 280 : Number((file.height * 0.195).toFixed(0))));
             element.remove()
@@ -945,7 +958,6 @@ export class TravelScheduleListComponent {
         // }
       }
       const fileName = this.schedule.title
-      console.log(doc);
       doc.save(fileName)
       doc.close();
       this.costAnanalysisChartImageDataURL = null;
@@ -963,7 +975,7 @@ export class TravelScheduleListComponent {
   /** 將上傳檔案轉為圖片放到行程輸出PDF */
   async convertPDFToImages(file: TravelScheduleFile, doc: jsPDF) {
     // 載入PDF文件
-    const pdf = await pdfjsLib.getDocument(new URL('http://127.0.0.1:8000/travel/file?file_pk_id=' + file.file_pk_id)).promise;
+    const pdf = await pdfjsLib.getDocument(new URL(fileurl + '/travel/file?file_pk_id=' + file.file_pk_id)).promise;
     // 遍歷每一頁
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       // 提取每一頁的內容
@@ -1088,7 +1100,7 @@ export class TravelScheduleListComponent {
 
   /** 檢視檔案 */
   async checkUploadFile(pk_id: string): Promise<void> {
-    window.open('http://127.0.0.1:8000/travel/file?file_pk_id=' + pk_id, '_blank');
+    window.open(fileurl + '/travel/file?file_pk_id=' + pk_id, '_blank');
   }
 
   /** 移除檔案 */

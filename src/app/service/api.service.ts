@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { fileurl } from '../globals';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class ApiService {
    * @returns 回傳API執行結果
    */
   postApi(action: string, body: Object) {
-    return this.httpClient.post('http://127.0.0.1:8000/travel/' + action, body);
+    const requestOptions = { withCredentials: true };
+    return this.httpClient.post(fileurl + '/travel/' + action, body, requestOptions);
   }
 }

@@ -254,15 +254,7 @@ hr {
 
 /* 行程列表 */
 .dayPerScheduleList {
-    /* max-height: 60%; */
-    display: contents;
-    background: transparent;
-    border-radius: 4px;
-    overflow-x: auto;
-    position: absolute;
-    width: 99%;
-    border-bottom: 0.5px solid white;
-    margin-bottom: 10px;
+    display: block;
 }
 
 /* 行程列表移動區塊 */
@@ -421,6 +413,9 @@ input,
 /* 顯示模式 */
 .modeOption {
     text-align: right;
+    display: contents;
+    padding-top: 15px;
+    float: right;
 }
 
 /* 非整列顯示時出現說明 */

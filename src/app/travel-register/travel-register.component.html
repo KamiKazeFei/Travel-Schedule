@@ -1,1 +1,48 @@
-<p>travel-register works!</p>
+<div class="login-box">
+    <h2>登入</h2>
+    <form (ngSubmit)="executeRegister(loginForm)" #loginForm="ngForm">
+        <!-- 郵件 -->
+        <div class="user-box">
+            <!-- 輸入框 -->
+            <input type="text" name="account" #account="ngModel" required [(ngModel)]="registerInfo.account">
+            <label>帳號</label>
+        </div>
+        <!-- 郵件 -->
+        <div class="user-box">
+            <!-- 輸入框 -->
+            <input type="email" name="email" #email="ngModel" required [(ngModel)]="registerInfo.email">
+            <label>電子郵件</label>
+        </div>
+        <!-- 密碼 -->
+        <div class="user-box">
+            <!-- 輸入框 -->
+            <input [type]="passwordCheckMode" name="password" #password="ngModel" required
+                [(ngModel)]="registerInfo.password">
+            <label>密碼</label>
+            <!-- 檢視密碼 -->
+            <i [class]="passwordCheckMode === 'text' ? 'pi pi-eye' : 'pi pi-eye-slash'" (click)="setPasswordViewable()">
+            </i>
+        </div>
+        <!-- 警示未輸入 -->
+        <ng-container *ngIf="loginForm.submitted">
+            <!-- 電子郵件 -->
+            <div *ngIf="(loginForm.controls['email']?.invalid)">
+                <p style="color: red;">電子郵件為必填項目</p>
+            </div>
+            <!-- 帳號 -->
+            <div *ngIf="(loginForm.controls['account']?.invalid)">
+                <p style="color: red;">使用者名稱為必填項目</p>
+            </div>
+            <!-- 密碼必填 -->
+            <div *ngIf="(loginForm.controls['password']?.invalid)">
+                <p style="color: red;">密碼為必填項目</p>
+            </div>
+        </ng-container>
+        <!-- 登入按鍵 -->
+        <button pButton type="submit" class="loginBtn" [label]="'註冊'"></button>
+        <!-- 登入 -->
+        <div class="bottomBar">
+            <a href="login">已有帳號? 前去登入</a>
+        </div>
+    </form>
+</div>

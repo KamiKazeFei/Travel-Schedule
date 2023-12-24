@@ -2,6 +2,12 @@
     width: 95%;
 }
 
+#page-top {
+    position: sticky;
+    top: -2px;
+    z-index: 999;
+}
+
 .navbar-fixed-bottom,
 .navbar-fixed-top {
     position: unset;
@@ -322,4 +328,3 @@ a.active {
         font-size: 1.5em;
     }
 }
-

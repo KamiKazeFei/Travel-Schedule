@@ -1,0 +1,1 @@
+export const fileurl: string = 'http://kamikaze.website:8000'

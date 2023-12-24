@@ -21,8 +21,12 @@
                     <li class="hidden active">
                         <a href="#page-top"></a>
                     </li>
+                    <!-- 開啟Google Map -->
+                    <li (click)="gotoGoogleMap()">
+                        <a class="page-scroll">{{'開啟Google Map'}}</a>
+                    </li>
                     <ng-container *ngFor="let data of menu">
-                        <li class="" *ngIf="data.isLogin === isLogin" (click)="goto(data.url)">
+                        <li (click)="goto(data.url)">
                             <a class="page-scroll">{{data.label}}</a>
                         </li>
                     </ng-container>

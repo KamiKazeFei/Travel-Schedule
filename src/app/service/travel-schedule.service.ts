@@ -36,7 +36,22 @@ export class TravelScheduleService {
   }
 
   /** 儲存檔案 */
-  saveTravelScheduleFiles(requestObj): Observable<any> {
+  saveTravelScheduleFiles(requestObj: any): Observable<any> {
     return this.apiService.postApi('save_upload/', requestObj);
+  }
+
+  /** 註冊帳號 */
+  registerAccount(data: any): Observable<any> {
+    return this.apiService.postApi('register/', data);
+  }
+
+  /** 登入 */
+  login(data: any): Observable<any> {
+    return this.apiService.postApi('login/', data);
+  }
+
+  /** 登出 */
+  logout(): Observable<any> {
+    return this.apiService.postApi('logout/', null);
   }
 }

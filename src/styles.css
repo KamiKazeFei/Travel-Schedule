@@ -20,17 +20,7 @@ label {
 /* You can add global styles to this file, and also import other style files */
 body {
     padding: 0px;
-    height: 100%;
     background-color: rgb(22, 46, 62) !important;
-}
-
-body>* {
-    height: 100%;
-}
-
-html {
-    height: 100%;
-    overflow: auto;
 }
 
 /* 媒體查詢，當螢幕寬度小於等於1200px時，隱藏目錄，顯示切換按鈕 */
@@ -38,8 +28,6 @@ html {
 
     html {
         width: min-content;
-        height: 100%;
-        overflow: auto;
     }
 
 }
@@ -47,8 +35,6 @@ html {
 @media screen and (min-width: 413) {
     html {
         width: unset;
-        height: 100%;
-        overflow: auto;
     }
 }
 
@@ -126,13 +112,8 @@ img {
 
 .p-tabview-nav {
     max-width: 100px;
-    overflow: auto;
-    overflow-y: hidden;
-}
-
-html,
-body {
-    height: 100%;
+    /* overflow: auto;
+    overflow-y: hidden; */
 }
 
 body {
@@ -187,10 +168,6 @@ ul {
     text-align: right;
 }
 
-html,
-body {
-    height: 100%;
-}
 
 body {
     margin: 0;

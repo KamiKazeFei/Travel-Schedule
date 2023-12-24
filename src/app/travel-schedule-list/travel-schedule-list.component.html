@@ -54,11 +54,11 @@
 </ng-container>
 
 <!-- 編輯行程 -->
-<ng-container *ngIf="isEditMode">
+<ng-container *ngIf="isEditMode && !saveLoading">
     <!-- 行程資訊 -->
     <div class="grid editPageGrid">
         <!-- 標題列 -->
-        <div class="col-12" style="background: rgb(22, 46, 62);z-index: 99;position: sticky;top: 0px;">
+        <div class="col-12" style="background: rgb(22, 46, 62);">
             <div class="grid zeroPadding">
                 <!-- 標題 -->
                 <div class="col-12 xl:col-9 lg:col-9 md:col-6 title">
@@ -91,7 +91,7 @@
             <!-- 行程安排 -->
             <ng-container *ngSwitchCase="'schedule'">
                 <!-- 日期選項 -->
-                <div class="col-12" style="background: rgb(22, 46, 62);z-index: 99;position: sticky;top: 70px;">
+                <div class="col-12" style="background: rgb(22, 46, 62);z-index: 99;">
                     <div class="grid zeroPadding">
                         <!-- 新增單天行程 -->
                         <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol bigAddNewDayBtn">
@@ -138,11 +138,11 @@
                             <label>{{'行程類型'}}</label>
                         </div>
                         <!-- 停留時間 -->
-                        <div class="col-12 xl:col-3 lg:col-2 md:col-6 autoCenter">
+                        <div class="col-12 xl:col-1 lg:col-1 md:col-4 autoCenter">
                             <label>{{'時段'}}</label>
                         </div>
                         <!-- 敘述 -->
-                        <div class="col-12 xl:col-4 lg:col-4 md:col-6 autoCenter">
+                        <div class="col-12 xl:col-6 lg:col-5 md:col-8 autoCenter">
                             <label>{{'敘述'}}</label>
                         </div>
                         <!-- Google地圖網址 -->
@@ -160,7 +160,7 @@
                     <div class="grid dayPerScheduleList" id="dayPerScheduleList" cdkDropList
                         (cdkDropListDropped)="changeScheduleOrder($event)">
                         <div class="col-12 dragBlock" cdkDrag
-                            *ngFor="let data of returnNotDeleteData(schedule.selected_introduce.schedule_list);let i = index">
+                            *ngFor="let data of returnNotDeleteData(schedule.selected_introduce.schedule_list);let i = index;">
                             <div class="scheduleBlock">
                                 <div class="grid zeroPadding">
                                     <!-- 移除 -->
@@ -203,13 +203,13 @@
                                         </p-radioButton>
                                     </div>
                                     <!-- 停留時間 -->
-                                    <div class="col-12 xl:col-3 lg:col-2 md:col-6 center">
+                                    <div class="col-12 xl:col-1 lg:col-1 md:col-4 center">
                                         <!-- 非整列顯示時出現說明 -->
                                         <label class="notRowLabel">時段</label>
                                         <input pInputText type="text" [(ngModel)]="data.time">
                                     </div>
                                     <!-- 敘述 -->
-                                    <div class="col-12 xl:col-4 lg:col-4 md:col-6 center">
+                                    <div class="col-12 xl:col-6 lg:col-5 md:col-8 center">
                                         <!-- 非整列顯示時出現說明 -->
                                         <label class="notRowLabel">敘述</label>
                                         <input pInputText type="text" [(ngModel)]="data.description">
@@ -471,7 +471,7 @@
                         <div>
                             <p-fileUpload #fileUpload name="uploadData" mode="basic" chooseLabel="上傳檔案"
                                 [multiple]="true" (onUpload)="uploadFinish($event)" [auto]="true"
-                                url="http://127.0.0.1:8000/travel/upload/">
+                                [url]="fileurl + '/travel/upload/'">
                             </p-fileUpload>
                         </div>
                     </div>

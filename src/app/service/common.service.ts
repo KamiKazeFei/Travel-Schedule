@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -58,7 +57,7 @@ export class CommonService {
     this.setBlock(false);
     // 回傳錯誤訊息
     if (request.error) {
-      this.showMsg('e', request.error_detail);
+      this.showMsg('e', request.error_message);
       return false;
     }
     // 正常處裡

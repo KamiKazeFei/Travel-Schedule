@@ -28,7 +28,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { AppRoutingModule, } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApiService } from './service/api.service';
-import { TravelCostRecordComponent } from './travel-cost-record/travel-cost-record.component';
 import { TravelHomeComponent } from './travel-home/travel-home.component';
 import { TravelDetailComponent } from './travel-introduce/travel-detail/travel-detail.component';
 import { TravelIntroduceComponent } from './travel-introduce/travel-introduce.component';
@@ -49,7 +48,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     TravelIntroduceComponent,
     TravelDetailComponent,
-    TravelCostRecordComponent,
     TravelHomeComponent,
     TravelLoginComponent,
     TravelRegisterComponent,
