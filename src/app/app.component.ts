@@ -88,7 +88,28 @@ export class AppComponent {
 
   /** 切換索引 */
   goto(url: string): void {
-    this.router.navigate(['/' + url]);
+    if (url === 'logout') {
+      this.confirmationService.confirm({
+        header: '登出確認',
+        message: '即將登出系統，是否確認要登出?',
+        accept: () => {
+          this.logout()
+        }
+      })
+    } else {
+      this.router.navigate(['/' + url]);
+    }
+  }
+
+  /** 登出 */
+  async logout(): Promise<void> {
+    await this.travelScheduleService.logout().forEach(
+      res => {
+        if (this.commonService.afterServerResponse(res)) {
+          this.commonService.showMsg('s', '登出成功');
+        }
+      }
+    )
   }
 
   /** 前往GoogleMap */

@@ -9,10 +9,7 @@ import { CommonService } from './common.service';
 })
 export class TravelScheduleService {
 
-  constructor(
-    private apiService: ApiService,
-    private commonService: CommonService,
-  ) { }
+  constructor(private apiService: ApiService) { }
 
   /** 行程計畫 */
   travelSchedule: TravelSchedule;

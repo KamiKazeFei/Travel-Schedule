@@ -58,32 +58,22 @@
     <!-- 行程資訊 -->
     <div class="grid editPageGrid">
         <!-- 標題列 -->
-        <div class="col-12" style="background: rgb(22, 46, 62);">
-            <div class="grid zeroPadding">
-                <!-- 標題 -->
-                <div class="col-12 xl:col-9 lg:col-9 md:col-6 title">
-                    <!-- 調整日期 -->
-                    <button pButton type="button" icon="pi pi-cog" class="roundBtn" (click)="openEditBasicInfo()"
-                        [pTooltip]="'編輯基本資訊'" [tooltipPosition]="'right'" style="width: 40px;height: 40px;">
-                    </button>
-                    <label style="margin-bottom: 10px;">{{schedule.title}}</label>
-                </div>
-                <!-- 顯示模式 -->
-                <div class="col-12 xl:col-3 lg:col-3 md:col-6 modeOption">
-                    <!-- 新增單天行程 -->
-                    <div class="center dateSettingBtnCol addNewDayBtn" *ngIf="mode === 'schedule'">
-                        <button pButton type="button" icon="pi pi-plus" class="roundBtn" (click)="createDayIntroduce()">
-                        </button>
-                        <br>
-                        <label style="margin: auto;color: white;">新增行程</label>
-                    </div>
-                    <p-selectButton [(ngModel)]="mode" [options]="modeOptions" optionLabel="label" optionValue="value">
-                    </p-selectButton>
-                    <!-- 行動版總花費 -->
-                    <label class="mobileTotalCostLabel" *ngIf="mode === 'cost_record'">
-                        總花費<br>{{schedule.real_cost | number:'3.0-0'}}
-                    </label>
-                </div>
+        <div class="col-12 title" style="background: rgb(22, 46, 62);">
+            <!-- 調整日期 -->
+            <button pButton type="button" icon="pi pi-cog" class="roundBtn" (click)="openEditBasicInfo()"
+                [pTooltip]="'編輯基本資訊'" [tooltipPosition]="'right'" style="width: 40px;height: 40px;">
+            </button>
+            <!-- 行程標題 -->
+            <label style="margin-bottom: 10px;">{{schedule.title}}</label>
+            <!-- 顯示模式 -->
+            <div class="modeOption">
+                <!-- 模式切換 -->
+                <p-selectButton [(ngModel)]="mode" [options]="modeOptions" optionLabel="label" optionValue="value">
+                </p-selectButton>
+                <!-- 行動版總花費 -->
+                <label class="mobileTotalCostLabel" *ngIf="mode === 'cost_record'">
+                    總花費<br>{{schedule.real_cost | number:'3.0-0'}}
+                </label>
             </div>
         </div>
         <!-- 顯示模式 -->
@@ -92,37 +82,15 @@
             <ng-container *ngSwitchCase="'schedule'">
                 <!-- 日期選項 -->
                 <div class="col-12" style="background: rgb(22, 46, 62);z-index: 99;">
-                    <div class="grid zeroPadding">
-                        <!-- 新增單天行程 -->
-                        <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol bigAddNewDayBtn">
-                            <button pButton type="button" icon="pi pi-plus" class="roundBtn"
-                                (click)="createDayIntroduce()">
-                            </button>
-                            <br>
-                            <label style="margin: auto;color: white;">新增行程</label>
-                        </div>
-                        <!-- 新增日期 -->
-                        <div class="col-6 xl:col-1 lg:col-1 md:col-2 center dateSettingBtnCol" *ngIf="false">
-                            <button pButton type="button" *ngIf="isEditMode" icon="pi pi-plus" class="roundBtn"
-                                (click)="addNewScheduleDay()">
-                            </button>
-                            <br>
-                            <label style="margin: auto;color: yellow;">新增天數</label>
-                        </div>
-                        <!-- 日期列 -->
-                        <div class="col-12 xl:col-10 lg:col-10 md:col-8" style="display: flex;align-items: center;">
-                            <!-- 標題攔 -->
-                            <div class="dateOptionBar">
-                                <div class="dateOptionBarDiv">
-                                    <ul>
-                                        <li [class]="schedule.selected_introduce.pk_id === data.pk_id ? 'selectedDateOption' : 'dateOption'"
-                                            (click)="switchSelectedData(data)"
-                                            *ngFor="let data of returnNotDeleteData(schedule.day_introduces);let i = index">
-                                            <label>{{data.date | date: 'MM/dd'}}</label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="dateOptionBar">
+                        <div class="dateOptionBarDiv">
+                            <ul>
+                                <li [class]="schedule.selected_introduce.pk_id === data.pk_id ? 'selectedDateOption' : 'dateOption'"
+                                    (click)="switchSelectedData(data)"
+                                    *ngFor="let data of returnNotDeleteData(schedule.day_introduces);let i = index">
+                                    <label>{{(data.date | date: 'MM/dd') + '(' + returnDays(data.date) + ')' }}</label>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -471,7 +439,7 @@
                         <div>
                             <p-fileUpload #fileUpload name="uploadData" mode="basic" chooseLabel="上傳檔案"
                                 [multiple]="true" (onUpload)="uploadFinish($event)" [auto]="true"
-                                [url]="fileurl + '/travel/upload/'">
+                                [url]="fileurl + '/travel/upload/'" [withCredentials]="true">
                             </p-fileUpload>
                         </div>
                     </div>
@@ -522,15 +490,25 @@
     <div class="footer">
         <!-- 編輯模式 -->
         <ng-container *ngIf="isEditMode">
-            <label style="color: white;">輸出PDF</label>
+            <!-- 新增預算紀錄 -->
+            <button pButton type="button" *ngIf="mode === 'cost_record'" class="roundBtn" icon="pi pi-plus"
+                [pTooltip]="'新增預算紀錄'" [tooltipPosition]="'top'" (click)="createCostRecord()">
+            </button>
+            <!-- 新增行程 -->
+            <button pButton type="button" *ngIf="mode === 'schedule'" icon="pi pi-plus" class="roundBtn"
+                (click)="createDayIntroduce()" [pTooltip]="'新增行程'" [tooltipPosition]="'top'">
+            </button>
             <!-- 輸出PDF -->
-            <button pButton type="button" icon="pi pi-file" class="roundBtn" (click)="setExportPdfSettingDialog(true)">
+            <button pButton type="button" icon="pi pi-file" class="roundBtn" (click)="setExportPdfSettingDialog(true)"
+                [pTooltip]="'輸出PDF'" [tooltipPosition]="'top'">
             </button>
             <!-- 儲存 -->
-            <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()">
+            <button pButton type="button" icon="pi pi-save" class="roundBtn" (click)="confirmSave()" [pTooltip]="'儲存'"
+                [tooltipPosition]="'top'">
             </button>
             <!-- 取消 -->
-            <button pButton type="button" icon="pi pi-times" class="roundBtn" (click)="confirmCancel()">
+            <button pButton type="button" icon="pi pi-times" class="roundBtn" (click)="confirmCancel()"
+                [pTooltip]="'離開編輯畫面'" [tooltipPosition]="'top'">
             </button>
         </ng-container>
     </div>

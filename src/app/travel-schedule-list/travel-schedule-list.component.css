@@ -412,10 +412,9 @@ input,
 
 /* 顯示模式 */
 .modeOption {
-    text-align: right;
-    display: contents;
-    padding-top: 15px;
     float: right;
+    display: inline-flex;
+    padding-top: 15px;
 }
 
 /* 非整列顯示時出現說明 */

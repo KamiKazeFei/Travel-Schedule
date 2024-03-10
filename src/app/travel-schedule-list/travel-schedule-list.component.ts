@@ -442,7 +442,6 @@ export class TravelScheduleListComponent {
   createCostRecord(): void {
     const costRecord = new TravelCostRecord();
     costRecord.schedule_pk_id = this.schedule.pk_id;
-    costRecord.ser_no = this.schedule.cost_records.length + 1
     if (!this.schedule.cost_records) {
       this.schedule.cost_records = []
     }
@@ -450,6 +449,7 @@ export class TravelScheduleListComponent {
     this.commonService.isMobileDevice()
       ? this.schedule.cost_records.push(costRecord)
       : this.schedule.cost_records.splice(0, 0, costRecord)
+    this.returnNotDeleteData(this.schedule.cost_records).forEach((ele, i) => ele.ser_no = (i + 1));
   }
 
   /** 移除預算紀錄 */
@@ -1120,5 +1120,26 @@ export class TravelScheduleListComponent {
       delete this.schedule.selected
       delete this.schedule.file_selected
     }
+  }
+
+  /** 回傳星期 */
+  returnDays(date: Date): string {
+    switch (date.getDay()) {
+      case 0:
+        return '日';
+      case 1:
+        return '一';
+      case 2:
+        return '二';
+      case 3:
+        return '三';
+      case 4:
+        return '四';
+      case 5:
+        return '五';
+      case 6:
+        return '六';
+    }
+    return '';
   }
 }
