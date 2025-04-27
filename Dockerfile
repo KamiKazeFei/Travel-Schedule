@@ -15,5 +15,5 @@ FROM dockerhub.zeabur.cloud/zeabur/caddy-static AS runtime
 COPY --from=build /app/dist/travel-introduce/ /
 
 # （選配）設定 Caddy (如果你要設定 fallback route，比如 Angular Router)
-# ENV CADDY_GLOBAL_OPTIONS="encode gzip"
-# ENV CADDY_ROUTE_OPTIONS="try_files {path} /index.html"
+ENV CADDY_GLOBAL_OPTIONS="encode gzip"
+ENV CADDY_ROUTE_OPTIONS="try_files {path} /index.html"
